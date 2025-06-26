@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Webring: Nós no Cabo</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/reset.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
+  <script src="/script.js" defer></script>
+</head>
+
+<body class="page">
+  <header class="page-header">
+    <div class="header-content">
+      <img src="/assets/logo.svg" alt="Logo do Nós no Cabo" class="logo">
+      <h1 class="page-title">
+        Nós no cabo
+      </h1>
+    </div>
+    <p>
+      O Webring brasileiro para divulgação projetos independentes em tecnologia.
+    </p>
+  </header>
+  <main class="page-content">
+    <nav class="menu">
+      <button id="show-form">Adicionar Projeto</button>
+      <a>Editar Lista</a>
+      <a>Exibir Embeddable</a>
+    </nav>
+    <section class="list">
+      <h2 class="page-subtitle">Projetos:</h2>
+      <div class="list-content-container"></div>
+    </section>
+    <section class="form-container hidden">
+      <button id="go-back" class="subtitle-button">
+        <img src="/assets/arrowLeftIcon.svg" />
+        <h2 class="page-subtitle">
+          Adicionar Projeto
+        </h2>
+      </button>
+      <form class="form" method="POST" action="/create" id="form-submit">
+        <div class="form-content">
+          <div class="form-group">
+            <label for="name">Nome:</label>
+            <input class="input-text" type="text" id="name" name="name" required placeholder="ex: Projeto Exemplo" autocomplete="off" >
+          </div>
+          <div class="form-group">
+            <label for="url">URL:</label>
+            <input class="input-text" type="url" id="url" name="url" required
+              placeholder="ex: https://projetoexemplo.com">
+          </div>
+        </div>
+        <button class="form-button" type="submit">Adicionar</button>
+      </form>
+    </section>
+
+  </main>
+</body>
+
+</html>
