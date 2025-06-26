@@ -123,7 +123,7 @@
   &:hover {
     color: var(--secondary-color);
 
-    .list-item-button  {
+    .list-item-button {
       opacity: 1;
       z-index: 2;
     }
@@ -191,7 +191,7 @@
   color: var(--secondary-color);
 }
 
-.menu > *:not(:last-child)::after {
+.menu>*:not(:last-child)::after {
   content: "|";
   margin-left: 0.75rem;
 }

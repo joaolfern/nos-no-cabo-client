@@ -9,9 +9,9 @@ window.addEventListener('DOMContentLoaded', () => {
   handleShowForm()
 })
 
-const renderEditButton = ({ name, id }) => `<button class='list-item-button list-item-edit' arial-label='Editar ${name}' title='Editar ${name}' data-id="${id}" ><img src='/assets/editIcon.svg'/></button>`
-const renderRemoveButton = ({ name, id }) => `<button class='list-item-button list-item-remove' data-id="${id}" arial-label='Remover ${name}' title='Remover ${name}'><img src='/assets/removeIcon.svg'/></button>`
-const renderListItem = ({ name, url, id }) => `<li class="list-item">${renderRemoveButton({name, id})}<a class="list-item-link" href=${url} target="_blank" aria-label=${name}></a><span class='list-item-text-inner'><span class="list-item-text">${name}</span>${renderEditButton({name, id})}</span></li>`
+const renderEditButton = ({ name, id }) => `<button class='list-item-button list-item-edit' arial-label='Editar ${name}' title='Editar ${name}' data-id="${id}" ><img src='./assets/editIcon.svg'/></button>`
+const renderRemoveButton = ({ name, id }) => `<button class='list-item-button list-item-remove' data-id="${id}" arial-label='Remover ${name}' title='Remover ${name}'><img src='./assets/removeIcon.svg'/></button>`
+const renderListItem = ({ name, url, id }) => `<li class="list-item">${renderRemoveButton({ name, id })}<a class="list-item-link" href=${url} target="_blank" aria-label=${name}></a><span class='list-item-text-inner'><span class="list-item-text">${name}</span>${renderEditButton({ name, id })}</span></li>`
 const renderListContainer = ({ listItems, shouldUseExtraColumn }) => `<ol class="list-content"${shouldUseExtraColumn ? ` style="--max-column-count: 4"` : ''}>${listItems}<ol>`
 
 let currentList = []
@@ -89,7 +89,7 @@ function handleFormSubmit (action) {
 
     const originalText = button.innerHTML
 
-    button.innerHTML = SPINNER_SMALL +  'Salvando'
+    button.innerHTML = SPINNER_SMALL + 'Salvando'
 
     const formData = new FormData(form)
 
@@ -137,7 +137,7 @@ async function handleProjectCreate (body) {
   }
 }
 
- const handleProjectUpdate = (id) => (
+const handleProjectUpdate = (id) => (
   async (body) => {
     const response = await fetch(`${API_URL}/list/${id}`, {
       method: 'PATCH',
@@ -196,7 +196,7 @@ function handleItemsEdit () {
       event.preventDefault()
       const listItem = btn.closest('.list-item')
 
-      setFormTexts({ title: 'Editar Projeto',  button: 'Salvar' })
+      setFormTexts({ title: 'Editar Projeto', button: 'Salvar' })
 
       const linkElement = listItem.querySelector('.list-item-link')
       const url = linkElement.getAttribute('href')
@@ -225,16 +225,16 @@ async function fillFormWithProjectFromServer (id) {
 }
 
 function fillForm (data) {
-    const form = document.querySelector('.form')
+  const form = document.querySelector('.form')
 
 
-    for (const field in data) {
-      const value = data[field]
-      if (value) {
+  for (const field in data) {
+    const value = data[field]
+    if (value) {
 
-        form[field].value = value
-     }
+      form[field].value = value
     }
+  }
 }
 
 async function getProject (id) {
