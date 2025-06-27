@@ -76,6 +76,15 @@ function handleGoBack () {
   })
 }
 
+function getParsedError (error) {
+  try {
+    const parsed = JSON.parse(error.message);
+    if (parsed && parsed.error) {
+      message = parsed.error;
+    }
+  } catch (e) { }
+}
+
 function handleFormSubmit (action) {
   const button = document.querySelector('.form-button')
 
@@ -85,7 +94,7 @@ function handleFormSubmit (action) {
 
     if (!form.checkValidity()) {
       form.reportValidity()
-      return;
+      return
     }
 
 
@@ -109,8 +118,10 @@ function handleFormSubmit (action) {
       toggleHome()
       initializeList()
     } catch (error) {
-      console.error('Error submitting form:', error)
-      alert(`Error adding item: ${error.message}`)
+      let message = error.message;
+      const parsedError = getParsedError(error);
+      console.error('Error submitting form:', parsedError)
+      alert(message)
     } finally {
       button.innerHTML = originalText
     }
@@ -134,8 +145,9 @@ async function handleProjectCreate (body) {
     body
   })
 
-  if (!response) {
-    throw new Error('Failed to add item')
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || 'Failed to add item');
   }
 }
 
@@ -149,8 +161,9 @@ const handleProjectUpdate = (id) => (
       body
     })
 
-    if (!response) {
-      throw new Error('Failed to add item')
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || 'Failed to update item');
     }
   }
 )
