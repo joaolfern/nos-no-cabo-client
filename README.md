@@ -1,5 +1,5 @@
-# nos-no-cabo-client
-![image](https://github.com/user-attachments/assets/d7926117-a9c3-45c6-af74-476434676089)
+# Nós no Cabo
+"Nós no Cabo" é um webring dedicado a conectar e dar visibilidade a projetos de tecnologia independentes. Nosso objetivo é fortalecer a comunidade, promovendo a troca de conhecimento técnico e experiências reais da web.
 
 ## Como iniciar o projeto
 1. Abra o arquivo index.html
