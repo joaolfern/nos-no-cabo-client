@@ -22,7 +22,7 @@ async function initializeList () {
   listContainer.innerHTML = SPINNER_SECTION
 
   try {
-    const response = await fetch(`${API_URL}/list`)
+    const response = await fetch(`${API_URL}/project`)
     const data = await response.json()
 
     renderList(data)
@@ -66,10 +66,12 @@ function handleGoBack () {
   const button = document.querySelector('#go-back')
 
   button.addEventListener('click', () => {
-    const form = document.querySelector('.form-container')
+    const formContainer = document.querySelector('.form-container')
     const listContainer = document.querySelector('.list')
+    const form = document.querySelector('.form')
+    form.reset()
 
-    form.classList.add('hidden')
+    formContainer.classList.add('hidden')
     listContainer.classList.remove('hidden')
   })
 }
@@ -124,7 +126,7 @@ function handleFormSubmit (action) {
 }
 
 async function handleProjectCreate (body) {
-  const response = await fetch(`${API_URL}/list`, {
+  const response = await fetch(`${API_URL}/project`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -139,7 +141,7 @@ async function handleProjectCreate (body) {
 
 const handleProjectUpdate = (id) => (
   async (body) => {
-    const response = await fetch(`${API_URL}/list/${id}`, {
+    const response = await fetch(`${API_URL}/project/${id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json'
@@ -166,7 +168,7 @@ function handleItemsRemoval () {
 
       btn.classList.add('list-button-loading')
       try {
-        const response = await fetch(`${API_URL}/list/${id}`, {
+        const response = await fetch(`${API_URL}/project/${id}`, {
           method: 'DELETE'
         })
 
@@ -239,7 +241,7 @@ function fillForm (data) {
 
 async function getProject (id) {
   try {
-    const response = await fetch(`${API_URL}/list/${id}`)
+    const response = await fetch(`${API_URL}/project/${id}`)
     const data = await response.json()
     return data
   } catch (error) {
@@ -249,10 +251,12 @@ async function getProject (id) {
 }
 
 function toggleHome () {
-  const form = document.querySelector('.form-container')
+  const formContainer = document.querySelector('.form-container')
   const listContainer = document.querySelector('.list')
+  const form = document.querySelector('.form')
 
-  form.classList.toggle('hidden')
+  form.reset()
+  formContainer.classList.toggle('hidden')
   listContainer.classList.toggle('hidden')
 }
 
