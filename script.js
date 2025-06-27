@@ -79,8 +79,13 @@ function handleGoBack () {
 function getParsedError (error) {
   try {
     const parsed = JSON.parse(error.message);
+
+    if (parsed && Array.isArray(parsed)) {
+      return parsed.map(item => item.msg).join(', ')
+    }
+
     if (parsed && parsed.error) {
-      message = parsed.error;
+      return parsed.error;
     }
   } catch (e) { }
 }
@@ -118,10 +123,9 @@ function handleFormSubmit (action) {
       toggleHome()
       initializeList()
     } catch (error) {
-      let message = error.message;
       const parsedError = getParsedError(error);
       console.error('Error submitting form:', parsedError)
-      alert(message)
+      alert(parsedError)
     } finally {
       button.innerHTML = originalText
     }
