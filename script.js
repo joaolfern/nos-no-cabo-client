@@ -28,7 +28,7 @@ async function initializeList () {
     renderList(data)
   } catch (error) {
     console.error('Error rendering list:', error)
-    listContainer.innerHTML = `<p>Error loading items: ${error.message}</p>`
+    listContainer.innerHTML = `<p>Não foi possível carregar os projetos: ${error.message}</p>`
   }
 }
 
