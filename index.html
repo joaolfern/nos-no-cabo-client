@@ -11,16 +11,25 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
-  <script src="./script.js" defer></script>
+  <script src="./scripts/main.js" defer></script>
+  <script src="./scripts/auth.js" defer></script>
 </head>
 
 <body class="page">
   <header class="page-header">
     <div class="header-content">
       <img src="./assets/logo.svg" alt="Logo do Nós no Cabo" class="logo">
-      <h1 class="page-title">
-        Nós no cabo
-      </h1>
+      <div class="header-title-container">
+        <h1 class="page-title">
+          Nós no cabo
+        </h1>
+        <div class="admin-badge-container">
+          <span class="admin-badge">Modo ADMIN</span>
+          <button class='admin-badge-logout hidden' arial-label='Sair do Modo Administrador' title='Sair do Modo Administrador'><img src='./assets/removeIcon.svg'/></button>
+
+        </div>
+      </div>
+
     </div>
     <p>
       O Webring brasileiro para divulgação projetos independentes em tecnologia.
@@ -29,21 +38,19 @@
   <main class="page-content">
     <nav class="menu">
       <button id="show-form">Adicionar Projeto</button>
-      <button onclick="alert('🚧 Em breve')">Reordenar Projetos</a>
-      <button onclick="alert('🚧 Em breve')">Copiar Embeddable</a>
     </nav>
     <section class="list">
       <h2 class="page-subtitle">Projetos:</h2>
       <div class="list-content-container"></div>
     </section>
-    <section class="form-container hidden">
+    <section class="form-container join-form-container hidden">
       <button id="go-back" class="subtitle-button">
         <img src="./assets/arrowLeftIcon.svg" />
         <h2 class="page-subtitle">
           Adicionar Projeto
         </h2>
       </button>
-      <form class="form" method="POST" action="/create" id="form-submit">
+      <form class="join-form form" method="POST" action="/create" id="form-submit">
         <div class="form-content">
           <div class="form-group">
             <label for="name">Nome:</label>
@@ -56,10 +63,29 @@
               placeholder="ex: https://projetoexemplo.com">
           </div>
         </div>
-        <button class="form-button" type="submit">Adicionar</button>
+        <button class="join-form-button form-button" type="submit">Adicionar</button>
       </form>
     </section>
-
+    <section class="form-container auth-form-container hidden">
+      <h2 class="page-subtitle">
+        Entrar como Administrador
+      </h2>
+      <form class="auth-form form" method="POST" action="/login" id="form-submit">
+        <div class="form-content">
+          <div class="form-group">
+            <label for="username">Usuário:</label>
+            <input class="input-text" type="text" id="username" name="username" required
+              placeholder="ex: admin@email.com" autocomplete="username" />
+          </div>
+          <div class="form-group">
+            <label for="password">Senha:</label>
+            <input class="input-text" type="password" id="password" name="password" required placeholder="********"
+              autocomplete="current-password" />
+          </div>
+        </div>
+        <button class="auth-form-button form-button" type="submit">Entrar</button>
+      </form>
+    </section>
   </main>
 </body>
 
