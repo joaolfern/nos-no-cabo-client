@@ -1,0 +1,14 @@
+@use '@/styles/tokens/colors.scss' as *;
+
+$radius-xs: 0.125rem;
+$radius-sm: 0.25rem;
+$radius-md: 0.5rem;
+$radius-lg: 1rem;
+$radius-xl: 2.625rem;
+$radius-full: 50rem;
+
+$border-color: $color-neutral-200;
+$border-width-base: 1px;
+$border-width-lg: 2px;
+$border-base: $border-width-base solid $border-color;
+$border-lg: $border-width-lg solid $border-color;

@@ -1,0 +1,8 @@
+@use '@/styles/tokens/spacing.scss' as *;
+
+.container {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-xs;
+  min-height: $spacing-xl;
+}

@@ -1,0 +1,19 @@
+import { Image } from '@/components/Image/Image'
+import type { ImageProps } from '@/components/Image/ImageInterfaces'
+import clsx from 'clsx'
+import styles from './CardImage.module.scss'
+
+type WebsiteProps = Omit<ImageProps, 'className'> & {
+  classNames?: {
+    container?: string
+    image?: string
+  }
+}
+
+export function CardImage({ classNames, ...props }: WebsiteProps) {
+  return (
+    <div className={clsx(styles.container, classNames?.container)}>
+      <Image className={clsx(styles.image, classNames?.image)} {...props} />
+    </div>
+  )
+}

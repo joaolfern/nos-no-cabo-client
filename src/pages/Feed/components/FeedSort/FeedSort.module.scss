@@ -1,0 +1,9 @@
+@use '@/styles/tokens/spacing.scss' as *;
+
+.sort {
+  min-width: 80.56px;
+}
+
+.sortPanel {
+  margin-top: $spacing-xxs;
+}

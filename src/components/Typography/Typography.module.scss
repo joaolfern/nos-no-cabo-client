@@ -1,0 +1,72 @@
+@use '@/styles/tokens/typography.scss' as *;
+@use '@/styles/tokens/colors.scss' as *;
+@use '@/styles/tokens/breakpoints.scss' as *;
+
+.body {
+  color: var(--color-text, $color-primary-500);
+  line-height: $line-height-base;
+}
+
+.bodyDefault {
+  font-size: $font-size-md;
+  font-weight: $font-weight-normal;
+}
+
+.bodyLarge {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semi-bold;
+}
+
+.bodySmall {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-normal;
+}
+
+.strong {
+  font-weight: $font-weight-semi-bold;
+}
+
+.secondary {
+  color: var(--color-text, $color-neutral-600);
+}
+
+.ellipsis > *,
+.ellipsis.title {
+  display: -webkit-box;
+  -webkit-line-clamp: var(--line-number);
+  line-clamp: var(--line-number);
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.title {
+  color: var(--color-text, $color-primary-400);
+}
+
+.h1 {
+  font-size: $font-size-xxxl;
+  font-weight: $font-weight-bold;
+  line-height: $line-height-heading;
+}
+
+.h2 {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  line-height: $line-height-heading;
+
+  @media (min-width: $breakpoint-md) {
+    font-size: $font-size-xxxl;
+  }
+}
+
+.h3 {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  line-height: $line-height-heading;
+}
+
+.caption {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-normal;
+  line-height: $line-height-base;
+}

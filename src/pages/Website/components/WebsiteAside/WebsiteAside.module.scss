@@ -1,0 +1,9 @@
+@use '@/styles/tokens/spacing.scss' as *;
+
+.backButton {
+  gap: $spacing-xs;
+}
+
+.backIcon {
+  margin: -$spacing-xxxs;
+}

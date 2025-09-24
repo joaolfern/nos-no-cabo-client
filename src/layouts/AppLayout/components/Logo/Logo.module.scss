@@ -1,0 +1,18 @@
+@use '@/styles/tokens/spacing.scss' as *;
+
+.container {
+  display: flex;
+  align-items: flex-end;
+  gap: $spacing-sm;
+}
+
+.subtitle {
+  white-space: nowrap;
+  line-height: 0.75;
+  font-size: $spacing-xs;
+}
+
+.image {
+  width: 25px;
+  height: 21px;
+}

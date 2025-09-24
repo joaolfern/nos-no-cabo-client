@@ -1,0 +1,60 @@
+@use '@/styles/tokens/colors.scss' as *;
+@use '@/styles/tokens/breakpoints.scss' as *;
+
+.container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -1;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 20rem;
+  padding: 7.5rem 0;
+}
+
+.circle {
+  flex: 0 0 auto;
+  width: 10rem;
+  height: 10rem;
+  border-radius: 10rem;
+  filter: blur(7rem);
+  transform: translateZ(0);
+  z-index: -1;
+
+  &:nth-child(odd) {
+    margin-inline: auto -5rem;
+  }
+
+  &:nth-child(even) {
+    margin-inline: -5rem auto;
+  }
+
+  @media (min-width: $breakpoint-sm) {
+    width: 20rem;
+    height: 20rem;
+    filter: blur(15rem);
+    &:nth-child(odd) {
+      margin-inline: auto 0;
+    }
+
+    &:nth-child(even) {
+      margin-inline: 0 auto;
+    }
+  }
+}
+
+.primary {
+  background: $color-primary-300;
+}
+
+.secondary {
+  background: $color-secondary-300;
+}
+
+.tertiary {
+  background: $color-accent-300;
+}
