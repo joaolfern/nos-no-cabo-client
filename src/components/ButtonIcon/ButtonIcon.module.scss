@@ -1,0 +1,33 @@
+@use '@/styles/tokens/colors.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+
+.buttonIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: $radius-full;
+  flex-shrink: 0;
+}
+
+.primary {
+  background: $color-primary-300;
+  color: $color-neutral-100;
+
+  &:hover,
+  &:focus-visible {
+    background: $color-primary-400;
+  }
+}
+
+.transparent {
+  &:focus-visible {
+    box-shadow: 0 0 0 2px $color-primary-400;
+  }
+
+  &:hover {
+    background: $color-neutral-200;
+  }
+}
+
+.secondary {
+  color: $color-neutral-500;
+}

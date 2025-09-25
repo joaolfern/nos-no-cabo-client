@@ -1,0 +1,42 @@
+@use '@/styles/tokens/colors.scss' as *;
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+
+.container {
+  position: relative;
+}
+
+.content {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xxs;
+  padding: $spacing-xxs;
+  border-radius: $radius-xl;
+  cursor: pointer;
+  user-select: none;
+
+  &:hover {
+    // background: $color-accent-400;
+    // --color-text: #{$color-neutral-100};
+  }
+
+  &:focus-visible {
+    // outline: $border-width-base solid $color-accent-300;
+  }
+}
+
+.text {
+  text-align: left;
+}
+
+.icon {
+  // color: var(--color-text, $color-accent-300);
+}
+
+.trigger {
+  gap: $spacing-xxs;
+}
+
+.panel {
+  margin-top: $spacing-xxs;
+}

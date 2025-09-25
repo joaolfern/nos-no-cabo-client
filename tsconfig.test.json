@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "types": ["jest", "node", "@testing-library/jest-dom"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "esModuleInterop": true,
+    "jsx": "react-jsx"
+  },
+  "include": ["src", "jest.setup.ts"]
+}

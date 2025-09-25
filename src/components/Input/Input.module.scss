@@ -1,0 +1,16 @@
+@use '@/styles/tokens/colors.scss' as *;
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+
+.input {
+  background: $color-neutral-100;
+  padding: $spacing-xxs $spacing-md;
+  border: $border-base;
+  border-radius: $radius-full;
+  color: $color-neutral-600;
+
+  &:hover,
+  &:focus {
+    border-color: $color-accent-400;
+  }
+}

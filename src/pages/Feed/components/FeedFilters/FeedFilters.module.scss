@@ -1,0 +1,31 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/colors.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+@use '@/styles/tokens/typography.scss' as *;
+
+.inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-xs;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  background: $color-neutral-100;
+  border: $border-width-base solid $color-neutral-200;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.apply {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semi-bold;
+}

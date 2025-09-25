@@ -1,0 +1,6 @@
+@use '@/styles/tokens/border.scss' as *;
+
+.divider {
+  border-bottom: 1px solid $border-color;
+  margin: 1rem 0;
+}

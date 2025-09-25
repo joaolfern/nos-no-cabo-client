@@ -1,0 +1,22 @@
+@use '@/styles/tokens/colors.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+@use '@/styles/tokens/breakpoints.scss' as *;
+@use '@/styles/tokens/animations.scss' as *;
+
+.container {
+  width: 100%;
+  height: 9.5rem;
+  overflow: hidden;
+
+  @media (min-width: $breakpoint-md) {
+    height: 12.25rem;
+  }
+}
+
+.image {
+  background-color: $color-neutral-200;
+  border-radius: $radius-lg;
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+}

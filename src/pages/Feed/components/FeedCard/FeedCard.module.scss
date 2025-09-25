@@ -1,0 +1,78 @@
+@use '@/styles/tokens/border.scss' as *;
+@use '@/styles/tokens/colors.scss' as *;
+@use '@/styles/tokens/shadow.scss' as *;
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/breakpoints.scss' as *;
+@use '@/styles/tokens/animations.scss' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  background: $color-neutral-100;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+  position: relative;
+  transition:
+    background 0.15s ease-in,
+    box-shadow 0.15s ease-in;
+
+  &:hover {
+    background: $color-neutral-200;
+    box-shadow: $shadow-md;
+  }
+
+  &:focus-within:focus-visible {
+    border: $border-width-base solid $color-accent-400;
+  }
+
+  @media (min-width: $breakpoint-md) {
+    border: $border-base;
+  }
+
+  @include has-motion {
+    &:hover .image {
+      transform: scale(1.1);
+    }
+  }
+}
+
+.content {
+  flex: 1;
+  padding: $spacing-md;
+  gap: $spacing-md;
+  display: flex;
+  flex-direction: column;
+}
+
+.image {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+
+  @include has-motion {
+    transition: transform 0.35s ease-out;
+    will-change: transform;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+}
+
+.description {
+  height: 3.25rem;
+}
+
+.keywords {
+  margin-top: auto;
+}
+
+.title {
+  all: unset;
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+  }
+}

@@ -1,0 +1,21 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/breakpoints.scss' as *;
+
+.container {
+  min-height: 100dvh;
+  position: relative;
+}
+
+.content {
+  padding: $spacing-md $spacing-sm;
+
+  @media (min-width: $breakpoint-sm) {
+    padding: $spacing-xxl $spacing-xxxxl;
+  }
+
+  @media (min-width: $breakpoint-md) {
+    display: grid;
+    grid-template-columns: 3fr 9fr;
+    gap: $spacing-lg;
+  }
+}

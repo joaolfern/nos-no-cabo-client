@@ -1,0 +1,29 @@
+import type { IAuthor } from '@/interfaces/IAuthor'
+import type { IKeyword, IWebsite } from '@/interfaces/IWebsite'
+
+export interface IFiltersContext {
+  selectedKeywords: string[]
+  keywordOptions: { label: string; value: string }[]
+  updateKeywords: (changedItem: string) => IFilterEvent
+  getKeywordById: (id: string) => IKeyword | undefined
+  keywordIsLoading: boolean
+  filterByKeyword: (
+    websites: IWebsite[],
+    selectedKeywords: string[]
+  ) => IWebsite[]
+
+  selectedAuthors: string[]
+  authorOptions: { label: string; value: string }[]
+  updateAuthors: (changedItem: string) => IFilterEvent
+  getAuthorById: (id: string) => IAuthor | undefined
+  authorIsLoading: boolean
+  filterByAuthor: (
+    websites: IWebsite[],
+    selectedAuthors: string[]
+  ) => IWebsite[]
+}
+
+export type IFilterEvent = {
+  updatedKeywords?: string[]
+  updatedAuthors?: string[]
+}

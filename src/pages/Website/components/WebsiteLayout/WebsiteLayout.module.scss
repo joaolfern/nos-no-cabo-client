@@ -1,0 +1,11 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/breakpoints.scss' as *;
+
+.container {
+  display: grid;
+  gap: $spacing-md;
+
+  @media (min-width: $breakpoint-md) {
+    grid-template-columns: 2fr 10fr;
+  }
+}

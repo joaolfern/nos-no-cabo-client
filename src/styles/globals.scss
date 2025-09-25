@@ -1,0 +1,26 @@
+@use './tokens/colors.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+@use '@/styles/tokens/typography.scss' as *;
+
+html {
+  background: $color-neutral-100;
+}
+
+html,
+body,
+#root {
+  font-style: normal;
+  font-family: $font-family-base;
+}
+
+body {
+  font-size: $font-size-sm;
+}
+
+:root {
+  font-size: 16px;
+}
+
+*:focus-visible {
+  outline: none;
+}

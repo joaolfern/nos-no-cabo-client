@@ -1,0 +1,22 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/breakpoints.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+
+.topbar {
+  position: relative;
+}
+
+.content {
+  position: relative;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: $spacing-xs $spacing-sm;
+  border-bottom: $border-lg;
+
+  @media (min-width: $breakpoint-sm) {
+    padding-inline: $spacing-xxxxl;
+  }
+}
