@@ -1,0 +1,54 @@
+@use '@/styles/tokens/border.scss' as *;
+@use '@/styles/tokens/colors.scss' as *;
+@use '@/styles/tokens/shadow.scss' as *;
+@use '@/styles/tokens/spacing.scss' as *;
+
+@mixin rounded-corners($radius) {
+  &:first-child {
+    border-top-left-radius: $radius;
+    border-top-right-radius: $radius;
+  }
+  &:last-child {
+    border-bottom-left-radius: $radius;
+    border-bottom-right-radius: $radius;
+  }
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+}
+
+.item {
+  display: flex;
+  text-align: left;
+  line-height: 1.25rem;
+  font-size: 14px;
+  padding: $spacing-xs;
+  border-radius: 0;
+  @include rounded-corners($radius-lg);
+
+  &:hover,
+  &:focus-within:focus-visible {
+    background: $color-neutral-200;
+  }
+
+  &:focus-within:focus-visible {
+    outline: $border-width-base solid $color-accent-400;
+  }
+
+  > * {
+    border-radius: $radius-lg;
+    text-align: left;
+  }
+}
+
+.checkIcon {
+  color: $color-accent-300;
+  margin-left: auto;
+}
+
+.empty {
+  padding: $spacing-md;
+  text-align: center;
+}

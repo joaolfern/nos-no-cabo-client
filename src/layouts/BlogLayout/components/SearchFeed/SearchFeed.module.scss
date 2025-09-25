@@ -1,0 +1,22 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/colors.scss' as *;
+@use '@/styles/tokens/breakpoints.scss' as *;
+
+.search:not(.focused) {
+  @media (min-width: $breakpoint-sm) {
+    width: 37vw;
+  }
+}
+
+.focused {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: $spacing-xs;
+  right: $spacing-sm;
+
+  @media (min-width: $breakpoint-sm) {
+    right: $spacing-xxxxl;
+    left: $spacing-xxxxl;
+  }
+}

@@ -1,0 +1,38 @@
+@use '@/styles/tokens/colors.scss' as *;
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+@use '@/styles/tokens/shadow.scss' as *;
+@use '@/styles/tokens/breakpoints.scss' as *;
+@use '@/styles/tokens/elevation.scss' as *;
+
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xxxs;
+}
+
+.panel {
+  position: fixed;
+  left: $spacing-sm;
+  right: $spacing-sm;
+  background: $color-neutral-100;
+  border-radius: $radius-lg;
+  width: calc(100% - 2em);
+  box-shadow: $shadow-sm;
+  z-index: $elevation-high;
+
+  @media (min-width: $breakpoint-md) {
+    position: absolute;
+    width: 314px;
+    right: 0;
+    border: $border-base;
+
+    &.left {
+      left: auto;
+    }
+
+    &.right {
+      right: auto;
+    }
+  }
+}

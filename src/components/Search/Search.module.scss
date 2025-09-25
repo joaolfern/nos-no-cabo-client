@@ -1,0 +1,65 @@
+@use '@/styles/tokens/colors.scss' as *;
+@use '@/styles/tokens/breakpoints.scss' as *;
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+
+.container {
+  height: $spacing-xxxxl;
+}
+
+.content {
+  display: flex;
+  align-items: center;
+  min-width: 40px;
+  gap: $spacing-xxs;
+
+  &:hover .input,
+  &:focus-within .input {
+    border-color: $color-accent-400;
+  }
+}
+
+.inputContainer {
+  flex: 1;
+  min-height: 56px;
+  display: inline-flex;
+  flex-direction: row-reverse;
+  position: relative;
+}
+
+.mainButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: $spacing-xxs;
+}
+
+.backButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: $spacing-xxs;
+}
+
+.input {
+  display: none;
+  flex: 1;
+  padding-right: calc(40px + #{$spacing-sm});
+
+  @media (min-width: $breakpoint-sm) {
+    display: block;
+  }
+}
+
+.inputVisible {
+  padding-left: calc(40px + #{$spacing-sm});
+  display: block;
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100%);
+  left: 0;
+  right: 0;
+  background: $color-neutral-100;
+}
