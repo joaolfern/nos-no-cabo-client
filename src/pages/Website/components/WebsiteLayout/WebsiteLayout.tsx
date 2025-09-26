@@ -1,9 +1,9 @@
-import { BlogLayout } from '@/layouts/BlogLayout/BlogLayout'
-import { WebsiteAside } from '@/pages/Website/components/WebsiteAside/WebsiteAside'
+import { NosNoCaboLayout } from '@/layouts/NosNoCaboLayout/NosNoCaboLayout'
+import { InnerRouteAside } from '@/pages/NosNoCabo/components/InnerRouteAside/InnerRouteAside'
 import styles from './WebsiteLayout.module.scss'
-import type { BlogLayoutProps } from '@/layouts/BlogLayout/BlogLayoutInterfaces'
+import type { NosNoCaboLayoutProps } from '@/layouts/NosNoCaboLayout/NosNoCaboLayoutInterfaces'
 
-type WebsiteLayoutProps = BlogLayoutProps & {
+type WebsiteLayoutProps = NosNoCaboLayoutProps & {
   children: React.ReactNode
 }
 
@@ -13,9 +13,9 @@ export function WebsiteLayout({
   ...props
 }: WebsiteLayoutProps) {
   return (
-    <BlogLayout classNames={{ content: styles.container }} {...props}>
-      <WebsiteAside />
+    <NosNoCaboLayout classNames={{ content: styles.container }} {...props}>
+      <InnerRouteAside />
       {children}
-    </BlogLayout>
+    </NosNoCaboLayout>
   )
 }

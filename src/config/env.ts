@@ -10,3 +10,5 @@ if (!API_URL) {
 
 export const BOOK_COVER_QUALITY = import.meta.env.VITE_ENABLE_MOCKS ? 'S' : 'L'
 export const ENABLE_OPEN_LIBRARY_API = !import.meta.env.VITE_ENABLE_MOCKS
+export const NOS_NO_CABO_URL =
+  import.meta.env.VITE_NOS_NO_CABO_URL || 'https://nosnocabo.pages.dev'

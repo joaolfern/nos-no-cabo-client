@@ -26,7 +26,7 @@ export function FeedSort() {
       value={selectedSort}
       multiple={false}
     >
-      Sort by:
+      Ordenar por:
     </DropdownText>
   )
 }

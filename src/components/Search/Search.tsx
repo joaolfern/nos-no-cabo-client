@@ -6,12 +6,12 @@ import React, { useCallback, useEffect } from 'react'
 import { ButtonIcon } from '@/components/ButtonIcon/ButtonIcon'
 import { Menu } from '@/components/Menu/Menu'
 import { Typography } from '@/components/Typography/Typography'
-import { createPortal } from 'react-dom'
 import type { MenuProps } from '@/components/Menu/MenuInterfaces'
 import type {
   ISearchOption,
   SearchProps,
 } from '@/components/Search/SearchInterfaces'
+import { Portal } from '@/components/Portal/Portal'
 
 export function Search({
   className,
@@ -165,15 +165,4 @@ function Dropdown({ options, className, isOpen, ...props }: DropdownProps) {
       </Menu>
     )
   )
-}
-
-type PortalProps = {
-  container: HTMLElement | null | undefined
-  children: React.ReactNode
-}
-
-function Portal({ container, children }: PortalProps) {
-  if (!container) return null
-
-  return createPortal(children, container)
 }

@@ -1,0 +1,15 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/colors.scss' as *;
+
+.container {
+  display: flex;
+  gap: $spacing-xs;
+}
+
+.icon {
+  color: $color-secondary-400;
+}
+
+.editButton {
+  margin-left: auto;
+}

@@ -1,6 +1,6 @@
 import type { AppLayoutProps } from '@/layouts/AppLayout/AppLayoutInterfaces'
 
-export type BlogLayoutProps = AppLayoutProps & {
+export type NosNoCaboLayoutProps = AppLayoutProps & {
   children: React.ReactNode
   classNames?: {
     content?: string

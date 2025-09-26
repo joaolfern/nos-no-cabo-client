@@ -1,0 +1,8 @@
+@use '@/styles/tokens/spacing.scss' as *;
+
+.buttonBack {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xxs;
+  margin-bottom: $spacing-xxs;
+}

@@ -1,13 +1,13 @@
 import { AppLayout } from '@/layouts/AppLayout/AppLayout'
 import { useRef } from 'react'
-import { SearchFeed } from '@/layouts/BlogLayout/components/SearchFeed/SearchFeed'
-import type { BlogLayoutProps } from '@/layouts/BlogLayout/BlogLayoutInterfaces'
+import { SearchFeed } from '@/layouts/NosNoCaboLayout/components/SearchFeed/SearchFeed'
+import type { NosNoCaboLayoutProps } from '@/layouts/NosNoCaboLayout/NosNoCaboLayoutInterfaces'
 
-export function BlogLayout({
+export function NosNoCaboLayout({
   children,
   classNames,
   ...props
-}: BlogLayoutProps) {
+}: NosNoCaboLayoutProps) {
   const topbarRef = useRef<HTMLElement>(null)
 
   return (

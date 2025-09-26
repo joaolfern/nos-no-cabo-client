@@ -1,0 +1,24 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/colors.scss' as *;
+@use '@/styles/tokens/typography.scss' as *;
+@use '@/styles/tokens/breakpoints.scss' as *;
+
+.container {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 1000;
+}
+
+.button {
+  min-height: 50px;
+}
+
+.popup {
+  padding: $spacing-xs;
+  margin-bottom: 250px !important;
+
+  @media (min-width: $breakpoint-md) {
+    margin-bottom: calc(50px + $spacing-xs) !important;
+  }
+}

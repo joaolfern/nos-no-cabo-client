@@ -1,9 +1,15 @@
 import { api, openLibraryApi } from '@/api/api'
 import type { IAuthor } from '@/interfaces/IAuthor'
-import { useQuery } from '@tanstack/react-query'
-import type { IKeyword, IWebsite } from '@/interfaces/IWebsite'
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
+import type {
+  IRegisterWebsite,
+  IKeyword,
+  IPreregisterWebsite,
+  IWebsite,
+} from '@/interfaces/IWebsite'
 import type { IOpenLibraryResponse } from '@/interfaces/IBook'
 import { ENABLE_OPEN_LIBRARY_API } from '@/config/env'
+import { parseRegisterDataToWebsite } from '@/__mocks__/data/parseRegisterDataToWebsite'
 
 export function useWebsiteDetailsData(id: string) {
   return useQuery({
@@ -60,5 +66,47 @@ export function useRecommendedBooks(keywords: IKeyword[]) {
       openLibraryApi
         .get<IOpenLibraryResponse>(`subjects/${keywords[0].name}.json?limit=3`)
         .then((res) => res.data ?? []),
+  })
+}
+
+export function usePreregisterWebsite() {
+  return useMutation({
+    mutationFn: (data: { url: string }) =>
+      api
+        .post<IPreregisterWebsite>('website/preregister', data)
+        .then((res) => res.data),
+  })
+}
+
+export function useRegisterWebsite() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data: IRegisterWebsite) =>
+      api.post('website/register', data).then((res) => res.data),
+    mutationKey: ['websites'],
+    onMutate: async (newWebsite: IRegisterWebsite) => {
+      await Promise.resolve()
+      const previousWebsites = queryClient.getQueryData<IWebsite[]>([
+        'websites',
+      ])
+
+      const newWebsiteComplete: IWebsite =
+        parseRegisterDataToWebsite(newWebsite)
+
+      queryClient.setQueryData<IWebsite[]>(['websites'], (old = []) => [
+        ...old,
+        newWebsiteComplete,
+      ])
+
+      return { previousWebsites }
+    },
+    onError: (_err, _newWebsite, context) => {
+      if (context?.previousWebsites) {
+        queryClient.setQueryData(['websites'], context.previousWebsites)
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['websites'] })
+    },
   })
 }

@@ -32,13 +32,13 @@ FeedFilters.Panel = function FeedFiltersPanel({ onChange }: FeedFiltersProps) {
       <header className={styles.header}>
         <MdTune />
         <Typography variant='h3' asVariant={true}>
-          Filters
+          Filtros
         </Typography>
       </header>
       <KeywordFilter variant='panel' />
       <AuthorFilter variant='panel' />
       <Button className={styles.apply} onClick={() => onChange()}>
-        Apply filters
+        Aplicar filtros
       </Button>
     </div>
   )
@@ -76,7 +76,7 @@ function AuthorFilter({
   return (
     <VariantFilter
       variant={variant}
-      label='Author'
+      label='Autor'
       labelOfSelected={labelOfSelected}
       onChange={handleChange}
       options={authorOptions}
@@ -126,7 +126,7 @@ function KeywordFilter({
   return (
     <VariantFilter
       variant={variant}
-      label='Keyword'
+      label='Palavras-chave'
       labelOfSelected={labelOfSelected}
       onChange={handleChange}
       options={keywordOptions}

@@ -2,14 +2,7 @@ import clsx from 'clsx'
 import styles from './Button.module.scss'
 import React from 'react'
 import { AsChild } from '@/components/AsChild/AsChild'
-
-type _variant = 'primary' | 'secondary'
-
-type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: _variant
-  small?: boolean
-  asChild?: boolean
-}
+import type { _buttonVariant, ButtonProps } from './ButtonProps'
 
 export function Button({
   variant = 'primary',
@@ -47,7 +40,8 @@ export function Button({
   )
 }
 
-const VARIANT_CLASSES: Record<_variant, string> = {
+const VARIANT_CLASSES: Record<_buttonVariant, string> = {
   primary: styles.primary,
   secondary: styles.secondary,
+  tertiary: styles.tertiary,
 }

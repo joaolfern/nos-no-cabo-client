@@ -14,8 +14,8 @@ describe('FeedTopBar', () => {
       window.innerWidth = 500
       render(<FeedTopbar />)
 
-      screen.getByRole('button', { name: 'Keyword' })
-      screen.getByRole('button', { name: 'Author' })
+      screen.getByRole('button', { name: 'Palavras-chave' })
+      screen.getByRole('button', { name: 'Autor' })
     })
   })
 })

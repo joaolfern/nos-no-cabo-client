@@ -26,3 +26,12 @@ export interface IKeyword {
   id: string
   name: string
 }
+
+export type IPreregisterWebsite = Pick<
+  IWebsite,
+  'url' | 'description' | 'name' | 'faviconUrl' | 'color'
+>
+
+export type IRegisterWebsite = IPreregisterWebsite & {
+  keywords: string[]
+}

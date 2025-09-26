@@ -1,0 +1,8 @@
+@use '@/styles/tokens/spacing.scss' as *;
+
+.confirmButton {
+  margin-top: $spacing-xxs;
+  margin-left: auto;
+  display: flex;
+  gap: $spacing-xxs;
+}
