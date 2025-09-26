@@ -2,11 +2,11 @@ import { FiltersProvider } from '@/providers/FiltersProvider/FiltersProvider'
 import { WebsitesProvider } from '@/providers/WebsitesProvider/WebsitesProvider'
 import { SortProvider } from '@/providers/SortProvider/SortProvider'
 
-type BlogProvidersProps = {
+type NosNoCaboProvidersProps = {
   children: React.ReactNode
 }
 
-export function BlogProviders({ children }: BlogProvidersProps) {
+export function NosNoCaboProviders({ children }: NosNoCaboProvidersProps) {
   return (
     <SortProvider>
       <FiltersProvider>

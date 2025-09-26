@@ -17,7 +17,7 @@ describe('Feed', () => {
     render(<Feed />)
 
     const keywordButton = screen.getByRole('button', {
-      name: 'Keyword',
+      name: 'Palavras-chave',
     })
 
     await userEvent.click(keywordButton)

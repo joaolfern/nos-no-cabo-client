@@ -1,7 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { Providers } from '@/providers'
-import { Blog } from '@/pages/Blog/Blog'
+import { NosNoCabo } from '@/pages/NosNoCabo/NosNoCabo'
 import './styles/index.scss'
 
 async function enableMocking() {
@@ -18,7 +18,7 @@ enableMocking().then(() => {
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
       <Providers>
-        <Blog />
+        <NosNoCabo />
       </Providers>
     </StrictMode>
   )

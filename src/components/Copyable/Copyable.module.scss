@@ -1,0 +1,12 @@
+@use '@/styles/tokens/spacing.scss' as *;
+
+.copyable {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  gap: $spacing-xxs;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
