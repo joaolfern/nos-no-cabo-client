@@ -8,6 +8,17 @@ export const api = axios.create({
   },
 })
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response) {
+      return Promise.reject(error.response.data)
+    }
+
+    return Promise.reject(error)
+  }
+)
+
 export const openLibraryApi = axios.create({
   baseURL: 'https://openlibrary.org/',
   headers: {

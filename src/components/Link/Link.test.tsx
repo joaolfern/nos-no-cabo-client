@@ -5,7 +5,7 @@ const query = { id: '42' }
 
 describe('Link', () => {
   beforeEach(() => {
-    window.history.replaceState({}, '', '/blog')
+    window.history.replaceState({}, '', '/nosnocabo')
   })
 
   it('updates the query string in the URL on click', () => {

@@ -2,13 +2,13 @@ import styles from './Dropdown.module.scss'
 import clsx from 'clsx'
 import React, { useState } from 'react'
 import { Menu } from '@/components/Menu/Menu'
-import { createPortal } from 'react-dom'
 import type {
   DropdownProps,
   PanelProps,
 } from '@/components/Dropdown/DropdownInterfaces'
 import { useDismissOnScroll } from '@/components/Dropdown/hooks/useDismissOnScroll'
 import { useClickOutside } from '@/components/Dropdown/hooks/useClickOutside'
+import { Portal } from '@/components/Portal/Portal'
 
 export function Dropdown<T, M extends boolean | undefined>({
   container,
@@ -135,15 +135,4 @@ function PanelItem<T>({
       {option.label}
     </Menu.Item>
   )
-}
-
-type PortalProps = {
-  container: HTMLElement | null | undefined
-  children: React.ReactNode
-}
-
-function Portal({ container, children }: PortalProps) {
-  if (!container) return null
-
-  return createPortal(children, container)
 }

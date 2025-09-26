@@ -1,7 +1,7 @@
 import { QueryProvider } from './QueryProvider/QueryProvider'
 import { IconProvider } from './IconProvider/IconProvider'
 import { ErrorBoundary } from './ErrorBoundary/ErrorBoundary'
-import { BlogProviders } from '@/pages/Blog/providers/BlogProviders'
+import { NosNoCaboProviders } from '@/pages/NosNoCabo/providers/NosNoCaboProviders'
 
 type ProvidersProps = {
   children: React.ReactNode
@@ -12,7 +12,7 @@ export function Providers({ children }: ProvidersProps) {
     <ErrorBoundary>
       <QueryProvider>
         <IconProvider>
-          <BlogProviders>{children}</BlogProviders>
+          <NosNoCaboProviders>{children}</NosNoCaboProviders>
         </IconProvider>
       </QueryProvider>
     </ErrorBoundary>

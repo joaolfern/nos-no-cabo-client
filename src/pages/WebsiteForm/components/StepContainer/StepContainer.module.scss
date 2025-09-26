@@ -1,0 +1,9 @@
+@use '@/styles/tokens/colors.scss' as *;
+@use '@/styles/tokens/typography.scss' as *;
+
+.stepContainer {
+  display: flex;
+  flex-direction: column;
+  color: $color-primary-400;
+  font-weight: $font-weight-semi-bold;
+}

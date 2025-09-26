@@ -1,0 +1,16 @@
+@use '@/styles/tokens/spacing.scss' as *;
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.inputContainer {
+  flex-grow: 1;
+  display: flex;
+}
+
+.input {
+  flex-grow: 1;
+}
