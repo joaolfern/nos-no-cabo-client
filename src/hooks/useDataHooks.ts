@@ -73,7 +73,7 @@ export function usePreregisterWebsite() {
   return useMutation({
     mutationFn: (data: { url: string }) =>
       api
-        .post<IPreregisterWebsite>('website/preregister', data)
+        .post<IPreregisterWebsite>('pre-register', data)
         .then((res) => res.data),
   })
 }
@@ -82,7 +82,7 @@ export function useRegisterWebsite() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (data: IRegisterWebsite) =>
-      api.post('website/register', data).then((res) => res.data),
+      api.post('register', data).then((res) => res.data),
     mutationKey: ['websites'],
     onMutate: async (newWebsite: IRegisterWebsite) => {
       await Promise.resolve()
