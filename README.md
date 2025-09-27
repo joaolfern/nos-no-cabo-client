@@ -45,9 +45,9 @@
 
 ### 📊 Arquitetura da Aplicação
 
-![Fluxograma da Arquitetura](./docs/arquitetura.png)
+<img width="762" height="372" alt="Frame 30@2x" src="https://github.com/user-attachments/assets/c6e3910c-11a3-402f-983e-46bb20d14f1f" />
 
-> O fluxograma acima ilustra os principais módulos e integrações externas.
+O diagram acima ilustra os principais módulos e integrações da aplicação.
 
 ---
 
