@@ -1,7 +1,7 @@
 import { QueryProvider } from './QueryProvider/QueryProvider'
 import { IconProvider } from './IconProvider/IconProvider'
 import { ErrorBoundary } from './ErrorBoundary/ErrorBoundary'
-import { NosNoCaboProviders } from '@/pages/NosNoCabo/providers/NosNoCaboProviders'
+import { NosNoCaboProviders } from '@/pages/Webring/providers/NosNoCaboProviders'
 
 type ProvidersProps = {
   children: React.ReactNode

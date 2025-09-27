@@ -1,4 +1,3 @@
-import type { IAuthor } from '@/interfaces/IAuthor'
 import type { IKeyword, IWebsite } from '@/interfaces/IWebsite'
 
 export interface IFiltersContext {
@@ -10,16 +9,6 @@ export interface IFiltersContext {
   filterByKeyword: (
     websites: IWebsite[],
     selectedKeywords: string[]
-  ) => IWebsite[]
-
-  selectedAuthors: string[]
-  authorOptions: { label: string; value: string }[]
-  updateAuthors: (changedItem: string) => IFilterEvent
-  getAuthorById: (id: string) => IAuthor | undefined
-  authorIsLoading: boolean
-  filterByAuthor: (
-    websites: IWebsite[],
-    selectedAuthors: string[]
   ) => IWebsite[]
 }
 

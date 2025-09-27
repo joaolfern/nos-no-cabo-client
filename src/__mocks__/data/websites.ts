@@ -1,4 +1,3 @@
-import { MOCK_AUTHORS } from '@/__mocks__/data/authors'
 import { MOCK_KEYWORDS } from '@/__mocks__/data/keywords'
 import type { IWebsite } from '@/interfaces/IWebsite'
 
@@ -13,7 +12,6 @@ export const MOCK_WEBSITES: IWebsite[] = [
     createdAt: '2023-02-01T00:00:00.000Z',
     updatedAt: '2024-01-01T00:00:00.000Z',
     faviconUrl: 'https://github.githubassets.com/favicons/favicon.svg',
-    author: MOCK_AUTHORS[0],
   },
   {
     id: '2',
@@ -26,7 +24,6 @@ export const MOCK_WEBSITES: IWebsite[] = [
     updatedAt: '2024-02-01T00:00:00.000Z',
     faviconUrl:
       'https://cdn.sstatic.net/Sites/stackoverflow/img/favicon.ico?v=ec617d715196',
-    author: MOCK_AUTHORS[1],
   },
   {
     id: '3',
@@ -38,7 +35,6 @@ export const MOCK_WEBSITES: IWebsite[] = [
     createdAt: '2023-01-01T00:00:00.000Z',
     updatedAt: '2024-03-01T00:00:00.000Z',
     faviconUrl: 'https://developer.mozilla.org/favicon-48x48.cbbd161b.png',
-    author: MOCK_AUTHORS[2],
   },
   {
     id: '4',
@@ -50,7 +46,6 @@ export const MOCK_WEBSITES: IWebsite[] = [
     createdAt: '2023-04-01T00:00:00.000Z',
     updatedAt: '2024-04-01T00:00:00.000Z',
     faviconUrl: 'https://dev.to/assets/favicon-dev-black.png',
-    author: MOCK_AUTHORS[0],
   },
   {
     id: '5',
@@ -62,7 +57,6 @@ export const MOCK_WEBSITES: IWebsite[] = [
     createdAt: '2023-05-01T00:00:00.000Z',
     updatedAt: '2024-05-01T00:00:00.000Z',
     faviconUrl: 'https://www.freecodecamp.org/icons/icon-96x96.png',
-    author: MOCK_AUTHORS[1],
   },
   {
     id: '6',
@@ -75,7 +69,6 @@ export const MOCK_WEBSITES: IWebsite[] = [
     createdAt: '2023-06-01T00:00:00.000Z',
     updatedAt: '2024-06-01T00:00:00.000Z',
     faviconUrl: 'https://news.ycombinator.com/favicon.ico',
-    author: MOCK_AUTHORS[2],
   },
   {
     id: '7',
@@ -88,7 +81,6 @@ export const MOCK_WEBSITES: IWebsite[] = [
     updatedAt: '2024-07-01T00:00:00.000Z',
     faviconUrl:
       'https://www.redditstatic.com/desktop2x/img/favicon/apple-icon-120x120.png',
-    author: MOCK_AUTHORS[1],
   },
   {
     id: '8',
@@ -101,7 +93,6 @@ export const MOCK_WEBSITES: IWebsite[] = [
     createdAt: '2023-08-01T00:00:00.000Z',
     updatedAt: '2024-08-01T00:00:00.000Z',
     faviconUrl: 'https://static.codepen.io/assets/favicon/favicon-96x96.png',
-    author: MOCK_AUTHORS[0],
   },
   {
     id: '9',
@@ -114,7 +105,6 @@ export const MOCK_WEBSITES: IWebsite[] = [
     updatedAt: '2024-09-01T00:00:00.000Z',
     faviconUrl:
       'https://www.smashingmagazine.com/images/favicon/apple-touch-icon-120x120.png',
-    author: MOCK_AUTHORS[2],
   },
   {
     id: '10',
@@ -126,6 +116,5 @@ export const MOCK_WEBSITES: IWebsite[] = [
     createdAt: '2023-10-01T00:00:00.000Z',
     updatedAt: '2024-10-01T00:00:00.000Z',
     faviconUrl: 'https://css-tricks.com/apple-touch-icon.png',
-    author: MOCK_AUTHORS[1],
   },
 ]

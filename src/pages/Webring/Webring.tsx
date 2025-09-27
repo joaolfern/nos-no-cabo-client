@@ -4,7 +4,7 @@ import { Feed } from '@/pages/Feed/Feed'
 import { useEffect } from 'react'
 import { WebsiteForm } from '@/pages/WebsiteForm/WebsiteForm'
 
-export function NosNoCabo() {
+export function Webring() {
   const { id, action } = useUrlQuery('id')
   const hasSelectedWebsite = !!id
 
@@ -16,5 +16,10 @@ export function NosNoCabo() {
     return <WebsiteForm />
   }
 
-  return hasSelectedWebsite ? <Website id={id} /> : <Feed />
+  return (
+    <>
+      {hasSelectedWebsite ? <Website id={id} /> : <Feed />}
+      <WebsiteForm />
+    </>
+  )
 }

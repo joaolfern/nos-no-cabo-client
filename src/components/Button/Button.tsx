@@ -10,6 +10,7 @@ export function Button({
   children,
   small,
   asChild,
+  ref,
   ...props
 }: ButtonProps) {
   const variantClass = VARIANT_CLASSES[variant]
@@ -34,7 +35,7 @@ export function Button({
   }
 
   return (
-    <button className={classNameFinal} {...props}>
+    <button ref={ref} className={classNameFinal} {...props}>
       {children}
     </button>
   )

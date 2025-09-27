@@ -21,7 +21,6 @@ FeedFilters.Inline = function FeedFiltersInline({
   return (
     <div className={styles.inline}>
       <KeywordFilter variant='inline' onChange={onChange} />
-      <AuthorFilter variant='inline' onChange={onChange} />
     </div>
   )
 }
@@ -36,7 +35,6 @@ FeedFilters.Panel = function FeedFiltersPanel({ onChange }: FeedFiltersProps) {
         </Typography>
       </header>
       <KeywordFilter variant='panel' />
-      <AuthorFilter variant='panel' />
       <Button className={styles.apply} onClick={() => onChange()}>
         Aplicar filtros
       </Button>
@@ -46,45 +44,6 @@ FeedFilters.Panel = function FeedFiltersPanel({ onChange }: FeedFiltersProps) {
 
 type FilterElementProps = {
   variant: 'panel' | 'inline'
-}
-
-function AuthorFilter({
-  variant,
-  onChange,
-}: FilterElementProps & Partial<FeedFiltersProps>) {
-  const {
-    authorOptions,
-    selectedAuthors,
-    updateAuthors,
-    getAuthorById,
-    authorIsLoading,
-  } = useFilters()
-
-  const labelOfSelected = useMemo(
-    () => getLabelOfSelected(selectedAuthors, getAuthorById),
-    [selectedAuthors, getAuthorById]
-  )
-
-  function handleChange(value: string) {
-    const props = updateAuthors(value)
-
-    if (onChange) {
-      onChange(props)
-    }
-  }
-
-  return (
-    <VariantFilter
-      variant={variant}
-      label='Autor'
-      labelOfSelected={labelOfSelected}
-      onChange={handleChange}
-      options={authorOptions}
-      value={selectedAuthors}
-      multiple={true}
-      loading={authorIsLoading}
-    />
-  )
 }
 
 function VariantFilter<T, M extends boolean | undefined>({

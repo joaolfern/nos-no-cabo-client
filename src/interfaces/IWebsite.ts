@@ -10,7 +10,7 @@ export interface IWebsite {
   createdAt: string
   updatedAt: string
   faviconUrl: string
-  author: IAuthor
+  author?: IAuthor
 }
 
 export interface IWebsitesContext {

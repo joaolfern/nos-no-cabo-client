@@ -1,5 +1,5 @@
 import { NosNoCaboLayout } from '@/layouts/NosNoCaboLayout/NosNoCaboLayout'
-import { InnerRouteAside } from '@/pages/NosNoCabo/components/InnerRouteAside/InnerRouteAside'
+import { InnerRouteAside } from '@/pages/Webring/components/InnerRouteAside/InnerRouteAside'
 import styles from './WebsiteLayout.module.scss'
 import type { NosNoCaboLayoutProps } from '@/layouts/NosNoCaboLayout/NosNoCaboLayoutInterfaces'
 

@@ -19,7 +19,7 @@ export function LatestWebsites({ websiteId }: LatestWebsitesProps) {
   return (
     <section className={styles.container}>
       <Typography variant='h3' asVariant={true}>
-        Latest Websites
+        Novos Sites
       </Typography>
       <FeedCardList data={websites} />
     </section>

@@ -5,3 +5,9 @@
   flex-direction: column;
   gap: $spacing-md;
 }
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}

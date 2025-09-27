@@ -1,7 +1,12 @@
 @use '@/styles/tokens/colors.scss' as *;
 @use '@/styles/tokens/typography.scss' as *;
+@use '@/styles/tokens/spacing.scss' as *;
 
 .url {
   color: $color-secondary-400;
   font-weight: $font-weight-semi-bold;
+}
+
+.disclaimer {
+  margin-top: $spacing-sm;
 }
