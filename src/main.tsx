@@ -1,7 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { Providers } from '@/providers'
-import { NosNoCabo } from '@/pages/NosNoCabo/NosNoCabo'
+import { Webring } from '@/pages/Webring/Webring'
 import './styles/index.scss'
 
 async function enableMocking() {
@@ -18,7 +18,7 @@ enableMocking().then(() => {
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
       <Providers>
-        <NosNoCabo />
+        <Webring />
       </Providers>
     </StrictMode>
   )

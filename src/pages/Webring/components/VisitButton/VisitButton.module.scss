@@ -1,0 +1,23 @@
+@use '@/styles/tokens/colors.scss' as *;
+@use '@/styles/tokens/shadow.scss' as *;
+@use '@/styles/tokens/spacing.scss' as *;
+
+.visitButton {
+  position: relative;
+  color: $color-accent-400;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xxxs;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 6px;
+  }
+
+  &:hover {
+    background: $color-neutral-200;
+    box-shadow: $shadow-md;
+  }
+}

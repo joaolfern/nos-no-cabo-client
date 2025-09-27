@@ -29,7 +29,7 @@ export function ReviewStep({
 
   return (
     <StepContainer>
-      <StepTitle updateStep={updateStep} text='Revise' index={3} />
+      <StepTitle updateStep={updateStep} text='Revise' index={2} />
       <ReviewItem label='Nome do site'>
         <EditableText
           onSave={(value) => handleChange('name', value)}

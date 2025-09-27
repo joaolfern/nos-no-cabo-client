@@ -7,13 +7,6 @@ const INITIAL_STATE: IFiltersContext = {
   updateKeywords: () => ({}) as unknown as IFilterEvent,
   getKeywordById: () => undefined,
   keywordIsLoading: false,
-
-  authorOptions: [],
-  selectedAuthors: [],
-  updateAuthors: () => ({}) as unknown as IFilterEvent,
-  getAuthorById: () => undefined,
-  authorIsLoading: false,
-  filterByAuthor: () => [],
   filterByKeyword: () => [],
 }
 

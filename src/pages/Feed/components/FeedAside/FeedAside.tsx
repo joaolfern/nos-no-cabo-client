@@ -7,17 +7,11 @@ import { useWebsites } from '@/pages/Feed/hooks/useWebsites'
 export function FeedAside() {
   const isMobile = useIsMobile()
   const { updateWebsites, websitesRaw } = useWebsites()
-  const { filterByAuthor, filterByKeyword, selectedAuthors, selectedKeywords } =
-    useFilters()
+  const { filterByKeyword, selectedKeywords } = useFilters()
 
   function handleFilter() {
     if (websitesRaw) {
-      updateWebsites(
-        filterByAuthor(
-          filterByKeyword(websitesRaw, selectedKeywords),
-          selectedAuthors
-        )
-      )
+      updateWebsites(filterByKeyword(websitesRaw, selectedKeywords))
     }
   }
 

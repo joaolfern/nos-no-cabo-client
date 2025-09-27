@@ -16,9 +16,5 @@
 
 .popup {
   padding: $spacing-xs;
-  margin-bottom: 250px !important;
-
-  @media (min-width: $breakpoint-md) {
-    margin-bottom: calc(50px + $spacing-xs) !important;
-  }
+  margin-bottom: calc(50px + $spacing-xs) !important;
 }
