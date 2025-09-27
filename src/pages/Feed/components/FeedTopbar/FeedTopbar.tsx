@@ -10,18 +10,14 @@ export function FeedTopbar() {
   const isMobile = useIsMobile()
 
   const { updateWebsites, websitesRaw } = useWebsites()
-  const { filterByAuthor, filterByKeyword, selectedAuthors, selectedKeywords } =
-    useFilters()
+  const { filterByKeyword, selectedKeywords } = useFilters()
 
   function handleFilter(props?: IFilterEvent) {
     if (websitesRaw) {
-      const { updatedKeywords, updatedAuthors } = props || {}
+      const { updatedKeywords } = props || {}
       const keywords = updatedKeywords ?? selectedKeywords
-      const authors = updatedAuthors ?? selectedAuthors
 
-      updateWebsites(
-        filterByAuthor(filterByKeyword(websitesRaw, keywords), authors)
-      )
+      updateWebsites(filterByKeyword(websitesRaw, keywords))
     }
   }
 

@@ -1,12 +1,13 @@
 import { Typography } from '@/components/Typography/Typography'
-import { WebsiteAuthorAndDate } from '@/pages/NosNoCabo/components/WebsiteAuthorAndDate/WebsiteAuthorAndDate'
-import { WebsiteKeywords } from '@/pages/NosNoCabo/components/WebsiteKeywords/WebsiteKeywords'
-import { CardImage } from '@/pages/NosNoCabo/components/CardImage/CardImage'
+import { WebsiteAuthorAndDate } from '@/pages/Webring/components/WebsiteAuthorAndDate/WebsiteAuthorAndDate'
+import { WebsiteKeywords } from '@/pages/Webring/components/WebsiteKeywords/WebsiteKeywords'
+import { CardImage } from '@/pages/Webring/components/CardImage/CardImage'
 import styles from './FeedCard.module.scss'
 import { Link } from '@/components/Link/Link'
 import type { IWebsite } from '@/interfaces/IWebsite'
 import clsx from 'clsx'
 import { memo } from 'react'
+import { VisitButton } from '@/pages/Webring/components/VisitButton/VisitButton'
 
 type FeedCardProps = React.JSX.IntrinsicElements['section'] & IWebsite
 
@@ -39,15 +40,19 @@ const FeedCardInner = ({
         />
       </div>
       <div className={styles.content}>
-        <WebsiteAuthorAndDate.Compact
-          authorName={author.name}
-          createdAt={createdAt}
-        />
-        <Typography variant='h3' asVariant={true} numberOfLines={2}>
-          <Link className={styles.title} query={{ id }}>
-            {name}
-          </Link>
-        </Typography>
+        {author && (
+          <WebsiteAuthorAndDate.Compact
+            authorName={author?.name}
+            createdAt={createdAt}
+          />
+        )}
+        <Link className={styles.detailsLink} query={{ id }} />
+        <div className={styles.externalLinkContainer}>
+          <Typography variant='h3' numberOfLines={2}>
+            <h3>{name}</h3>
+          </Typography>
+          <VisitButton url={url} />
+        </div>
         <Typography
           className={styles.description}
           variant='bodySmall'

@@ -15,7 +15,6 @@ describe('FeedTopBar', () => {
       render(<FeedTopbar />)
 
       screen.getByRole('button', { name: 'Palavras-chave' })
-      screen.getByRole('button', { name: 'Autor' })
     })
   })
 })

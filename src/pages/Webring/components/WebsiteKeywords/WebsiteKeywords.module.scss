@@ -2,7 +2,11 @@
 
 .container {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: $spacing-xs;
   min-height: $spacing-xl;
+}
+
+.more {
+  flex-shrink: 0;
 }

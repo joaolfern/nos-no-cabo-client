@@ -20,6 +20,13 @@ export function InitialStep({ updateStep }: StepComponentProps) {
       <Typography className={styles.url} variant='caption'>
         <Copyable text={NOS_NO_CABO_URL} />
       </Typography>
+      <Typography
+        className={styles.disclaimer}
+        variant='caption'
+        asVariant={true}
+      >
+        Atenção: durante a beta isso ainda não será obrigatório.
+      </Typography>
       <ConfirmButton onClick={() => updateStep(1)} />
     </StepContainer>
   )

@@ -9,6 +9,7 @@
 .inputContainer {
   flex-grow: 1;
   display: flex;
+  gap: $spacing-xs;
 }
 
 .input {

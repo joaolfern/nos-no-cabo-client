@@ -12,7 +12,6 @@
 }
 
 .panel {
-  position: fixed;
   left: $spacing-sm;
   right: $spacing-sm;
   background: $color-neutral-100;
@@ -20,27 +19,24 @@
   width: calc(100% - 2em);
   box-shadow: $shadow-sm;
   z-index: $elevation-high;
+  position: absolute;
+  border: $border-base;
+  right: 0;
+  min-width: 314px;
 
-  @media (min-width: $breakpoint-md) {
-    position: absolute;
-    width: 314px;
-    right: 0;
-    border: $border-base;
+  &.left {
+    left: auto;
+  }
 
-    &.left {
-      left: auto;
-    }
+  &.right {
+    right: auto;
+  }
 
-    &.right {
-      right: auto;
-    }
+  &.topLeft {
+    top: auto;
+    left: auto;
 
-    &.topLeft {
-      top: auto;
-      left: auto;
-
-      bottom: 100%;
-      margin-bottom: $spacing-sm;
-    }
+    bottom: 100%;
+    margin-bottom: $spacing-sm;
   }
 }

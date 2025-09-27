@@ -17,7 +17,7 @@
     background 0.15s ease-in,
     box-shadow 0.15s ease-in;
 
-  &:hover {
+  &:hover:not(&:has(.externalLink:hover)) {
     background: $color-neutral-200;
     box-shadow: $shadow-md;
   }
@@ -67,7 +67,7 @@
   margin-top: auto;
 }
 
-.title {
+.detailsLink {
   all: unset;
   &::after {
     content: '';
@@ -75,4 +75,11 @@
     inset: 0;
     cursor: pointer;
   }
+}
+
+.externalLinkContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  z-index: 2;
 }
