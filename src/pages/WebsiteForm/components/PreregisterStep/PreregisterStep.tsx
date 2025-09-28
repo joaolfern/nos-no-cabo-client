@@ -1,5 +1,5 @@
 import { Typography } from '@/components/Typography/Typography'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Input } from '@/components/Input/Input'
 import { usePreregisterWebsite } from '@/hooks/useDataHooks'
 import { Form } from '@/components/Form/Form'
@@ -12,8 +12,10 @@ import { StepDescription } from '@/pages/WebsiteForm/components/StepDescription/
 export function PreregisterStep({
   updateStep,
   setPreregister,
+  preregister,
 }: StepComponentProps) {
   const { mutate, isPending, error, data } = usePreregisterWebsite()
+  const [url, setUrl] = useState(preregister?.url || '')
 
   useEffect(() => {
     if (data) {
@@ -34,6 +36,8 @@ export function PreregisterStep({
           placeholder='https://<seusite>.com'
           required={true}
           autoFocus={true}
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
         />
         {error && (
           <Typography variant='caption'>
