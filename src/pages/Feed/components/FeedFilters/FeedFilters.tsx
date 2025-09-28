@@ -6,7 +6,6 @@ import { RadioGroup } from '@/components/RadioGroup/RadioGroup'
 import type { DropdownButtonProps } from '@/components/DropdownButton/DropdownButtonInterfaces'
 import { Typography } from '@/components/Typography/Typography'
 import { MdTune } from 'react-icons/md'
-import { Button } from '@/components/Button/Button'
 import type { IFilterEvent } from '@/interfaces/IFilters'
 
 type FeedFiltersProps = {
@@ -34,10 +33,7 @@ FeedFilters.Panel = function FeedFiltersPanel({ onChange }: FeedFiltersProps) {
           Filtros
         </Typography>
       </header>
-      <KeywordFilter variant='panel' />
-      <Button className={styles.apply} onClick={() => onChange()}>
-        Aplicar filtros
-      </Button>
+      <KeywordFilter variant='panel' onChange={onChange} />
     </div>
   )
 }

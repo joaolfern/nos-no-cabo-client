@@ -1,12 +1,11 @@
 import { Typography } from '@/components/Typography/Typography'
-
-import styles from './RecommendBooks.module.scss'
 import { FeedCardList } from '@/pages/Feed/components/FeedCardList/FeedCardList'
 import { useRecommendedBooks } from '@/hooks/useDataHooks'
 import type { IKeyword, IWebsite } from '@/interfaces/IWebsite'
 import { useMemo } from 'react'
 import type { IBook } from '@/interfaces/IBook'
 import { BOOK_COVER_QUALITY } from '@/config/env'
+import styles from './RecommendBooks.module.scss'
 
 type RecommendBooksProps = {
   keywords: IKeyword[]

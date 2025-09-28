@@ -32,6 +32,5 @@ export const openLibraryApi = axios.create({
   baseURL: 'https://openlibrary.org/',
   headers: {
     'Content-Type': 'application/json',
-    'User-Agent': 'Nós no Cabo/1.0 (joaolfern@proton.me)',
   },
 })
