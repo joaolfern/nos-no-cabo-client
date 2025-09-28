@@ -60,7 +60,7 @@ export function WebsiteForm() {
               preregister={preregister}
               setPreregister={setPreregister}
               updateStep={setStepIndex}
-              onSucess={onSucess}
+              onSuccess={onSucess}
             />
           )
         }

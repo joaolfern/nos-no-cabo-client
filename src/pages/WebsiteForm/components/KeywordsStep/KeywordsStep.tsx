@@ -12,7 +12,7 @@ import { useState } from 'react'
 export function KeywordsStep({
   updateStep,
   preregister,
-  onSucess,
+  onSuccess,
 }: StepComponentProps) {
   const [keywords, setKeywords] = useState<string[]>([])
   const { mutate, isPending, error } = useRegisterWebsite()
@@ -28,7 +28,7 @@ export function KeywordsStep({
 
     mutate(website, {
       onSuccess: () => {
-        onSucess()
+        onSuccess()
       },
     })
   }

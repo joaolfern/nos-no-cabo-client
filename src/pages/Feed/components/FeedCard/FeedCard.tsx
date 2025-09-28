@@ -24,13 +24,20 @@ const FeedCardInner = ({
   faviconUrl,
   name,
   url,
+  style,
   ...props
 }: FeedCardProps) => {
+  const completeStyle = {
+    ...style,
+    '--website-color': color,
+  }
+
   return (
     <article
-      className={clsx(styles.container, className)}
+      className={clsx(styles.container, className, id && styles.clickable)}
       {...props}
       data-testid='feed-card'
+      style={completeStyle}
     >
       <div className={styles.imageContainer}>
         <CardImage
@@ -47,9 +54,9 @@ const FeedCardInner = ({
             createdAt={createdAt}
           />
         )}
-        <Link className={styles.detailsLink} query={{ id }} />
+        {id && <Link className={styles.detailsLink} query={{ id }} />}
         <div className={styles.externalLinkContainer}>
-          <Typography variant='h3' numberOfLines={2}>
+          <Typography className={styles.title} variant='h3' numberOfLines={2}>
             <h3>{name}</h3>
           </Typography>
           <VisitButton url={url} />
