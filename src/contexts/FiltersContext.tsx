@@ -8,6 +8,9 @@ const INITIAL_STATE: IFiltersContext = {
   getKeywordById: () => undefined,
   keywordIsLoading: false,
   filterByKeyword: () => [],
+  search: '',
+  updateSearch: () => ({}) as unknown as IFilterEvent,
+  filterBySearch: () => [],
 }
 
 export const FiltersContext =

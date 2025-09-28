@@ -10,9 +10,11 @@ export interface IFiltersContext {
     websites: IWebsite[],
     selectedKeywords: string[]
   ) => IWebsite[]
+  search: string
+  updateSearch: (search: string) => void
+  filterBySearch: (websites: IWebsite[], search: string) => IWebsite[]
 }
 
 export type IFilterEvent = {
   updatedKeywords?: string[]
-  updatedAuthors?: string[]
 }
