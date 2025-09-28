@@ -98,7 +98,7 @@ describe('Dropdown', () => {
       </TestDropdown>
     )
     await userEvent.click(screen.getByText('Trigger'))
-    expect(screen.getByText(/No options found/i)).toBeInTheDocument()
+    expect(screen.getByText(/Sem opções/i)).toBeInTheDocument()
   })
   it('closes panel on scroll on mobile', async () => {
     Object.defineProperty(window, 'innerWidth', {

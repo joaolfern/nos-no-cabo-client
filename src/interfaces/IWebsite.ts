@@ -5,7 +5,7 @@ export interface IWebsite {
   name: string
   description: string
   url: string
-  color: string
+  color: string | undefined
   keywords: IKeyword[]
   createdAt: string
   updatedAt: string
