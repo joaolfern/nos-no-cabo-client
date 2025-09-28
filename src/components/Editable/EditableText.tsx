@@ -35,7 +35,7 @@ export function EditableText<T extends string | undefined>({
           variant='body'
           {...props}
         >
-          {value}
+          {value || '-'}
         </Typography>
       }
       edit={

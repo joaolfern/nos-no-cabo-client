@@ -9,6 +9,8 @@ import { LatestWebsites } from '@/pages/Website/components/LatestWebsites/Latest
 import React from 'react'
 import { RecommendBooks } from '@/pages/Website/components/RecommendBooks/RecommendBooks'
 import { VisitButton } from '@/pages/Webring/components/VisitButton/VisitButton'
+import { ReportButton } from '@/pages/Webring/components/ReportButton/ReportButton'
+import { isAdminMode } from '@/config/env'
 
 export function WebsiteContent() {
   const { website, isLoading } = useWebsiteDetails()
@@ -27,6 +29,9 @@ export function WebsiteContent() {
             {website.name}
           </Typography>
           <VisitButton url={website.url}>Visitar site</VisitButton>
+          {isAdminMode && (
+            <ReportButton className={styles.reportButton} id={website.id} />
+          )}
         </header>
 
         {website.author && (
@@ -36,15 +41,21 @@ export function WebsiteContent() {
             authorImage={website.author.profilePicture}
           />
         )}
-        <CardImage src={website.faviconUrl} alt={website.name} />
-        <Typography variant='body' numberOfLines={2} asVariant={true}>
-          {website.description.split('\n').map((line, idx) => (
-            <React.Fragment key={idx}>
-              {line}
-              <br />
-            </React.Fragment>
-          ))}
-        </Typography>
+        <CardImage
+          src={website.faviconUrl}
+          alt={website.name}
+          color={website.color}
+        />
+        {website.description && (
+          <Typography variant='body' numberOfLines={2} asVariant={true}>
+            {website.description.split('\n').map((line, idx) => (
+              <React.Fragment key={idx}>
+                {line}
+                <br />
+              </React.Fragment>
+            ))}
+          </Typography>
+        )}
         <Divider />
         <LatestWebsites websiteId={website.id} />
         <RecommendBooks keywords={website.keywords} />

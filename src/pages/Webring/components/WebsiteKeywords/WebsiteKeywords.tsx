@@ -10,7 +10,7 @@ type WebsiteKeywordsProps = React.HTMLAttributes<HTMLDivElement> & {
 
 export function WebsiteKeywords({
   className,
-  keywords,
+  keywords = [],
   ...props
 }: WebsiteKeywordsProps) {
   const shownKeywords = keywords.slice(0, 2)

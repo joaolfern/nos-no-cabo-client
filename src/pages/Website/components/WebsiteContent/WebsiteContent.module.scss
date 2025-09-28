@@ -10,4 +10,9 @@
   display: flex;
   align-items: center;
   gap: $spacing-md;
+  flex-wrap: wrap;
+}
+
+.reportButton {
+  margin-left: auto;
 }
