@@ -3,6 +3,20 @@
 
 ---
 
+## Configurando
+
+Crie o arquivo .env na raiz do projeto
+
+Exemplo:
+```bash
+VITE_DEV_API_URL=http://localhost:3000
+VITE_ENV=production
+VITE_ENABLE_MOCKS=false
+VITE_ADMIN_PASSWORD=fastpass
+```
+
+Lembre-se de utilizar a mesma senha da env do back-end (`VITE_ADMIN_PASSWORD`).
+
 ### 🐳 Executando com Docker
 
 1. **Build da imagem:**
