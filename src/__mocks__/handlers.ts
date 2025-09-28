@@ -11,10 +11,10 @@ export const handlers = [
   http.get(`${API_URL}/keywords`, () => {
     return HttpResponse.json(MOCK_KEYWORDS)
   }),
-  http.post(`${API_URL}/pre-register`, () => {
+  http.post(`${API_URL}/website`, () => {
     return HttpResponse.json(WEBSITE_METADATA)
   }),
-  http.post(`${API_URL}/register`, () => {
+  http.patch(`${API_URL}/website`, () => {
     return HttpResponse.json()
   }),
 ]

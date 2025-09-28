@@ -22,7 +22,7 @@ export function RecommendBooks({ keywords }: RecommendBooksProps) {
   return (
     <section className={styles.container}>
       <Typography variant='h3' asVariant={true}>
-        Literaturas Recomendadas
+        Leituras Recomendadas
       </Typography>
       <FeedCardList data={formattedBooks} />
     </section>
