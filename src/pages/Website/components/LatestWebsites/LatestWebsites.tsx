@@ -10,7 +10,7 @@ interface LatestWebsitesProps {
 }
 
 export function LatestWebsites({ websiteId }: LatestWebsitesProps) {
-  const { websites: websitesRaw } = useWebsites()
+  const { websites: websitesRaw, isLoading } = useWebsites()
   const websites = useMemo(
     () => getLatestUniqueWebsites(websitesRaw, websiteId),
     [websitesRaw, websiteId]
@@ -21,7 +21,7 @@ export function LatestWebsites({ websiteId }: LatestWebsitesProps) {
       <Typography variant='h3' asVariant={true}>
         Novos Sites
       </Typography>
-      <FeedCardList data={websites} />
+      <FeedCardList isLoading={isLoading} data={websites} />
     </section>
   )
 }
