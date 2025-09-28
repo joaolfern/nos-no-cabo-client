@@ -51,3 +51,7 @@ O diagram acima ilustra os principais módulos e integrações da aplicação.
 
 ---
 
+
+### Back-end
+
+https://github.com/joaolfern/nos-no-cabo-server
