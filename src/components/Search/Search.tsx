@@ -4,14 +4,7 @@ import styles from './Search.module.scss'
 import clsx from 'clsx'
 import React, { useCallback, useEffect } from 'react'
 import { ButtonIcon } from '@/components/ButtonIcon/ButtonIcon'
-import { Menu } from '@/components/Menu/Menu'
-import { Typography } from '@/components/Typography/Typography'
-import type { MenuProps } from '@/components/Menu/MenuInterfaces'
-import type {
-  ISearchOption,
-  SearchProps,
-} from '@/components/Search/SearchInterfaces'
-import { Portal } from '@/components/Portal/Portal'
+import type { SearchProps } from '@/components/Search/SearchInterfaces'
 
 export function Search({
   className,
@@ -120,49 +113,6 @@ export function Search({
           />
         </div>
       </div>
-      <Portal container={container?.current}>
-        <Dropdown
-          isOpen={Boolean(isFocused && value)}
-          options={options}
-          style={
-            container?.current
-              ? {
-                  height: `calc(100dvh - ${container?.current?.offsetHeight}px)`,
-                }
-              : undefined
-          }
-        />
-      </Portal>
     </div>
-  )
-}
-
-type DropdownProps = MenuProps & {
-  options?: ISearchOption[]
-  isOpen: boolean
-}
-
-function Dropdown({ options, className, isOpen, ...props }: DropdownProps) {
-  return (
-    isOpen && (
-      <Menu className={clsx(styles.dropdown, className)} {...props}>
-        {options && options[0] ? (
-          options.map((option) => (
-            <Menu.Item
-              key={option.value}
-              onClick={() => {}}
-              selected={false}
-              value={option.value}
-            >
-              <Typography variant='bodySmall'>
-                {option.description}
-              </Typography>{' '}
-            </Menu.Item>
-          ))
-        ) : (
-          <Menu.Empty />
-        )}
-      </Menu>
-    )
   )
 }
