@@ -17,23 +17,29 @@
     background 0.15s ease-in,
     box-shadow 0.15s ease-in;
 
-  &:hover:not(&:has(.externalLinkContainer a:hover)) {
-    background: $color-neutral-200;
-    box-shadow: $shadow-md;
-  }
+  &.clickable {
+    &:hover:not(&:has(.externalLinkContainer a:hover)) {
+      background: $color-neutral-200;
+      box-shadow: $shadow-md;
+    }
 
-  &:focus-within:focus-visible {
-    border: $border-width-base solid $color-accent-400;
+    &:focus-within:focus-visible {
+      border: $border-width-base solid $color-accent-400;
+    }
+
+    @include has-motion {
+      &:hover .image {
+        transform: scale(1.1);
+      }
+
+      &:hover .title {
+        color: var(--website-color);
+      }
+    }
   }
 
   @media (min-width: $breakpoint-md) {
     border: $border-base;
-  }
-
-  @include has-motion {
-    &:hover .image {
-      transform: scale(1.1);
-    }
   }
 }
 

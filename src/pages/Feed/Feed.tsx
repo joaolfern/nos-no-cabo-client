@@ -8,7 +8,7 @@ import { useFilters } from '@/pages/Feed/hooks/useFilters'
 import { useMemo } from 'react'
 
 export function Feed() {
-  const { websites } = useWebsites()
+  const { websites, isLoading } = useWebsites()
   const { filterBySearch, search } = useFilters()
 
   const filteredWebsites = useMemo(
@@ -21,7 +21,7 @@ export function Feed() {
       <FeedAside />
       <div className={styles.feed}>
         <FeedTopbar />
-        <FeedCardList data={filteredWebsites} />
+        <FeedCardList isLoading={isLoading} data={filteredWebsites} />
       </div>
     </NosNoCaboLayout>
   )

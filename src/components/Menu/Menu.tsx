@@ -42,7 +42,7 @@ Menu.Empty = function MenuEmpty() {
   return (
     <div className={styles.empty}>
       <MdOutlineInfo />
-      <Typography variant='bodySmall'>No options found</Typography>
+      <Typography variant='bodySmall'>Sem opções</Typography>
     </div>
   )
 }

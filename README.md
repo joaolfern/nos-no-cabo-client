@@ -55,3 +55,13 @@ O diagram acima ilustra os principais módulos e integrações da aplicação.
 ### Back-end
 
 https://github.com/joaolfern/nos-no-cabo-server
+
+### API Externa
+
+Esse projeto utiliza a API livre da Open Library para recomendação e direcionamento à mais de 3.000 mil livros de acesso gratuito.
+
+**API**
+`https://openlibrary.org`
+
+**Rotas utilizadas:**
+`GET /subjects/<subject>.json`

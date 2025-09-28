@@ -12,7 +12,7 @@ type RecommendBooksProps = {
 }
 
 export function RecommendBooks({ keywords }: RecommendBooksProps) {
-  const { data } = useRecommendedBooks(keywords)
+  const { data, isLoading } = useRecommendedBooks(keywords)
   const formattedBooks = useMemo(
     () => (data?.works ? formatBooksToWebsites(data.works) : []),
     [data]
@@ -23,7 +23,7 @@ export function RecommendBooks({ keywords }: RecommendBooksProps) {
       <Typography variant='h3' asVariant={true}>
         Leituras Recomendadas
       </Typography>
-      <FeedCardList data={formattedBooks} />
+      <FeedCardList data={formattedBooks} isLoading={isLoading} />
     </section>
   )
 }
@@ -31,13 +31,11 @@ export function RecommendBooks({ keywords }: RecommendBooksProps) {
 function formatBooksToWebsites(books: IBook[]): IWebsite[] {
   return books.map(
     (book): IWebsite => ({
-      id: book.key,
+      id: '',
       name: book.title,
       description: book.subject?.join(', ') || '',
-      url: book.openlibrary_work
-        ? `https://openlibrary.org/works/${book.openlibrary_work}`
-        : '',
-      color: '#F5F5F5',
+      url: book.key ? `https://openlibrary.org${book.key}` : '',
+      color: undefined,
       keywords: (book.subject || []).map((s) => ({ name: s }) as IKeyword),
       createdAt: book.first_publish_year
         ? new Date(book.first_publish_year, 0, 1).toISOString()
