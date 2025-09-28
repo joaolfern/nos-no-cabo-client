@@ -8,6 +8,7 @@ import { PreregisterStep } from '@/pages/WebsiteForm/components/PreregisterStep/
 import { ReviewStep } from '@/pages/WebsiteForm/components/ReviewStep/ReviewStep'
 import styles from './WebsiteForm.module.scss'
 import { KeywordsStep } from '@/pages/WebsiteForm/components/KeywordsStep/KeywordsStep'
+import { GithubStep } from '@/pages/WebsiteForm/components/GithubStep/GithubStep'
 
 export function WebsiteForm() {
   const [isOpen, setIsOpen] = useState(false)
@@ -92,4 +93,10 @@ export function WebsiteForm() {
   )
 }
 
-const STEPS = [InitialStep, PreregisterStep, ReviewStep, KeywordsStep]
+const STEPS = [
+  InitialStep,
+  PreregisterStep,
+  ReviewStep,
+  GithubStep,
+  KeywordsStep,
+]

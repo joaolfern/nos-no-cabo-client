@@ -11,6 +11,7 @@ import { RecommendBooks } from '@/pages/Website/components/RecommendBooks/Recomm
 import { VisitButton } from '@/pages/Webring/components/VisitButton/VisitButton'
 import { ReportButton } from '@/pages/Webring/components/ReportButton/ReportButton'
 import { isAdminMode } from '@/config/env'
+import { GithubButton } from '@/pages/Webring/components/GithubButton/GithubButton'
 
 export function WebsiteContent() {
   const { website, isLoading } = useWebsiteDetails()
@@ -28,6 +29,7 @@ export function WebsiteContent() {
           <Typography variant='h3' asVariant={true} numberOfLines={2}>
             {website.name}
           </Typography>
+          <GithubButton repo={website.repo} />
           <VisitButton url={website.url}>Visitar site</VisitButton>
           {isAdminMode && (
             <ReportButton className={styles.reportButton} id={website.id} />
