@@ -71,7 +71,7 @@ export function WebsiteForm() {
       >
         <FloatingButton
           className={styles.button}
-          variant={isOpen ? 'secondary' : 'tertiary'}
+          variant={isOpen ? 'secondary' : 'primary'}
         >
           {isOpen ? (
             <>

@@ -1,5 +1,6 @@
 import { Typography } from '@/components/Typography/Typography'
 import { useIsMobile } from '@/hooks/useIsMobile'
+import type { IFilterEvent } from '@/interfaces/IFilters'
 import { FeedFilters } from '@/pages/Feed/components/FeedFilters/FeedFilters'
 import { useFilters } from '@/pages/Feed/hooks/useFilters'
 import { useWebsites } from '@/pages/Feed/hooks/useWebsites'
@@ -9,9 +10,12 @@ export function FeedAside() {
   const { updateWebsites, websitesRaw } = useWebsites()
   const { filterByKeyword, selectedKeywords } = useFilters()
 
-  function handleFilter() {
+  function handleFilter(props?: IFilterEvent) {
     if (websitesRaw) {
-      updateWebsites(filterByKeyword(websitesRaw, selectedKeywords))
+      const { updatedKeywords } = props || {}
+      const keywords = updatedKeywords ?? selectedKeywords
+
+      updateWebsites(filterByKeyword(websitesRaw, keywords))
     }
   }
 

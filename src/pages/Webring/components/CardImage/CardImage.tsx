@@ -16,7 +16,6 @@ export function CardImage({ classNames, color, src, ...props }: WebsiteProps) {
     <div className={clsx(styles.container, classNames?.container)}>
       <Image
         className={clsx(styles.image, classNames?.image)}
-        style={{ backgroundColor: src ? color : undefined }}
         src={src}
         {...props}
       />
