@@ -36,6 +36,7 @@ const FeedCardInner = ({
         <CardImage
           classNames={{ image: styles.image }}
           src={faviconUrl}
+          color={color}
           alt={name}
         />
       </div>

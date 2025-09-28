@@ -29,7 +29,7 @@ export interface IKeyword {
 
 export type IPreregisterWebsite = Pick<
   IWebsite,
-  'url' | 'description' | 'name' | 'faviconUrl' | 'color'
+  'id' | 'url' | 'description' | 'name' | 'faviconUrl' | 'color'
 >
 
 export type IRegisterWebsite = IPreregisterWebsite & {

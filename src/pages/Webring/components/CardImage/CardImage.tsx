@@ -8,12 +8,18 @@ type WebsiteProps = Omit<ImageProps, 'className'> & {
     container?: string
     image?: string
   }
+  color: string | undefined
 }
 
-export function CardImage({ classNames, ...props }: WebsiteProps) {
+export function CardImage({ classNames, color, src, ...props }: WebsiteProps) {
   return (
     <div className={clsx(styles.container, classNames?.container)}>
-      <Image className={clsx(styles.image, classNames?.image)} {...props} />
+      <Image
+        className={clsx(styles.image, classNames?.image)}
+        style={{ backgroundColor: src ? color : undefined }}
+        src={src}
+        {...props}
+      />
     </div>
   )
 }

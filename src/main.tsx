@@ -3,9 +3,10 @@ import { createRoot } from 'react-dom/client'
 import { Providers } from '@/providers'
 import { Webring } from '@/pages/Webring/Webring'
 import './styles/index.scss'
+import { ENABLE_MOCKS } from '@/config/env'
 
 async function enableMocking() {
-  if (!import.meta.env.VITE_ENABLE_MOCKS) {
+  if (!ENABLE_MOCKS) {
     return
   }
 

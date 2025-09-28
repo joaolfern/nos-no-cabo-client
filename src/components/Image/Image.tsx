@@ -8,6 +8,7 @@ export function Image({
   src,
   avatar,
   className,
+  style,
   ...props
 }: ImageProps) {
   const [imgSrc, setImgSrc] = useState(src ?? fallback)
@@ -26,9 +27,15 @@ export function Image({
     handleError()
   }, [src, handleError])
 
+  const completeStyle = {
+    ...style,
+    objectFit: !src ? 'cover' : style?.objectFit,
+  }
+
   return (
     <img
       className={clsx({ [styles.avatar]: avatar }, className)}
+      style={completeStyle}
       loading='lazy'
       src={imgSrc}
       onError={handleError}

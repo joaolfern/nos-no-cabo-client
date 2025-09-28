@@ -17,7 +17,7 @@
     background 0.15s ease-in,
     box-shadow 0.15s ease-in;
 
-  &:hover:not(&:has(.externalLink:hover)) {
+  &:hover:not(&:has(.externalLinkContainer a:hover)) {
     background: $color-neutral-200;
     box-shadow: $shadow-md;
   }
@@ -81,5 +81,4 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  z-index: 2;
 }

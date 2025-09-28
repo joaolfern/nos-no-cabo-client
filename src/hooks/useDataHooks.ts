@@ -15,7 +15,7 @@ export function useWebsiteDetailsData(id: string) {
   return useQuery({
     queryKey: [{ type: 'websiteDetails', id }],
     queryFn: () =>
-      api.get<IWebsite[]>(`websiteDetails/${id}`).then((res) => res.data ?? []),
+      api.get<IWebsite[]>(`website/${id}`).then((res) => res.data ?? []),
   })
 }
 
@@ -73,7 +73,9 @@ export function usePreregisterWebsite() {
   return useMutation({
     mutationFn: (data: { url: string }) =>
       api
-        .post<IPreregisterWebsite>('pre-register', data)
+        .post<IPreregisterWebsite>('website', {
+          url: `https://${data.url.replace(/^https?:\/\//, '')}`,
+        })
         .then((res) => res.data),
   })
 }
@@ -82,7 +84,7 @@ export function useRegisterWebsite() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (data: IRegisterWebsite) =>
-      api.post('register', data).then((res) => res.data),
+      api.patch(`website`, data).then((res) => res.data),
     mutationKey: ['websites'],
     onMutate: async (newWebsite: IRegisterWebsite) => {
       await Promise.resolve()
@@ -108,5 +110,12 @@ export function useRegisterWebsite() {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['websites'] })
     },
+  })
+}
+
+export function useReportWebsite() {
+  return useMutation({
+    mutationFn: (data: { id: string }) => api.delete(`website/${data.id}`),
+    mutationKey: ['websites'],
   })
 }

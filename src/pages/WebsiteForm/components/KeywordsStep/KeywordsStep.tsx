@@ -1,4 +1,5 @@
 import { InputList } from '@/components/Input/InputList'
+import { Typography } from '@/components/Typography/Typography'
 import { useRegisterWebsite } from '@/hooks/useDataHooks'
 import type { IRegisterWebsite } from '@/interfaces/IWebsite'
 import type { StepComponentProps } from '@/pages/WebsiteForm/_WebsiteFormProps'
@@ -14,7 +15,7 @@ export function KeywordsStep({
   onSucess,
 }: StepComponentProps) {
   const [keywords, setKeywords] = useState<string[]>([])
-  const { mutate, isPending } = useRegisterWebsite()
+  const { mutate, isPending, error } = useRegisterWebsite()
 
   function onConfirm() {
     if (!preregister) return
@@ -34,7 +35,7 @@ export function KeywordsStep({
 
   return (
     <StepContainer>
-      <StepTitle updateStep={updateStep} text='Palavras-chave' index={2} />
+      <StepTitle updateStep={updateStep} text='Palavras-chave' index={3} />
       <StepDescription>
         Nos ajude a classificar seu site adicionando algumas palavras-chave.
       </StepDescription>
@@ -43,6 +44,11 @@ export function KeywordsStep({
         onChange={setKeywords}
         placeholder='Adicione uma palavra-chave'
       />
+      {error && (
+        <Typography variant='caption'>
+          Ocorreu um erro: {error.message}
+        </Typography>
+      )}
       <ConfirmButton onClick={onConfirm} disabled={isPending}>
         {isPending ? 'Salvando...' : 'Salvar'}
       </ConfirmButton>

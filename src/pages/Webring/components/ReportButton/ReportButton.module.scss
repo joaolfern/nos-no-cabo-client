@@ -2,13 +2,12 @@
 @use '@/styles/tokens/shadow.scss' as *;
 @use '@/styles/tokens/spacing.scss' as *;
 
-.visitButton {
+.reportButton {
   position: relative;
-  color: $color-accent-400;
+  color: $color-danger-700;
   display: flex;
   align-items: center;
   gap: $spacing-xxxs;
-  z-index: 2;
 
   &::after {
     content: '';
