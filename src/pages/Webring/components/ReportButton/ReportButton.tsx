@@ -4,6 +4,7 @@ import { clsx } from 'clsx'
 import { isAdminMode } from '@/config/env'
 import { useReportWebsite } from '@/hooks/useDataHooks'
 import { handleNavigate } from '@/utils/handleNavigate/handleNavigate'
+import { useState } from 'react'
 
 type ReportButtonProps = React.JSX.IntrinsicElements['button'] & {
   id: string
@@ -16,6 +17,7 @@ export function ReportButton({
   ...props
 }: ReportButtonProps) {
   const { mutate } = useReportWebsite()
+  const [confirming, setConfirming] = useState(false)
 
   function onSuccess() {
     const url = new URL(window.location.href)
@@ -24,12 +26,18 @@ export function ReportButton({
   }
 
   function handleClick() {
-    mutate(
-      { id },
-      {
-        onSuccess,
-      }
-    )
+    if (confirming) {
+      mutate(
+        { id },
+        {
+          onSuccess,
+        }
+      )
+
+      return
+    }
+
+    setConfirming(true)
   }
 
   return (
@@ -39,7 +47,7 @@ export function ReportButton({
       {...props}
     >
       <MdWarningAmber />
-      {isAdminMode ? 'Remover' : 'Denunciar'}
+      {confirming ? 'Confirmar' : isAdminMode ? 'Remover' : 'Denunciar'}
     </button>
   )
 }

@@ -1,0 +1,24 @@
+@use '@/styles/tokens/colors.scss' as *;
+@use '@/styles/tokens/shadow.scss' as *;
+@use '@/styles/tokens/spacing.scss' as *;
+
+.githubButton {
+  position: relative;
+  color: black;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xxxs;
+  z-index: 2;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 6px;
+  }
+
+  &:hover {
+    background: $color-neutral-200;
+    box-shadow: $shadow-md;
+  }
+}

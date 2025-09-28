@@ -35,7 +35,7 @@ export function KeywordsStep({
 
   return (
     <StepContainer>
-      <StepTitle updateStep={updateStep} text='Palavras-chave' index={3} />
+      <StepTitle updateStep={updateStep} text='Palavras-chave' index={4} />
       <StepDescription>
         Nos ajude a classificar seu site adicionando algumas palavras-chave.
       </StepDescription>

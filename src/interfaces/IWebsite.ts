@@ -10,6 +10,7 @@ export interface IWebsite {
   createdAt: string
   updatedAt: string
   faviconUrl: string
+  repo?: string
   author?: IAuthor
 }
 
@@ -29,7 +30,7 @@ export interface IKeyword {
 
 export type IPreregisterWebsite = Pick<
   IWebsite,
-  'id' | 'url' | 'description' | 'name' | 'faviconUrl' | 'color'
+  'id' | 'url' | 'description' | 'name' | 'faviconUrl' | 'color' | 'repo'
 >
 
 export type IRegisterWebsite = IPreregisterWebsite & {
