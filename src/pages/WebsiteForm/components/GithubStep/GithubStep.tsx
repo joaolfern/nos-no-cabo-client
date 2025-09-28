@@ -24,7 +24,7 @@ export function GithubStep({
 
   return (
     <StepContainer>
-      <StepTitle updateStep={updateStep} text='Palavras-chave' index={2} />
+      <StepTitle updateStep={updateStep} text='Repositório Online' index={2} />
       <StepDescription>
         Se desejar, compartilhe o código fonte do seu site.
       </StepDescription>
