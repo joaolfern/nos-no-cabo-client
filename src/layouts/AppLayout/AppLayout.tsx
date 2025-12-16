@@ -6,11 +6,19 @@ import clsx from 'clsx'
 
 export function AppLayout({ children, className, ...props }: AppLayoutProps) {
   return (
-    <section className={clsx(styles.container, className)} {...props}>
-      {children}
+    <>
       <BackgroundEffect />
-    </section>
+      <section className={clsx(styles.container, className)} {...props}>
+        {children}
+      </section>
+    </>
   )
+}
+
+type TopbarContentProps = React.JSX.IntrinsicElements['div']
+
+export function TopbarContent({ className, ...props }: TopbarContentProps) {
+  return <div className={clsx(styles.topbarContent, className)} {...props} />
 }
 
 type ContentProps = React.JSX.IntrinsicElements['main'] & {
@@ -27,3 +35,4 @@ function Content({ children, className, ...props }: ContentProps) {
 
 AppLayout.Topbar = Topbar
 AppLayout.Content = Content
+AppLayout.TopbarContent = TopbarContent

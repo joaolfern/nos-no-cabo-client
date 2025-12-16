@@ -1,6 +1,7 @@
 @use '@/styles/tokens/colors.scss' as *;
 @use '@/styles/tokens/shadow.scss' as *;
 @use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/mixins.scss' as *;
 
 .visitButton {
   position: relative;
@@ -18,7 +19,7 @@
   }
 
   &:hover {
-    background: $color-neutral-200;
+    @include card();
     box-shadow: $shadow-md;
   }
 }

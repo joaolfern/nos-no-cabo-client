@@ -1,0 +1,3 @@
+@mixin card {
+  backdrop-filter: blur(var(--blur-background));
+}

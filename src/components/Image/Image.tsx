@@ -1,10 +1,11 @@
 import type { ImageProps } from '@/components/Image/ImageInterfaces'
 import clsx from 'clsx'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
+import FallbackSvg from '@/assets/imageFallback.svg?react'
 import styles from './Image.module.scss'
 
 export function Image({
-  fallback = '/images/imageFallback.svg',
+  fallback,
   src,
   avatar,
   className,
@@ -12,24 +13,22 @@ export function Image({
   ...props
 }: ImageProps) {
   const [imgSrc, setImgSrc] = useState(src ?? fallback)
+  const [hasError, setHasError] = useState(false)
 
   const handleError = useCallback(() => {
-    setImgSrc((prev) => (prev !== fallback ? fallback : prev))
+    setHasError(true)
+    if (fallback) setImgSrc(fallback)
   }, [fallback])
-
-  useEffect(() => {
-    if (src) {
-      setImgSrc(src)
-
-      return
-    }
-
-    handleError()
-  }, [src, handleError])
 
   const completeStyle = {
     ...style,
     objectFit: !src ? 'cover' : style?.objectFit,
+  }
+
+  if (!fallback && (hasError || !imgSrc)) {
+    return (
+      <FallbackSvg className={clsx({ [styles.avatar]: avatar }, className)} />
+    )
   }
 
   return (

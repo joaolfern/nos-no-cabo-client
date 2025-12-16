@@ -1,5 +1,6 @@
 @use '@/styles/tokens/colors.scss' as *;
 @use '@/styles/tokens/border.scss' as *;
+@use '@/styles/tokens/mixins.scss' as *;
 
 .buttonIcon {
   width: 40px;
@@ -24,7 +25,7 @@
   }
 
   &:hover {
-    background: $color-neutral-200;
+    @include card();
   }
 }
 

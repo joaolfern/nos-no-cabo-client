@@ -1,24 +1,18 @@
-import { clsx } from 'clsx'
 import styles from './BackgroundEffect.module.scss'
+import UnicornScene from 'unicornstudio-react'
+import { useTheme } from '@/hooks/useTheme'
+import { isLocal } from '@/config/env'
+import { memo } from 'react'
 
-const VARIANTS = ['secondary', 'tertiary', 'primary'] as const
-const CIRCLES_COUNT = 20
-const circlesArray = Array.from({ length: CIRCLES_COUNT })
+export const BackgroundEffect = memo(function BackgroundEffect() {
+  const { mode } = useTheme()
+  const filename = `${mode}Waves.json`
 
-export function BackgroundEffect() {
   return (
-    <div className={styles.container}>
-      {circlesArray.map((_, index) => (
-        <Circle key={index} variant={VARIANTS[index % VARIANTS.length]} />
-      ))}
+    <div className={`${styles.container} `}>
+      {isLocal ? null : (
+        <UnicornScene jsonFilePath={`/unicornStudio/${filename}`} />
+      )}
     </div>
   )
-}
-
-type CircleProps = {
-  variant: 'primary' | 'secondary' | 'tertiary'
-}
-
-function Circle({ variant }: CircleProps) {
-  return <span className={clsx(styles.circle, styles[variant])} />
-}
+})

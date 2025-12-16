@@ -3,7 +3,7 @@
 @use '@/styles/tokens/typography.scss' as *;
 
 html {
-  background: $color-neutral-100;
+  background: var(--color-background-400);
 }
 
 html,

@@ -4,6 +4,7 @@
 @use '@/styles/tokens/shadow.scss' as *;
 @use '@/styles/tokens/breakpoints.scss' as *;
 @use '@/styles/tokens/elevation.scss' as *;
+@use '@/styles/tokens/mixins.scss' as *;
 
 .trigger {
   display: flex;
@@ -15,7 +16,7 @@
   position: fixed;
   left: $spacing-sm;
   right: $spacing-sm;
-  background: $color-neutral-100;
+  @include card();
   border-radius: $radius-lg;
   width: calc(100% - 2em);
   box-shadow: $shadow-sm;
