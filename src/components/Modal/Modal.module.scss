@@ -1,0 +1,72 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+@use '@/styles/tokens/colors.scss' as *;
+@use '@/styles/tokens/breakpoints.scss' as *;
+
+.container {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.backdrop {
+  content: '';
+  opacity: 0.5;
+  background: var(--color-background-500);
+  position: fixed;
+  inset: 0;
+  z-index: 1001;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-background-400);
+  z-index: 1002;
+  position: relative;
+  width: 100%;
+  padding: $spacing-lg $spacing-md;
+  gap: $spacing-sm;
+  max-height: 100vh;
+  overflow-y: auto;
+
+  @media (min-width: $breakpoint-md) {
+    border-radius: $radius-lg;
+    padding: $spacing-xl;
+    gap: $spacing-md;
+  }
+}
+
+.contentDefault {
+  max-width: 780px;
+}
+
+.contentMessage {
+  max-width: 585px;
+}
+
+.title {
+  margin: 0 auto;
+}
+
+.footer {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  gap: $spacing-md;
+
+  @media (min-width: $breakpoint-md) {
+    flex-direction: row;
+    gap: $spacing-xxl;
+  }
+}
+
+.button {
+  width: 100%;
+  @media (min-width: $breakpoint-md) {
+    width: min(228px, 100%);
+  }
+}
