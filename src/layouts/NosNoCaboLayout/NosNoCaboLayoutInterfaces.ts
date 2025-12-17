@@ -5,5 +5,6 @@ export type NosNoCaboLayoutProps = AppLayoutProps & {
   classNames?: {
     content?: string
     topbar?: string
+    topbarContent?: string
   }
 }

@@ -4,6 +4,7 @@
 @use '@/styles/tokens/typography.scss' as *;
 @use '@/styles/tokens/breakpoints.scss' as *;
 @use '@/styles/tokens/animations.scss' as *;
+@use '@/styles/tokens/mixins.scss' as *;
 
 .button {
   display: inline-flex;
@@ -26,37 +27,37 @@
 }
 
 .primary {
-  background: $color-secondary-400;
-  color: $color-neutral-100;
-  border: $border-width-base solid $color-secondary-400;
+  background: var(--color-secondary-400);
+  color: var(--color-secondary-foreground-400);
+  border: $border-width-base solid var(--color-secondary-400);
 
   &:hover,
   &:focus-visible {
-    background: $color-secondary-500;
-    color: $color-neutral-100;
+    background: var(--color-secondary-500);
+    color: var(--color-secondary-foreground-400);
   }
 }
 
 .secondary {
-  background: $color-neutral-100;
-  color: $color-secondary-400;
-  border: $border-width-base solid $color-secondary-400;
+  @include card();
+  background: transparent;
+  color: var(--color-secondary-400);
+  border: $border-width-base solid var(--color-secondary-400);
 
   &:hover {
-    color: $color-secondary-500;
-
-    border-color: $color-secondary-500;
+    color: var(--color-secondary-500);
+    border-color: var(--color-secondary-500);
   }
 }
 
 .tertiary {
-  background: $color-primary-400;
-  color: $color-neutral-100;
+  background: var(--color-primary-400);
+  color: var(--color-primary-foreground-400);
   border: $border-width-base solid transparent;
 
   &:hover {
-    background: $color-primary-300;
-    color: $color-neutral-100;
+    background: var(--color-primary-300);
+    color: var(--color-primary-foreground-400);
   }
 }
 

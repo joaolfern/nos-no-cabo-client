@@ -9,7 +9,10 @@ import clsx from 'clsx'
 import { memo } from 'react'
 import { VisitButton } from '@/pages/Webring/components/VisitButton/VisitButton'
 
-type FeedCardProps = React.JSX.IntrinsicElements['section'] & IWebsite
+type FeedCardProps = React.JSX.IntrinsicElements['section'] &
+  IWebsite & {
+    variant?: 'compact' | 'detailed'
+  }
 
 const FeedCardInner = ({
   id,
@@ -25,6 +28,7 @@ const FeedCardInner = ({
   name,
   url,
   style,
+  variant = 'detailed',
   ...props
 }: FeedCardProps) => {
   const completeStyle = {
@@ -39,7 +43,7 @@ const FeedCardInner = ({
       data-testid='feed-card'
       style={completeStyle}
     >
-      <div className={styles.imageContainer}>
+      <div>
         <CardImage
           classNames={{ image: styles.image }}
           src={faviconUrl}
