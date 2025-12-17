@@ -25,9 +25,7 @@ export function FeedAside() {
 
   return (
     <aside>
-      <Typography variant='h1' asVariant={true}>
-        Webring
-      </Typography>
+      <Typography variant='h1' asVariant={true}></Typography>
       <FeedFilters.Panel onChange={handleFilter} />
     </aside>
   )

@@ -19,3 +19,8 @@
     gap: $spacing-lg;
   }
 }
+
+.topbarContent {
+  display: flex;
+  gap: $spacing-md;
+}

@@ -1,6 +1,7 @@
 @use '@/styles/tokens/border.scss' as *;
+@use '@/styles/tokens/spacing.scss' as *;
 
 .divider {
-  border-bottom: 1px solid $border-color;
-  margin: 1rem 0;
+  border-bottom: 1px solid var(--color-border-400);
+  margin: $spacing-md 0;
 }

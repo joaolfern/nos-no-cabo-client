@@ -3,7 +3,7 @@
 @use '@/styles/tokens/border.scss' as *;
 
 .input {
-  background: $color-neutral-100;
+  background: transparent;
   padding: $spacing-xxs $spacing-md;
   border: $border-base;
   border-radius: $radius-full;

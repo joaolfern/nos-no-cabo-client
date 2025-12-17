@@ -7,19 +7,18 @@
 
 .container {
   display: flex;
-  flex-direction: column;
-  background: $color-neutral-100;
   border-radius: $radius-lg;
   box-shadow: $shadow-sm;
   overflow: hidden;
   position: relative;
+  backdrop-filter: blur(5px);
   transition:
     background 0.15s ease-in,
     box-shadow 0.15s ease-in;
+  border: $border-width-base solid var(--color-border-400);
 
   &.clickable {
     &:hover:not(&:has(.externalLinkContainer a:hover)) {
-      background: $color-neutral-200;
       box-shadow: $shadow-md;
     }
 
@@ -37,23 +36,22 @@
       }
     }
   }
-
-  @media (min-width: $breakpoint-md) {
-    border: $border-base;
-  }
 }
 
 .content {
   flex: 1;
-  padding: $spacing-md;
+  padding: $spacing-md $spacing-md $spacing-md 0;
   gap: $spacing-md;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .image {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
+  width: 120px;
+  padding-inline: $spacing-md;
 
   @include has-motion {
     transition: transform 0.35s ease-out;
@@ -87,4 +85,5 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: $spacing-sm;
 }

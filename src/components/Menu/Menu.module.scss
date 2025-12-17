@@ -30,7 +30,7 @@
 
   &:hover,
   &:focus-within:focus-visible {
-    background: $color-neutral-200;
+    background: var(--color-background-400);
   }
 
   &:focus-within:focus-visible {

@@ -2,6 +2,7 @@ import { AppLayout } from '@/layouts/AppLayout/AppLayout'
 import { useRef } from 'react'
 import { SearchFeed } from '@/layouts/NosNoCaboLayout/components/SearchFeed/SearchFeed'
 import type { NosNoCaboLayoutProps } from '@/layouts/NosNoCaboLayout/NosNoCaboLayoutInterfaces'
+import { ThemeSwitcher } from '@/layouts/AppLayout/components/ThemeSwitcher/ThemeSwitcher'
 
 export function NosNoCaboLayout({
   children,
@@ -13,7 +14,10 @@ export function NosNoCaboLayout({
   return (
     <AppLayout {...props}>
       <AppLayout.Topbar ref={topbarRef} className={classNames?.topbar}>
-        <SearchFeed container={topbarRef} />
+        <AppLayout.TopbarContent>
+          <ThemeSwitcher />
+          <SearchFeed container={topbarRef} />
+        </AppLayout.TopbarContent>
       </AppLayout.Topbar>
       <AppLayout.Content className={classNames?.content}>
         {children}
