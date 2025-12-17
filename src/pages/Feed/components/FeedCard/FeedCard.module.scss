@@ -1,5 +1,5 @@
 @use '@/styles/tokens/border.scss' as *;
-@use '@/styles/tokens/colors.scss' as *;
+
 @use '@/styles/tokens/shadow.scss' as *;
 @use '@/styles/tokens/spacing.scss' as *;
 @use '@/styles/tokens/breakpoints.scss' as *;
@@ -23,7 +23,7 @@
     }
 
     &:focus-within:focus-visible {
-      border: $border-width-base solid $color-accent-400;
+      border: $border-width-base solid var(--color-accent-400);
     }
 
     @include has-motion {

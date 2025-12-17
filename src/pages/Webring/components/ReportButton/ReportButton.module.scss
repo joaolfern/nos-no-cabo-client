@@ -1,10 +1,9 @@
-@use '@/styles/tokens/colors.scss' as *;
 @use '@/styles/tokens/shadow.scss' as *;
 @use '@/styles/tokens/spacing.scss' as *;
 
 .reportButton {
   position: relative;
-  color: $color-danger-700;
+  color: var(--color-danger-700);
   display: flex;
   align-items: center;
   gap: $spacing-xxxs;
