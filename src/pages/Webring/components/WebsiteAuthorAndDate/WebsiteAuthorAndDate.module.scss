@@ -1,5 +1,5 @@
 @use '@/styles/tokens/spacing.scss' as *;
-@use '@/styles/tokens/colors.scss' as *;
+
 @use '@/styles/tokens/typography.scss' as *;
 @use '@/styles/tokens/breakpoints.scss' as *;
 
@@ -12,7 +12,7 @@
     font-size: $font-size-xs;
     line-height: $line-height-sm;
     content: '●';
-    color: $color-secondary-400;
+    color: var(--color-secondary-400);
     margin-left: $spacing-xxxs;
   }
 

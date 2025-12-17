@@ -25,7 +25,9 @@ export function FeedAside() {
 
   return (
     <aside>
-      <Typography variant='h1' asVariant={true}></Typography>
+      <Typography variant='h1' asVariant={true}>
+        Nós no cabo
+      </Typography>
       <FeedFilters.Panel onChange={handleFilter} />
     </aside>
   )

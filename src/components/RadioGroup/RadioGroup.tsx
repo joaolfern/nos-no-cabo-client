@@ -3,6 +3,7 @@ import { Loading } from '@/components/Loading/Loading'
 import { Menu } from '@/components/Menu/Menu'
 import { Typography } from '@/components/Typography/Typography'
 import clsx from 'clsx'
+import styles from './RadioGroup.module.scss'
 
 type RadioGroupProps<T, M extends boolean | undefined> = DropdownButtonProps<
   T,
@@ -34,7 +35,11 @@ export function RadioGroup<T, M extends boolean | undefined>({
       {loading ? (
         <Loading />
       ) : (
-        <Menu role='listbox' className={clsx(className)} {...props}>
+        <Menu
+          role='listbox'
+          className={clsx(className, styles.group)}
+          {...props}
+        >
           {hasOptions ? (
             options.map((option) => {
               const selected = Array.isArray(value)
@@ -70,6 +75,7 @@ function PanelItem<T>({
 }) {
   return (
     <Menu.Item
+      className={styles.item}
       key={option.label}
       onClick={() => handleChange(option.value)}
       selected={selected}
