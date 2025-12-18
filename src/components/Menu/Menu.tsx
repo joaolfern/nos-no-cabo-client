@@ -33,7 +33,12 @@ Menu.Item = function MenuItem<T>({
       aria-pressed={selected}
     >
       <Typography variant='body'>{children}</Typography>
-      {selected && <MdCheck className={styles.checkIcon} />}
+      {selected && (
+        <MdCheck
+          className={`${styles.checkIcon} ${selected ? '' : styles.checkIconHidden}}`}
+          size={16}
+        />
+      )}
     </button>
   )
 }

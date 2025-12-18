@@ -1,5 +1,5 @@
 @use '@/styles/tokens/spacing.scss' as *;
-@use '@/styles/tokens/colors.scss' as *;
+
 @use '@/styles/tokens/border.scss' as *;
 @use '@/styles/tokens/typography.scss' as *;
 
@@ -22,7 +22,7 @@
   display: flex;
   align-items: center;
   gap: $spacing-xs;
-  color: $color-primary-500;
+  color: var(--color-primary-500);
 }
 
 .apply {

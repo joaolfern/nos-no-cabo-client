@@ -1,18 +1,17 @@
-@use '@/styles/tokens/colors.scss' as *;
 @use '@/styles/tokens/spacing.scss' as *;
 @use '@/styles/tokens/border.scss' as *;
 
 .errorBoundary {
   padding: $spacing-lg;
-  background: $color-danger-100;
-  color: $color-danger-700;
+  background: var(--color-danger-100);
+  color: var(--color-danger-700);
   border-radius: $radius-md;
   text-align: center;
   margin: $spacing-lg 0;
 }
 
 .errorMessage {
-  background: $color-danger-100;
+  background: var(--color-danger-100);
   padding: $spacing-md;
   border-radius: $radius-sm;
   overflow-x: auto;
