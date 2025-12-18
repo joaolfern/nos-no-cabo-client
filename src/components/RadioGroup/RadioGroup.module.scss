@@ -1,5 +1,11 @@
 @use '@/styles/tokens/spacing.scss' as *;
 
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xxs;
+}
+
 .group {
   display: flex;
   flex-direction: row;
@@ -8,11 +14,12 @@
 }
 
 .item {
-  border-radius: 2rem;
+  border-radius: 2rem !important;
   padding: 0 $spacing-xxs;
   gap: $spacing-xxxs;
 
   &[aria-pressed='true'] {
     box-shadow: 0 0 0 1px var(--color-primary-400);
+    background: var(--color-primary-100);
   }
 }

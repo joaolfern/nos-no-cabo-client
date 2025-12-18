@@ -63,6 +63,10 @@ export function useKeywordFilter() {
     []
   )
 
+  const clearKeywords = useCallback(() => {
+    setSelectedKeywords([])
+  }, [])
+
   return {
     selectedKeywords,
     keywordOptions,
@@ -70,6 +74,7 @@ export function useKeywordFilter() {
     getKeywordById,
     keywordIsLoading,
     filterByKeyword,
+    clearKeywords,
   }
 }
 

@@ -13,6 +13,7 @@ export type ThemeVariables =
   | 'color-neutral-500'
   | 'color-neutral-600'
   | 'color-neutral-700'
+  | 'color-primary-100'
   | 'color-primary-300'
   | 'color-primary-400'
   | 'color-primary-500'

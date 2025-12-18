@@ -1,11 +1,11 @@
 import type { ModalProps } from '@/components/Modal/Modal.types'
-import { createPortal } from 'react-dom'
 import { Typography } from '@/components/Typography/Typography'
 import clsx from 'clsx'
 import { Button } from '@/components/Button/Button'
 import styles from './Modal.module.scss'
 import type { ButtonProps } from '@/components/Button/Button.types'
 import { useEscape } from '@/components/Portal/hooks/useEscape'
+import { Portal } from '@/components/Portal/Portal'
 
 export function Modal({
   children,
@@ -21,17 +21,20 @@ export function Modal({
     return null
   }
 
-  return createPortal(
-    <section className={styles.container}>
-      <div className={clsx(styles.content, CONTENT_STYLE_VARIANT[variant])}>
-        <Typography variant='h2' className={styles.title}>
-          {title}
-        </Typography>
-        {children}
-      </div>
-      <div className={styles.backdrop} onClick={onClose} />
-    </section>,
-    container || document.body
+  return (
+    <Portal container={container || document.body}>
+      <section className={styles.container}>
+        <div className={clsx(styles.content, CONTENT_STYLE_VARIANT[variant])}>
+          {title && (
+            <Typography variant='h2' className={styles.title}>
+              {title}
+            </Typography>
+          )}
+          {children}
+        </div>
+        <div className={styles.backdrop} onClick={onClose} />
+      </section>
+    </Portal>
   )
 }
 

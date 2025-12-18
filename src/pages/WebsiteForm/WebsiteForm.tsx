@@ -1,6 +1,5 @@
 import { FloatingButton } from '@/components/FloatingButton/FloatingButton'
-import { Popup } from '@/components/Popup/Popup'
-import { MdAdd, MdClose } from 'react-icons/md'
+import { MdAdd } from 'react-icons/md'
 import { useEffect, useRef, useState } from 'react'
 import type { IPreregisterWebsite } from '@/interfaces/IWebsite'
 import { InitialStep } from '@/pages/WebsiteForm/components/InitialStep/InitialStep'
@@ -9,6 +8,7 @@ import { ReviewStep } from '@/pages/WebsiteForm/components/ReviewStep/ReviewStep
 import styles from './WebsiteForm.module.scss'
 import { KeywordsStep } from '@/pages/WebsiteForm/components/KeywordsStep/KeywordsStep'
 import { GithubStep } from '@/pages/WebsiteForm/components/GithubStep/GithubStep'
+import { Modal } from '@/components/Modal/Modal'
 
 export function WebsiteForm() {
   const [isOpen, setIsOpen] = useState(false)
@@ -16,7 +16,6 @@ export function WebsiteForm() {
   const [preregister, setPreregister] = useState<IPreregisterWebsite | null>(
     null
   )
-  const [hasCreatedWebsite, setHasCreatedWebsite] = useState(false)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const CurrentStep = STEPS[stepIndex]
@@ -40,55 +39,38 @@ export function WebsiteForm() {
     setIsOpen(false)
     setPreregister(null)
     setStepIndex(0)
-    setHasCreatedWebsite(true)
 
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
     }
 
-    timeoutRef.current = setTimeout(() => {
-      setHasCreatedWebsite(false)
-    }, 4000)
+    timeoutRef.current = setTimeout(() => {}, 4000)
+  }
+
+  function handleClose() {
+    setIsOpen(false)
   }
 
   return (
     <div className={styles.container}>
-      <Popup
-        position='topLeft'
-        popup={
-          CurrentStep && (
-            <CurrentStep
-              preregister={preregister}
-              setPreregister={setPreregister}
-              updateStep={setStepIndex}
-              onSuccess={onSucess}
-            />
-          )
-        }
-        classNames={{ panel: styles.popup }}
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        toggle={() => setIsOpen((prev) => !prev)}
+      <Modal onClose={handleClose} isOpen={isOpen}>
+        {CurrentStep && (
+          <CurrentStep
+            preregister={preregister}
+            setPreregister={setPreregister}
+            updateStep={setStepIndex}
+            onSuccess={onSucess}
+          />
+        )}
+      </Modal>
+      <FloatingButton
+        className={styles.button}
+        variant={isOpen ? 'secondary' : 'primary'}
+        onClick={() => setIsOpen(true)}
       >
-        <FloatingButton
-          className={styles.button}
-          variant={isOpen ? 'secondary' : 'primary'}
-        >
-          {isOpen ? (
-            <>
-              Cancelar
-              <MdClose />
-            </>
-          ) : hasCreatedWebsite ? (
-            'Seu site foi adicionado! 🎉🎉'
-          ) : (
-            <>
-              Adicionar meu site
-              <MdAdd />
-            </>
-          )}
-        </FloatingButton>
-      </Popup>
+        Adicionar meu site
+        <MdAdd />
+      </FloatingButton>
     </div>
   )
 }

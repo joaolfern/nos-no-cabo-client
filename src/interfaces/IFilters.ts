@@ -13,6 +13,9 @@ export interface IFiltersContext {
   search: string
   updateSearch: (search: string) => void
   filterBySearch: (websites: IWebsite[], search: string) => IWebsite[]
+  clearSearch: () => void
+  hasFilters: boolean
+  clearKeywords: () => void
 }
 
 export type IFilterEvent = {

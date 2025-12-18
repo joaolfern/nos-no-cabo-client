@@ -23,9 +23,14 @@ export function useSearch() {
     setSearch(search)
   }, [])
 
+  const clearSearch = useCallback(() => {
+    setSearch('')
+  }, [])
+
   return {
     search,
     updateSearch,
     filterBySearch,
+    clearSearch,
   }
 }

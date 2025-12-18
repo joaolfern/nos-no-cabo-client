@@ -1,6 +1,5 @@
 @use '@/styles/tokens/spacing.scss' as *;
 @use '@/styles/tokens/border.scss' as *;
-@use '@/styles/tokens/colors.scss' as *;
 @use '@/styles/tokens/breakpoints.scss' as *;
 
 .container {
@@ -41,7 +40,8 @@
 }
 
 .contentDefault {
-  max-width: 780px;
+  max-width: 650px;
+  min-height: 500px;
 }
 
 .contentMessage {
