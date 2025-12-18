@@ -1,4 +1,3 @@
-@use '@/styles/tokens/colors.scss' as *;
 @use '@/styles/tokens/spacing.scss' as *;
 @use '@/styles/tokens/border.scss' as *;
 @use '@/styles/tokens/animations.scss' as *;
@@ -17,12 +16,12 @@
   user-select: none;
 
   &:hover {
-    background: $color-accent-400;
-    --color-text: #{$color-neutral-100};
+    background: var(--color-accent-400);
+    --color-text: var(--color-neutral-100);
   }
 
   &:focus-visible {
-    outline: $border-width-base solid $color-accent-300;
+    outline: $border-width-base solid var(--color-accent-300);
   }
 }
 
@@ -31,7 +30,7 @@
 }
 
 .icon {
-  color: var(--color-text, $color-accent-300);
+  color: var(--color-text, var(--color-accent-300));
 }
 
 .trigger {

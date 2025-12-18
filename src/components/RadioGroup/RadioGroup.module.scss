@@ -1,2 +1,18 @@
-.radioGroup {
+@use '@/styles/tokens/spacing.scss' as *;
+
+.group {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: $spacing-xxxs;
+}
+
+.item {
+  border-radius: 2rem;
+  padding: 0 $spacing-xxs;
+  gap: $spacing-xxxs;
+
+  &[aria-pressed='true'] {
+    box-shadow: 0 0 0 1px var(--color-primary-400);
+  }
 }

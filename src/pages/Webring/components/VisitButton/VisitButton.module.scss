@@ -1,11 +1,10 @@
-@use '@/styles/tokens/colors.scss' as *;
 @use '@/styles/tokens/shadow.scss' as *;
 @use '@/styles/tokens/spacing.scss' as *;
 @use '@/styles/tokens/mixins.scss' as *;
 
 .visitButton {
   position: relative;
-  color: $color-accent-400;
+  color: var(--color-accent-400);
   display: flex;
   align-items: center;
   gap: $spacing-xxxs;
