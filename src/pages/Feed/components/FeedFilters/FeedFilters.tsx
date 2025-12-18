@@ -7,6 +7,7 @@ import type { DropdownButtonProps } from '@/components/DropdownButton/DropdownBu
 import { Typography } from '@/components/Typography/Typography'
 import { MdTune } from 'react-icons/md'
 import type { IFilterEvent } from '@/interfaces/IFilters'
+import { useWebsites } from '@/pages/Feed/hooks/useWebsites'
 
 type FeedFiltersProps = {
   onChange: (filter?: IFilterEvent) => void
@@ -25,6 +26,16 @@ FeedFilters.Inline = function FeedFiltersInline({
 }
 
 FeedFilters.Panel = function FeedFiltersPanel({ onChange }: FeedFiltersProps) {
+  const { clearKeywords } = useFilters()
+  const { updateWebsites, websitesRaw } = useWebsites()
+
+  function clear() {
+    if (websitesRaw) {
+      clearKeywords()
+      updateWebsites(websitesRaw)
+    }
+  }
+
   return (
     <div className={styles.panel}>
       <header className={styles.header}>
@@ -32,6 +43,11 @@ FeedFilters.Panel = function FeedFiltersPanel({ onChange }: FeedFiltersProps) {
         <Typography variant='h3' asVariant={true}>
           Filtros
         </Typography>
+        <button className={styles.clear} onClick={clear}>
+          <Typography variant='body' asVariant={true} strong={true}>
+            Limpar
+          </Typography>
+        </button>
       </header>
       <KeywordFilter variant='panel' onChange={onChange} />
     </div>
