@@ -9,6 +9,7 @@ export const DARK_THEME_VARIABLES: Record<ThemeVariables, string> = {
   'color-neutral-600': '#5e5f63',
   'color-neutral-700': '#222021',
 
+  'color-primary-100': '#ff405630',
   'color-primary-300': '#e07a87',
   'color-primary-400': '#d15c6a',
   'color-primary-500': '#b94c58',

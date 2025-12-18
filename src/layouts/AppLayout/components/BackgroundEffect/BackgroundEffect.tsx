@@ -10,7 +10,7 @@ export const BackgroundEffect = memo(function BackgroundEffect() {
 
   return (
     <div className={`${styles.container} `}>
-      {!isLocal ? null : (
+      {isLocal ? null : (
         <UnicornScene jsonFilePath={`/unicornStudio/${filename}`} />
       )}
     </div>

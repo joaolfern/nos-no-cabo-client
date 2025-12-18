@@ -3,6 +3,6 @@ export type ModalProps = {
   onClose: () => void
   children: React.ReactNode
   container?: HTMLElement | null
-  title: string
+  title?: string
   variant?: 'default' | 'message'
 }
