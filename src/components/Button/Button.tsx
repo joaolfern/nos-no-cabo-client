@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import styles from './Button.module.scss'
 import React from 'react'
 import { AsChild } from '@/components/AsChild/AsChild'
-import type { _buttonVariant, ButtonProps } from './ButtonProps'
+import type { _buttonVariant, ButtonProps } from './Button.types'
 
 export function Button({
   variant = 'primary',

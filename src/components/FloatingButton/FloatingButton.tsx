@@ -1,6 +1,6 @@
 import { Button } from '@/components/Button/Button'
 import styles from './FloatingButton.module.scss'
-import type { ButtonProps } from '@/components/Button/ButtonProps'
+import type { ButtonProps } from '@/components/Button/Button.types'
 import clsx from 'clsx'
 
 type FloatingButtonProps = ButtonProps & {

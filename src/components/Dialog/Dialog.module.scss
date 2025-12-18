@@ -1,0 +1,61 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+@use '@/styles/tokens/breakpoints.scss' as *;
+@use '@/styles/tokens/typography.scss' as *;
+
+.container {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @media (min-width: $breakpoint-md) {
+    inset: 0 0 40% 0;
+  }
+}
+
+.backdrop {
+  content: '';
+  opacity: 0.5;
+  background: var(--color-background-500);
+  position: fixed;
+  inset: 0;
+  z-index: 1001;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-background-400);
+  z-index: 1002;
+  position: relative;
+  width: 100%;
+  padding: $spacing-lg $spacing-md;
+  max-height: 100vh;
+  overflow-y: auto;
+  border-top-left-radius: $radius-md;
+  border-top-right-radius: $radius-md;
+
+  @media (min-width: $breakpoint-md) {
+    border-radius: $radius-lg;
+    max-width: 300px;
+    padding: $spacing-md $spacing-lg;
+  }
+}
+
+.title {
+  font-size: $font-size-lg;
+}
+
+.footer {
+  display: grid;
+  gap: $spacing-sm;
+  grid-template-columns: 1fr;
+  margin-top: $spacing-md;
+
+  @media (min-width: $breakpoint-md) {
+    grid-template-columns: 1fr 1fr;
+  }
+}

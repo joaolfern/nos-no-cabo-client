@@ -10,7 +10,6 @@ import React from 'react'
 import { RecommendBooks } from '@/pages/Website/components/RecommendBooks/RecommendBooks'
 import { VisitButton } from '@/pages/Webring/components/VisitButton/VisitButton'
 import { ReportButton } from '@/pages/Webring/components/ReportButton/ReportButton'
-import { isAdminMode } from '@/config/env'
 import { GithubButton } from '@/pages/Webring/components/GithubButton/GithubButton'
 
 export function WebsiteContent() {
@@ -31,9 +30,7 @@ export function WebsiteContent() {
           </Typography>
           <GithubButton repo={website.repo} />
           <VisitButton url={website.url}>Visitar site</VisitButton>
-          {isAdminMode && (
-            <ReportButton className={styles.reportButton} id={website.id} />
-          )}
+          <ReportButton className={styles.reportButton} id={website.id} />
         </header>
 
         {website.author && (
