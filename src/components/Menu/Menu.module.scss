@@ -1,5 +1,5 @@
 @use '@/styles/tokens/border.scss' as *;
-@use '@/styles/tokens/colors.scss' as *;
+
 @use '@/styles/tokens/shadow.scss' as *;
 @use '@/styles/tokens/spacing.scss' as *;
 
@@ -22,19 +22,22 @@
 .item {
   display: flex;
   text-align: left;
+  align-items: center;
   line-height: 1.25rem;
   font-size: 14px;
   padding: $spacing-xs;
   border-radius: 0;
+  user-select: none;
+
   @include rounded-corners($radius-lg);
 
   &:hover,
   &:focus-within:focus-visible {
-    background: var(--color-background-400);
+    background: var(--color-background-100);
   }
 
   &:focus-within:focus-visible {
-    outline: $border-width-base solid $color-accent-400;
+    outline: $border-width-base solid var(--color-accent-400);
   }
 
   > * {
@@ -44,8 +47,12 @@
 }
 
 .checkIcon {
-  color: $color-accent-300;
+  color: var(--color-accent-300);
   margin-left: auto;
+}
+
+.checkIconHidden {
+  visibility: hidden;
 }
 
 .empty {
