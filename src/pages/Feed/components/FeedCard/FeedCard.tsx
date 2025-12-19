@@ -58,7 +58,6 @@ const FeedCardInner = ({
             createdAt={createdAt}
           />
         )}
-        {id && <Link className={styles.detailsLink} to={`/website/${id}`} />}
         <div className={styles.externalLinkContainer}>
           <Typography className={styles.title} variant='h3' numberOfLines={2}>
             <h3>{name}</h3>
@@ -68,12 +67,13 @@ const FeedCardInner = ({
         <Typography
           className={styles.description}
           variant='bodySmall'
-          numberOfLines={2}
+          numberOfLines={3}
         >
           <p>{description}</p>
         </Typography>
         <WebsiteKeywords className={styles.keywords} keywords={keywords} />
       </div>
+      {id && <Link className={styles.detailsLink} to={`/website/${id}`} />}
     </article>
   )
 }

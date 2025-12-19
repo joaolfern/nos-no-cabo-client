@@ -21,7 +21,7 @@ export function Feed() {
       <div className={styles.feed}>
         <FeedTopbar />
         <FeedCardList
-          span={300}
+          span={400}
           isLoading={isLoading}
           data={filteredWebsites}
         />
