@@ -12,7 +12,7 @@ export function InnerRouteAside() {
         variant='secondary'
         small={true}
       >
-        <Link query={{ id: null }}>
+        <Link to='/websites'>
           <MdArrowBack className={styles.backIcon} size='1.25rem' />
           Voltar
         </Link>

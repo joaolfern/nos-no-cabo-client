@@ -3,10 +3,10 @@ import styles from './ReportButton.module.scss'
 import { clsx } from 'clsx'
 import { isAdminMode } from '@/config/env'
 import { useReportWebsite } from '@/hooks/useDataHooks'
-import { handleNavigate } from '@/utils/handleNavigate/handleNavigate'
 import { Dialog } from '@/components/Dialog/Dialog'
 import { useState } from 'react'
 import { Typography } from '@/components/Typography/Typography'
+import { useNavigate } from 'react-router'
 
 type ReportButtonProps = React.JSX.IntrinsicElements['button'] & {
   id: string
@@ -20,11 +20,10 @@ export function ReportButton({
 }: ReportButtonProps) {
   const { mutate } = useReportWebsite()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const navigate = useNavigate()
 
   function onSuccess() {
-    const url = new URL(window.location.href)
-
-    handleNavigate(url, { id: null })
+    navigate('/websites')
   }
 
   function handleClick() {

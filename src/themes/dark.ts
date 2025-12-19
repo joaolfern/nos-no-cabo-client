@@ -33,6 +33,8 @@ export const DARK_THEME_VARIABLES: Record<ThemeVariables, string> = {
 
   'blur-background': '50px',
 
+  'color-background-000': '#1a1a1e38',
+
   'color-background-100': '#121217',
   'color-background-200': '#1a1a1e',
   'color-background-300': '#2c2e31',

@@ -2,7 +2,6 @@ import { Tag } from '@/components/Tag/Tag'
 import styles from './WebsiteKeywords.module.scss'
 import { clsx } from 'clsx'
 import type { IKeyword } from '@/interfaces/IWebsite'
-import { Typography } from '@/components/Typography/Typography'
 
 type WebsiteKeywordsProps = React.HTMLAttributes<HTMLDivElement> & {
   keywords: IKeyword[]
@@ -13,19 +12,13 @@ export function WebsiteKeywords({
   keywords = [],
   ...props
 }: WebsiteKeywordsProps) {
-  const shownKeywords = keywords.slice(0, 2)
-  const hasMore = Boolean(keywords[2])
+  const shownKeyword = keywords[0]
+  const hasMore = keywords.slice(1)
 
   return (
     <div className={clsx(styles.container, className)} {...props}>
-      {shownKeywords.map((keyword) => (
-        <Tag key={keyword.id}>{keyword.name}</Tag>
-      ))}
-      {hasMore && (
-        <Typography className={styles.more} variant='caption'>
-          + {keywords.length - 2}
-        </Typography>
-      )}
+      {shownKeyword && <Tag key={shownKeyword.id}>{shownKeyword.name}</Tag>}
+      {hasMore && <Tag>+ {keywords.length - 1}</Tag>}
     </div>
   )
 }

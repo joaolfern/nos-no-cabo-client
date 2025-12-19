@@ -11,6 +11,9 @@ const INITIAL_STATE: IFiltersContext = {
   search: '',
   updateSearch: () => ({}) as unknown as IFilterEvent,
   filterBySearch: () => [],
+  clearKeywords: () => {},
+  clearSearch: () => {},
+  hasFilters: true,
 }
 
 export const FiltersContext =

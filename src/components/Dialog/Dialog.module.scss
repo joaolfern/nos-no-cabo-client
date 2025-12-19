@@ -2,6 +2,7 @@
 @use '@/styles/tokens/border.scss' as *;
 @use '@/styles/tokens/breakpoints.scss' as *;
 @use '@/styles/tokens/typography.scss' as *;
+@use '@/styles/tokens/mixins.scss' as *;
 
 .container {
   position: fixed;
@@ -28,7 +29,6 @@
 .content {
   display: flex;
   flex-direction: column;
-  background: var(--color-background-400);
   z-index: 1002;
   position: relative;
   width: 100%;
@@ -37,6 +37,8 @@
   overflow-y: auto;
   border-top-left-radius: $radius-md;
   border-top-right-radius: $radius-md;
+
+  @include card();
 
   @media (min-width: $breakpoint-md) {
     border-radius: $radius-lg;

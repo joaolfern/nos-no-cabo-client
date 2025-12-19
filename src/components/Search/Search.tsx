@@ -15,9 +15,8 @@ export function Search({
   container,
   ...rest
 }: SearchProps) {
-  const [isFocused, setIsFocused] = React.useState(false)
+  const [isFocused, setIsFocused] = React.useState(Boolean(value))
   const inputRef = React.useRef<HTMLInputElement>(null)
-
   const focusInput = useCallback(() => {
     if (inputRef.current) {
       inputRef.current.focus()
@@ -103,6 +102,7 @@ export function Search({
             </ButtonIcon>
           )}
           <Input
+            value={value}
             ref={inputRef}
             className={clsx(styles.input, {
               [styles.inputVisible]: isFocused,

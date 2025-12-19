@@ -9,8 +9,10 @@ import styles from './WebsiteForm.module.scss'
 import { KeywordsStep } from '@/pages/WebsiteForm/components/KeywordsStep/KeywordsStep'
 import { GithubStep } from '@/pages/WebsiteForm/components/GithubStep/GithubStep'
 import { Modal } from '@/components/Modal/Modal'
+import { useNavigate } from 'react-router'
 
 export function WebsiteForm() {
+  const navigate = useNavigate()
   const [isOpen, setIsOpen] = useState(false)
   const [stepIndex, setStepIndex] = useState(0)
   const [preregister, setPreregister] = useState<IPreregisterWebsite | null>(
@@ -51,6 +53,11 @@ export function WebsiteForm() {
     setIsOpen(false)
   }
 
+  function handleCreate() {
+    setIsOpen(true)
+    navigate('/websites')
+  }
+
   return (
     <div className={styles.container}>
       <Modal onClose={handleClose} isOpen={isOpen}>
@@ -66,7 +73,7 @@ export function WebsiteForm() {
       <FloatingButton
         className={styles.button}
         variant={isOpen ? 'secondary' : 'primary'}
-        onClick={() => setIsOpen(true)}
+        onClick={handleCreate}
       >
         Adicionar meu site
         <MdAdd />

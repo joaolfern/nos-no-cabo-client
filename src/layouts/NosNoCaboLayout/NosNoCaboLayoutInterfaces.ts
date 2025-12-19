@@ -1,10 +1,1 @@
-import type { AppLayoutProps } from '@/layouts/AppLayout/AppLayoutInterfaces'
-
-export type NosNoCaboLayoutProps = AppLayoutProps & {
-  children: React.ReactNode
-  classNames?: {
-    content?: string
-    topbar?: string
-    topbarContent?: string
-  }
-}
+export type NosNoCaboLayoutProps = React.JSX.IntrinsicElements['div']

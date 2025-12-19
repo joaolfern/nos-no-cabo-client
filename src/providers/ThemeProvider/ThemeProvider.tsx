@@ -2,7 +2,13 @@ import { ThemeContext } from '@/contexts/ThemeContext'
 import type { IThemeContext } from '@/interfaces/ITheme'
 import { DARK_THEME_VARIABLES } from '@/themes/dark'
 import { LIGHT_THEME_VARIABLES } from '@/themes/light'
-import { useEffect, useMemo, useState } from 'react'
+import {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useReducer,
+  useState,
+} from 'react'
 
 interface ThemeProviderProps {
   children: React.ReactNode
@@ -10,8 +16,15 @@ interface ThemeProviderProps {
 
 const matchesDark = (match: boolean) => (match ? 'dark' : 'light')
 
+const toggleAnimationReducer = (state: boolean) => {
+  const newState = !state
+
+  localStorage.setItem('animationsEnabled', String(newState))
+  return newState
+}
+
 const getCurrentTheme = () => {
-  const storedTheme = localStorage.getItem('theme')
+  const storedTheme = localStorage.getItem('themeMode')
   if (storedTheme) {
     return storedTheme as IThemeContext['mode']
   }
@@ -21,10 +34,14 @@ const getCurrentTheme = () => {
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
   const [mode, setThemeMode] = useState<IThemeContext['mode']>(getCurrentTheme)
+  const [animationsEnabled, toggleAnimations] = useReducer(
+    toggleAnimationReducer,
+    localStorage.getItem('animationsEnabled') === 'false' ? false : true
+  )
 
   const updateThemeMode = (newMode: IThemeContext['mode']) => {
     setThemeMode(newMode)
-    localStorage.setItem('theme', newMode)
+    localStorage.setItem('themeMode', newMode)
   }
 
   function applyThemeVariables(themeMode: IThemeContext['mode']) {
@@ -36,7 +53,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     })
   }
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     applyThemeVariables(mode)
   }, [mode])
 
@@ -55,8 +72,10 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     () => ({
       mode,
       updateThemeMode,
+      animationsEnabled,
+      toggleAnimations,
     }),
-    [mode]
+    [mode, toggleAnimations, animationsEnabled]
   )
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>

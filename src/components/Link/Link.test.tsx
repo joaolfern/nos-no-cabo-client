@@ -1,8 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { Link } from './Link'
 
-const query = { id: '42' }
-
 describe('Link', () => {
   beforeEach(() => {
     window.history.replaceState({}, '', '/nosnocabo')
@@ -10,7 +8,7 @@ describe('Link', () => {
 
   it('updates the query string in the URL on click', () => {
     render(
-      <Link query={query} data-testid='link'>
+      <Link to='/' data-testid='link'>
         Test Link
       </Link>
     )
@@ -23,7 +21,7 @@ describe('Link', () => {
     const handler = jest.fn()
     window.addEventListener('query-change', handler)
     render(
-      <Link query={{ id: '42' }} data-testid='link'>
+      <Link to='/42' data-testid='link'>
         Test Link
       </Link>
     )
@@ -39,7 +37,7 @@ describe('Link', () => {
     const originalPushState = window.history.pushState
     window.history.pushState = jest.fn()
     render(
-      <Link query={query} data-testid='link'>
+      <Link to='/' data-testid='link'>
         Test Link
       </Link>
     )
@@ -50,7 +48,7 @@ describe('Link', () => {
 
   it('sets href if ctrlKey is pressed', () => {
     render(
-      <Link query={query} data-testid='link'>
+      <Link to='/' data-testid='link'>
         Test Link
       </Link>
     )

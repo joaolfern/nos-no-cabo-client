@@ -1,5 +1,5 @@
 @use '@/styles/tokens/border.scss' as *;
-
+@use '@/styles/tokens/mixins.scss' as *;
 @use '@/styles/tokens/spacing.scss' as *;
 @use '@/styles/tokens/typography.scss' as *;
 
@@ -10,4 +10,6 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+
+  @include card();
 }
