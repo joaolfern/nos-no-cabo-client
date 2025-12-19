@@ -17,4 +17,14 @@ export const handlers = [
   http.patch(`${API_URL}/website`, () => {
     return HttpResponse.json()
   }),
+  http.delete(`${API_URL}/website/:id`, () => {
+    return HttpResponse.json()
+  }),
+  http.get(`${API_URL}/website/:id`, ({ params }) => {
+    const website = MOCK_WEBSITES.find((w) => w.id === params.id)
+    if (website) {
+      return HttpResponse.json(website)
+    }
+    return HttpResponse.json({ message: 'Not found' }, { status: 404 })
+  }),
 ]

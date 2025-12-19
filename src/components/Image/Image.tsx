@@ -25,7 +25,7 @@ export function Image({
     objectFit: !src ? 'cover' : style?.objectFit,
   }
 
-  if (!fallback && (hasError || !imgSrc)) {
+  if (!imgSrc || hasError) {
     return (
       <FallbackSvg className={clsx({ [styles.avatar]: avatar }, className)} />
     )

@@ -1,18 +1,19 @@
 import styles from './BackgroundEffect.module.scss'
-import UnicornScene from 'unicornstudio-react'
 import { useTheme } from '@/hooks/useTheme'
-import { isLocal } from '@/config/env'
 import { memo } from 'react'
+import { Scene } from '@/components/Scene/Scene'
 
 export const BackgroundEffect = memo(function BackgroundEffect() {
   const { mode } = useTheme()
-  const filename = `${mode}Waves.json`
+  const filename = `${mode}/waves.json`
 
   return (
     <div className={`${styles.container} `}>
-      {isLocal ? null : (
-        <UnicornScene jsonFilePath={`/unicornStudio/${filename}`} />
-      )}
+      <Scene
+        fallbackBackground='var(--color-background-400)'
+        fallbackAccent='var(--color-secondary-400)'
+        jsonFilePath={`/unicornStudio/${filename}`}
+      />
     </div>
   )
 })

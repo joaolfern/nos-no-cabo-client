@@ -3,14 +3,18 @@ import styles from './SearchFeed.module.scss'
 import { Search } from '@/components/Search/Search'
 import { useFilters } from '@/pages/Feed/hooks/useFilters'
 import { useDebounce } from '@/hooks/useDebounce'
-import { storeInUrl } from '@/utils/storeInUrl/storeInUrl'
+import { useLocation } from 'react-router'
 
 interface SearchFeedProps {
   container: React.RefObject<HTMLElement | null>
 }
 
 export function SearchFeed({ container }: SearchFeedProps) {
-  const [value, setValue] = useState<string>('')
+  const { search: currentSearch } = useLocation()
+  const [value, setValue] = useState<string>(() => {
+    const params = new URLSearchParams(currentSearch)
+    return params.get('s') || ''
+  })
   const { updateSearch } = useFilters()
   const debouncedValue = useDebounce(value)
 
@@ -18,9 +22,17 @@ export function SearchFeed({ container }: SearchFeedProps) {
     (search: string) => {
       updateSearch(search)
 
-      const url = new URL(window.location.href)
+      const currentParams = new URLSearchParams()
 
-      storeInUrl(url, { search })
+      currentParams.set('s', search)
+
+      if (!search) {
+        currentParams.delete('s')
+      }
+
+      const newSearch = currentParams.toString()
+
+      if (newSearch) window.history.replaceState(null, '', `?${newSearch}`)
     },
     [updateSearch]
   )

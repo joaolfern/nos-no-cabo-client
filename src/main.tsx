@@ -1,9 +1,9 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { Providers } from '@/providers'
-import { Webring } from '@/pages/Webring/Webring'
-import './styles/index.scss'
 import { ENABLE_MOCKS } from '@/config/env'
+import { Router } from '@/providers/RouterProvider/routes'
+import './styles/index.scss'
 
 async function enableMocking() {
   if (!ENABLE_MOCKS) {
@@ -19,7 +19,7 @@ enableMocking().then(() => {
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
       <Providers>
-        <Webring />
+        <Router />
       </Providers>
     </StrictMode>
   )

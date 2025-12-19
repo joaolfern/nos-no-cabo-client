@@ -58,7 +58,7 @@ const FeedCardInner = ({
             createdAt={createdAt}
           />
         )}
-        {id && <Link className={styles.detailsLink} query={{ id }} />}
+        {id && <Link className={styles.detailsLink} to={`/website/${id}`} />}
         <div className={styles.externalLinkContainer}>
           <Typography className={styles.title} variant='h3' numberOfLines={2}>
             <h3>{name}</h3>

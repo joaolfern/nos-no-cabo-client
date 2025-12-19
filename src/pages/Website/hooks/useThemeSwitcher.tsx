@@ -1,12 +1,21 @@
-import { Button } from '@/components/Button/Button'
 import { useTheme } from '@/hooks/useTheme'
 
-export function ThemeSwitcher() {
+export function useThemeSwitcher() {
   const { mode, updateThemeMode } = useTheme()
 
   const handleTheme = () => {
     updateThemeMode(mode === 'dark' ? 'light' : 'dark')
   }
 
-  return <Button onClick={handleTheme}>{mode}</Button>
+  const themeIcon = ICON_BY_MODE[mode]
+
+  return {
+    handleTheme,
+    themeIcon,
+  }
+}
+
+const ICON_BY_MODE = {
+  dark: '🌙',
+  light: '☀️',
 }

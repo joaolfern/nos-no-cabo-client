@@ -3,6 +3,7 @@ import { IconProvider } from './IconProvider/IconProvider'
 import { ErrorBoundary } from './ErrorBoundary/ErrorBoundary'
 import { NosNoCaboProviders } from '@/pages/Webring/providers/NosNoCaboProviders'
 import { ThemeProvider } from '@/providers/ThemeProvider/ThemeProvider'
+import { RouterProvider } from '@/providers/RouterProvider/RouterProvider'
 
 type ProvidersProps = {
   children: React.ReactNode
@@ -10,14 +11,16 @@ type ProvidersProps = {
 
 export function Providers({ children }: ProvidersProps) {
   return (
-    <ThemeProvider>
-      <ErrorBoundary>
-        <QueryProvider>
-          <IconProvider>
-            <NosNoCaboProviders>{children}</NosNoCaboProviders>
-          </IconProvider>
-        </QueryProvider>
-      </ErrorBoundary>
-    </ThemeProvider>
+    <RouterProvider>
+      <ThemeProvider>
+        <ErrorBoundary>
+          <QueryProvider>
+            <IconProvider>
+              <NosNoCaboProviders>{children}</NosNoCaboProviders>
+            </IconProvider>
+          </QueryProvider>
+        </ErrorBoundary>
+      </ThemeProvider>
+    </RouterProvider>
   )
 }
