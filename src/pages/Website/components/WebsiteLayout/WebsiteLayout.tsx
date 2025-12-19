@@ -1,21 +1,18 @@
-import { NosNoCaboLayout } from '@/layouts/NosNoCaboLayout/NosNoCaboLayout'
 import { InnerRouteAside } from '@/pages/Webring/components/InnerRouteAside/InnerRouteAside'
 import styles from './WebsiteLayout.module.scss'
 import type { NosNoCaboLayoutProps } from '@/layouts/NosNoCaboLayout/NosNoCaboLayoutInterfaces'
 
-type WebsiteLayoutProps = NosNoCaboLayoutProps & {
-  children: React.ReactNode
-}
+type WebsiteLayoutProps = NosNoCaboLayoutProps
 
 export function WebsiteLayout({
-  children,
   className,
+  children,
   ...props
 }: WebsiteLayoutProps) {
   return (
-    <NosNoCaboLayout classNames={{ content: styles.container }} {...props}>
+    <div className={styles.container} {...props}>
       <InnerRouteAside />
       {children}
-    </NosNoCaboLayout>
+    </div>
   )
 }

@@ -1,7 +1,16 @@
 @use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/breakpoints.scss' as *;
 
 .feed {
   display: flex;
   flex-direction: column;
   gap: $spacing-xs;
+}
+
+.container {
+  @media (min-width: $breakpoint-md) {
+    display: grid;
+    grid-template-columns: 3fr 9fr;
+    gap: $spacing-lg;
+  }
 }

@@ -1,6 +1,7 @@
 @use '@/styles/tokens/breakpoints.scss' as *;
 @use '@/styles/tokens/spacing.scss' as *;
 @use '@/styles/tokens/border.scss' as *;
+@use '@/styles/tokens/mixins.scss' as *;
 
 .container {
   height: $spacing-xxxxl;
@@ -31,6 +32,7 @@
   top: 50%;
   transform: translateY(-50%);
   right: $spacing-xxs;
+  z-index: 2;
 }
 
 .backButton {
@@ -38,12 +40,15 @@
   top: 50%;
   transform: translateY(-50%);
   left: $spacing-xxs;
+  z-index: 2;
+  color: var(--color-primary-400);
 }
 
 .input {
   display: none;
   flex: 1;
   padding-right: calc(40px + #{$spacing-sm});
+  @include card();
 
   @media (min-width: $breakpoint-sm) {
     display: block;

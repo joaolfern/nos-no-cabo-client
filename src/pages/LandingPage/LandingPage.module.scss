@@ -1,0 +1,25 @@
+.landingPage {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.loadingBarContainer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--color-background-400);
+}
+
+.fallbackHeader {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2rem;
+  color: var(--color-text-700);
+  text-align: center;
+}
