@@ -20,7 +20,11 @@ export function Feed() {
       <FeedAside />
       <div className={styles.feed}>
         <FeedTopbar />
-        <FeedCardList isLoading={isLoading} data={filteredWebsites} />
+        <FeedCardList
+          span={300}
+          isLoading={isLoading}
+          data={filteredWebsites}
+        />
       </div>
     </div>
   )
