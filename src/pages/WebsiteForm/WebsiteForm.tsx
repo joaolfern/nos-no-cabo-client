@@ -1,7 +1,10 @@
 import { FloatingButton } from '@/components/FloatingButton/FloatingButton'
 import { MdAdd } from 'react-icons/md'
-import { useEffect, useRef, useState } from 'react'
-import type { IPreregisterWebsite } from '@/interfaces/IWebsite'
+import { useEffect, useState } from 'react'
+import type {
+  IPreregisterWebsite,
+  IRegisterWebsite,
+} from '@/interfaces/IWebsite'
 import { InitialStep } from '@/pages/WebsiteForm/components/InitialStep/InitialStep'
 import { PreregisterStep } from '@/pages/WebsiteForm/components/PreregisterStep/PreregisterStep'
 import { ReviewStep } from '@/pages/WebsiteForm/components/ReviewStep/ReviewStep'
@@ -10,6 +13,7 @@ import { KeywordsStep } from '@/pages/WebsiteForm/components/KeywordsStep/Keywor
 import { GithubStep } from '@/pages/WebsiteForm/components/GithubStep/GithubStep'
 import { Modal } from '@/components/Modal/Modal'
 import { useNavigate } from 'react-router'
+import { useMessage } from '@/contexts/useMessage'
 
 export function WebsiteForm() {
   const navigate = useNavigate()
@@ -18,7 +22,8 @@ export function WebsiteForm() {
   const [preregister, setPreregister] = useState<IPreregisterWebsite | null>(
     null
   )
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  const { showMessage } = useMessage()
 
   const CurrentStep = STEPS[stepIndex]
   const isClosed = !isOpen
@@ -29,24 +34,12 @@ export function WebsiteForm() {
     }
   }, [isClosed])
 
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-      }
-    }
-  }, [])
-
-  function onSucess() {
+  function onSucess(website: IRegisterWebsite) {
     setIsOpen(false)
     setPreregister(null)
     setStepIndex(0)
 
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
-    }
-
-    timeoutRef.current = setTimeout(() => {}, 4000)
+    showMessage(`"${website.name ?? '-'}" foi adicionado!`)
   }
 
   function handleClose() {
