@@ -4,7 +4,7 @@ import React from 'react'
 import { AsChild } from '@/components/AsChild/AsChild'
 import type { _buttonVariant, ButtonProps } from './Button.types'
 
-export function Button({
+export const Button = function Button({
   variant = 'primary',
   className,
   children,
