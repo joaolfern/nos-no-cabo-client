@@ -1,18 +1,27 @@
 import { FeedCard } from '@/pages/Feed/components/FeedCard/FeedCard'
 import styles from './FeedCardList.module.scss'
 import type { IWebsite } from '@/interfaces/IWebsite'
-import { Loading } from '@/components/Loading/Loading'
+import { FeedCardSkeleton } from '@/pages/Feed/components/FeedCard/FeedCardSkeleton'
 
 type FeedCardListProps = React.HTMLAttributes<HTMLElement> & {
   data: IWebsite[]
   isLoading: boolean
+  span: number
 }
 
-export function FeedCardList({ data, isLoading }: FeedCardListProps) {
+export function FeedCardList({
+  data,
+  isLoading,
+  span = 300,
+}: FeedCardListProps) {
+  const style = { '--span': `${span}px` } as React.CSSProperties
+
   return (
-    <section className={styles.list}>
+    <section className={styles.list} style={style}>
       {isLoading ? (
-        <Loading />
+        Array(3)
+          .fill(null)
+          .map((_, index) => <FeedCardSkeleton key={index} />)
       ) : data?.[0] !== undefined ? (
         data.map((website) => (
           <FeedCard
