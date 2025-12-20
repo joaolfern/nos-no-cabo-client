@@ -21,7 +21,7 @@ export function LatestWebsites({ websiteId }: LatestWebsitesProps) {
       <Typography variant='h3' asVariant={true}>
         Novos Sites
       </Typography>
-      <FeedCardList isLoading={isLoading} data={websites} />
+      <FeedCardList span={300} isLoading={isLoading} data={websites} />
     </section>
   )
 }
