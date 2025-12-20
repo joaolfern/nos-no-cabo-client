@@ -13,6 +13,7 @@ export function FloatingButton({
   className,
   ref,
   position = 'right',
+  padded,
   ...props
 }: FloatingButtonProps) {
   return (
@@ -20,7 +21,7 @@ export function FloatingButton({
       ref={ref}
       className={clsx(styles.floatingButton, className, {
         [styles.left]: position === 'left',
-        [styles.padded]: props.padded,
+        [styles.padded]: padded,
       })}
       {...props}
     />

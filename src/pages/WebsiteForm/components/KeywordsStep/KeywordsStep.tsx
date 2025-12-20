@@ -28,7 +28,7 @@ export function KeywordsStep({
 
     mutate(website, {
       onSuccess: () => {
-        onSuccess()
+        onSuccess(website)
       },
     })
   }

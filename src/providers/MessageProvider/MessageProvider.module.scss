@@ -1,0 +1,12 @@
+@use '@/styles/tokens/spacing.scss' as *;
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  position: fixed;
+  top: $spacing-md;
+  right: 50%;
+  transform: translateX(50%);
+  z-index: 1000;
+}
