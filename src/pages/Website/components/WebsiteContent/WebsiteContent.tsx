@@ -30,7 +30,11 @@ export function WebsiteContent() {
           </Typography>
           <GithubButton repo={website.repo} />
           <VisitButton url={website.url}>Visitar site</VisitButton>
-          <ReportButton className={styles.reportButton} id={website.id} />
+          <ReportButton
+            className={styles.reportButton}
+            id={website.id}
+            name={website.name}
+          />
         </header>
 
         {website.author && (
