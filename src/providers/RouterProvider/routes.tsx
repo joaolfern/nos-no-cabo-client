@@ -4,8 +4,7 @@ import { LandingPage } from '@/pages/LandingPage/LandingPage'
 import { NotFound } from '@/pages/NotFound/NotFound'
 import { FloatingButtons } from '@/pages/Website/components/FloatingButtons/FloatingButtons'
 import { Website } from '@/pages/Website/Website'
-import { Route } from 'react-router'
-import { Routes } from 'react-router'
+import { Route, Routes } from 'react-router'
 
 export function Router() {
   return (
