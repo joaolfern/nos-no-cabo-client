@@ -1,6 +1,6 @@
 import type { ImageProps } from '@/components/Image/ImageInterfaces'
 import clsx from 'clsx'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import FallbackSvg from '@/assets/imageFallback.svg?react'
 import styles from './Image.module.scss'
 
@@ -14,6 +14,10 @@ export function Image({
 }: ImageProps) {
   const [imgSrc, setImgSrc] = useState(src ?? fallback)
   const [hasError, setHasError] = useState(false)
+
+  useEffect(() => {
+    setImgSrc(src)
+  }, [src])
 
   const handleError = useCallback(() => {
     setHasError(true)
