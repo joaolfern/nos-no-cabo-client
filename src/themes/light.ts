@@ -16,6 +16,7 @@ export const LIGHT_THEME_VARIABLES: Record<ThemeVariables, string> = {
 
   'color-primary-foreground-400': '#f2f0f2',
 
+  'color-secondary-100': '#ce95e97c',
   'color-secondary-300': '#cf95e9',
   'color-secondary-400': '#cf95e9',
   'color-secondary-500': '#cf95e9',

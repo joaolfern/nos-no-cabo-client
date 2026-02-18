@@ -1,17 +1,90 @@
-import { LoadingBar } from '@/components/LoadingBar/LoadingBar'
-import { useSpring, animated } from '@react-spring/web'
+import { useSpring } from '@react-spring/web'
 import { FloatingButton } from '@/components/FloatingButton/FloatingButton'
 import { MdHome } from 'react-icons/md'
 import { useNavigate } from 'react-router'
 import styles from './LandingPage.module.scss'
-import { Scene } from '@/components/Scene/Scene'
 import { useTheme } from '@/hooks/useTheme'
 import { Typography } from '@/components/Typography/Typography'
+import { BubblyContainer } from './components/BubblyContainer/BubblyContainer'
+
+const MOCK_BUBBLE_ITEMS = [
+  {
+    id: '1',
+    title: 'Portfolio',
+    url: '/portfolio',
+    imageSrc: 'https://picsum.photos/seed/portfolio/100/100',
+  },
+  {
+    id: '2',
+    title: 'About Us',
+    url: '/about',
+    imageSrc: 'https://picsum.photos/seed/about/100/100',
+  },
+  {
+    id: '3',
+    title: 'Services',
+    url: '/services',
+    imageSrc: 'https://picsum.photos/seed/services/100/100',
+  },
+  {
+    id: '4',
+    title: 'Contact',
+    url: '/contact',
+    imageSrc: 'https://picsum.photos/seed/contact/100/100',
+  },
+  {
+    id: '5',
+    title: 'Blog',
+    url: '/blog',
+    imageSrc: 'https://picsum.photos/seed/blog/100/100',
+  },
+  {
+    id: '6',
+    title: 'Careers',
+    url: '/careers',
+    imageSrc: 'https://picsum.photos/seed/careers/100/100',
+  },
+  {
+    id: '7',
+    title: 'FAQ',
+    url: '/faq',
+    imageSrc: 'https://picsum.photos/seed/faq/100/100',
+  },
+  {
+    id: '8',
+    title: 'Support',
+    url: '/support',
+    imageSrc: 'https://picsum.photos/seed/support/100/100',
+  },
+  {
+    id: '9',
+    title: 'Community',
+    url: '/community',
+    imageSrc: 'https://picsum.photos/seed/community/100/100',
+  },
+  {
+    id: '10',
+    title: 'Resources',
+    url: '/resources',
+    imageSrc: 'https://picsum.photos/seed/resources/100/100',
+  },
+  {
+    id: '11',
+    title: 'Case Studies',
+    url: '/case-studies',
+    imageSrc: 'https://picsum.photos/seed/cases/100/100',
+  },
+  {
+    id: '12',
+    title: 'Pricing',
+    url: '/pricing',
+    imageSrc: 'https://picsum.photos/seed/pricing/100/100',
+  },
+]
 
 export function LandingPage() {
   const { opacity } = useLoadingBar()
   const navigate = useNavigate()
-  const { mode, animationsEnabled } = useTheme()
 
   function goToWebsites() {
     navigate('/websites')
@@ -19,31 +92,25 @@ export function LandingPage() {
 
   return (
     <>
+      <BubblyContainer items={MOCK_BUBBLE_ITEMS} />
+
       <div className={styles.landingPage}>
-        {!animationsEnabled && (
-          <div className={styles.fallbackHeader}>
-            <Typography variant='h1' className={styles.staticText}>
-              Nós no Cabo
-            </Typography>
-            <Typography variant='body' className={styles.staticText} asVariant>
-              Conectando a comunidade brasileira de tecnologia
-            </Typography>
-          </div>
-        )}
-        <animated.div
+        <div className={styles.fallbackHeader}>
+          <Typography variant='h1' className={styles.staticText}>
+            Nós no Cabo
+          </Typography>
+          <Typography variant='body' className={styles.staticText} asVariant>
+            Conectando a comunidade brasileira de tecnologia
+          </Typography>
+        </div>
+        {/* <animated.div
           className={styles.loadingBarContainer}
           style={{ opacity }}
         >
           <LoadingBar />
-        </animated.div>
-        <Scene
-          fallbackBackground='var(--color-background-400)'
-          fallbackAccent='var(--color-primary-400)'
-          height='100vh'
-          width='100vw'
-          jsonFilePath={`/unicornStudio/${mode}/landingPageScene.json`}
-        />
+        </animated.div> */}
       </div>
+
       <FloatingButton
         padded={true}
         variant={'secondary'}
