@@ -20,6 +20,7 @@ export type ThemeVariables =
   | 'color-primary-400'
   | 'color-primary-500'
   | 'color-primary-foreground-400'
+  | 'color-secondary-100'
   | 'color-secondary-300'
   | 'color-secondary-400'
   | 'color-secondary-500'

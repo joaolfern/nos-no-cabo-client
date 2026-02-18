@@ -29,7 +29,7 @@
   background: var(--color-secondary-400);
   color: var(--color-secondary-foreground-400);
   border: $border-width-base solid var(--color-secondary-400);
-
+  box-shadow: 0 2px 25px var(--color-secondary-100);
   &:hover,
   &:focus-visible {
     background: var(--color-secondary-500);
