@@ -1,4 +1,5 @@
 import { memo, useState, useEffect, useRef, useCallback } from 'react'
+import gsap from 'gsap'
 import { WebsiteBubble } from '@/pages/Website/components/WebsiteBubble/WebsiteBubble'
 import type { WebsiteBubbleProps } from '@/pages/Website/components/WebsiteBubble/WebsiteBubble.types'
 import styles from './BubblyContainer.module.scss'
@@ -59,6 +60,75 @@ const BubblyItem = memo(function BubblyItemInner({
 }: BubblyItemProps) {
   const [isStationed, setIsStationed] = useState(false)
   const leaveEffectTimer = useRef<ReturnType<typeof setTimeout>>(null)
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const wigglerRef = useRef<HTMLDivElement>(null)
+  const floatTweenRef = useRef<gsap.core.Tween | null>(null)
+  const wiggleTweenRef = useRef<gsap.core.Tween | null>(null)
+  const isStationedRef = useRef(false)
+  const onCompleteRef = useRef(onComplete)
+  const uniqueIdRef = useRef(uniqueId)
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete
+  }, [onComplete])
+
+  useEffect(() => {
+    uniqueIdRef.current = uniqueId
+  }, [uniqueId])
+
+  useEffect(() => {
+    const wrapper = wrapperRef.current
+    const wiggler = wigglerRef.current
+    if (!wrapper || !wiggler) return
+
+    const totalDistance = window.innerHeight + 150
+    const { speed, wiggleDuration, wiggleOffset } = trajectoryConfig
+
+    gsap.set(wrapper, { opacity: 0, y: 0 })
+
+    floatTweenRef.current = gsap.to(wrapper, {
+      y: -totalDistance,
+      duration: speed,
+      ease: 'none',
+      onComplete: () => {
+        if (!isStationedRef.current) onCompleteRef.current(uniqueIdRef.current)
+      },
+      onUpdate: function () {
+        const progress = this.progress()
+        if (progress < 0.1) {
+          gsap.set(wrapper, { opacity: progress * 10 })
+        } else if (progress > 0.9) {
+          gsap.set(wrapper, { opacity: (1 - progress) * 10 })
+        } else {
+          gsap.set(wrapper, { opacity: 1 })
+        }
+      },
+    })
+
+    wiggleTweenRef.current = gsap.to(wiggler, {
+      x: wiggleOffset,
+      duration: wiggleDuration,
+      ease: 'sine.inOut',
+      yoyo: true,
+      repeat: -1,
+    })
+
+    return () => {
+      floatTweenRef.current?.kill()
+      wiggleTweenRef.current?.kill()
+    }
+  }, [])
+
+  useEffect(() => {
+    isStationedRef.current = isStationed
+    if (isStationed) {
+      floatTweenRef.current?.pause()
+      wiggleTweenRef.current?.pause()
+    } else {
+      floatTweenRef.current?.resume()
+      wiggleTweenRef.current?.resume()
+    }
+  }, [isStationed])
 
   const handleMouseEnter = useCallback(() => {
     if (leaveEffectTimer.current) {
@@ -73,31 +143,28 @@ const BubblyItem = memo(function BubblyItemInner({
 
   const handleMouseLeave = useCallback(() => {
     leaveEffectTimer.current = setTimeout(() => {
-      if (isStationed) {
+      if (isStationedRef.current) {
         setIsStationed(false)
         exitStation(trajectoryConfig.lane)
       }
     }, 500)
-  }, [isStationed, exitStation, trajectoryConfig.lane])
+  }, [exitStation, trajectoryConfig.lane])
 
-  const cssVariables = {
+  const wrapperStyle = {
     '--lane': trajectoryConfig.lane,
     '--lane-count': LANE_COUNT,
-    '--speed': `${trajectoryConfig.speed}s`,
     '--size': `${trajectoryConfig.size}px`,
-    '--wiggle-duration': `${trajectoryConfig.wiggleDuration}s`,
-    '--wiggle-offset': `${trajectoryConfig.wiggleOffset}px`,
   } as React.CSSProperties
 
   return (
     <div
+      ref={wrapperRef}
       className={`${styles.bubblyItemWrapper} ${isStationed ? styles.stationedWrapper : ''}`}
-      style={cssVariables}
-      onAnimationEnd={() => !isStationed && onComplete(uniqueId)}
+      style={wrapperStyle}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div className={styles.bubblyItemWiggler}>
+      <div ref={wigglerRef} className={styles.bubblyItemWiggler}>
         <WebsiteBubble
           id={id}
           imageSrc={imageSrc}
