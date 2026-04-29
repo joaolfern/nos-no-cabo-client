@@ -40,4 +40,6 @@ export const LIGHT_THEME_VARIABLES: Record<ThemeVariables, string> = {
   'color-background-500': '#f2f0f2',
 
   'blur-background': '20px',
+
+  'foreground-color': '#222021',
 }

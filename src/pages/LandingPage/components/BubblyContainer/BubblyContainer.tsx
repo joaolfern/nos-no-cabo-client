@@ -1,36 +1,21 @@
-import { memo, useState, useEffect, useRef, useCallback } from 'react'
-import { WebsiteBubble } from '@/pages/Website/components/WebsiteBubble/WebsiteBubble'
+import { useState, useRef, useEffect } from 'react'
 import type { WebsiteBubbleProps } from '@/pages/Website/components/WebsiteBubble/WebsiteBubble.types'
 import styles from './BubblyContainer.module.scss'
+import { getLaneCount } from '../../utils/getNextBubble'
+import type { BubbleInstance } from '../../LandingPage.types'
+import { BubblyItem } from '../BubblyItem/BubblyItem'
+import { ConnectionLine } from '../ConnectionLine/ConnectionLine'
+import { getIsMobile } from '@/utils/getIsMobile/getIsMobile'
 
-type BubbleTrajectoryConfig = {
-  lane: number
-  speed: number
-  size: number
-  wiggleDuration: number
-  wiggleOffset: number
-}
-
-type BubbleInstance = {
-  uniqueId: string
-  item: WebsiteBubbleProps
-  config: BubbleTrajectoryConfig
-}
-
-type BubblyItemProps = WebsiteBubbleProps & {
-  trajectoryConfig: BubbleTrajectoryConfig
-  uniqueId: string
-  onComplete: (id: string) => void
-  onStation: (lane: number) => void
-  exitStation: (lane: number) => void
-}
-
-const LANE_COUNT = 12
-const MIN_SPEED_SECONDS = 15
-const MAX_SPEED_SECONDS = 25
-const BASE_SIZE_PX = 45
-const VARIANCE_SIZE_PX = 35
-const LANE_COOLDOWN_MS = 5000
+const PANEL_BLACKLIST_WIDTH_PX = 400
+const PANEL_BLACKLIST_HEIGHT_PX = 230
+const PANEL_BLACKLIST_TOP_PERCENT = 25
+const MOBILE_TOP_BLACKLIST_PERCENT = 100 / 3
+const MOBILE_BOTTOM_BLACKLIST_PERCENT = 20
+const LANE_PADDING_PX = 10
+const MIN_TOP_PERCENT = 10
+const MAX_TOP_PERCENT = 82
+const TOP_RETRY_ATTEMPTS = 24
 
 const shuffleArray = <T,>(array: T[]): T[] => {
   const cloned = [...array]
@@ -41,180 +26,245 @@ const shuffleArray = <T,>(array: T[]): T[] => {
   return cloned
 }
 
-const getCenterWeightedLane = () => {
-  const u = (Math.random() + Math.random() + Math.random()) / 3
-  return Math.floor(u * LANE_COUNT)
-}
-
-const BubblyItem = memo(function BubblyItemInner({
-  id,
-  imageSrc,
-  title,
-  url,
-  trajectoryConfig,
-  uniqueId,
-  onComplete,
-  onStation,
-  exitStation,
-}: BubblyItemProps) {
-  const [isStationed, setIsStationed] = useState(false)
-  const leaveEffectTimer = useRef<ReturnType<typeof setTimeout>>(null)
-
-  const handleMouseEnter = useCallback(() => {
-    if (leaveEffectTimer.current) {
-      clearTimeout(leaveEffectTimer.current)
-    }
-
-    if (!isStationed) {
-      setIsStationed(true)
-      onStation(trajectoryConfig.lane)
-    }
-  }, [isStationed, onStation, trajectoryConfig.lane])
-
-  const handleMouseLeave = useCallback(() => {
-    leaveEffectTimer.current = setTimeout(() => {
-      if (isStationed) {
-        setIsStationed(false)
-        exitStation(trajectoryConfig.lane)
-      }
-    }, 500)
-  }, [isStationed, exitStation, trajectoryConfig.lane])
-
-  const cssVariables = {
-    '--lane': trajectoryConfig.lane,
-    '--lane-count': LANE_COUNT,
-    '--speed': `${trajectoryConfig.speed}s`,
-    '--size': `${trajectoryConfig.size}px`,
-    '--wiggle-duration': `${trajectoryConfig.wiggleDuration}s`,
-    '--wiggle-offset': `${trajectoryConfig.wiggleOffset}px`,
-  } as React.CSSProperties
-
-  return (
-    <div
-      className={`${styles.bubblyItemWrapper} ${isStationed ? styles.stationedWrapper : ''}`}
-      style={cssVariables}
-      onAnimationEnd={() => !isStationed && onComplete(uniqueId)}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      <div className={styles.bubblyItemWiggler}>
-        <WebsiteBubble
-          id={id}
-          imageSrc={imageSrc}
-          title={title}
-          url={url}
-          isStationed={isStationed}
-        />
-      </div>
-    </div>
-  )
-})
-
 export function BubblyContainer({ items }: { items: WebsiteBubbleProps[] }) {
-  const [activeBubbles, setActiveBubbles] = useState<BubbleInstance[]>([])
-  const itemsQueue = useRef<WebsiteBubbleProps[]>([])
-  const laneLastUsed = useRef<number[]>(new Array(LANE_COUNT).fill(0))
-  const stationedLanes = useRef<Set<number>>(new Set())
+  const [laneCount, setLaneCount] = useState(() => getLaneCount())
+  const [activeBubbles] = useState<BubbleInstance[]>(() =>
+    getActiveItems(items, laneCount)
+  )
 
-  const handleStation = useCallback((lane: number) => {
-    stationedLanes.current.add(lane)
-  }, [])
-
-  const exitStation = useCallback((lane: number) => {
-    stationedLanes.current.delete(lane)
-  }, [])
+  const containerRef = useRef<HTMLDivElement>(null)
+  const bubbleRefs = useRef<Map<string, HTMLDivElement>>(new Map())
 
   useEffect(() => {
-    if (!items.length) return
-
-    let timeoutId: NodeJS.Timeout
-
-    const releaseNextBubble = () => {
-      if (stationedLanes.current.size >= LANE_COUNT) {
-        timeoutId = setTimeout(releaseNextBubble, 3000)
-        return
-      }
-
-      if (itemsQueue.current.length === 0) {
-        itemsQueue.current = shuffleArray(items)
-      }
-
-      const nextItem = itemsQueue.current.shift()!
-      const now = Date.now()
-      let candidateLane = getCenterWeightedLane()
-      let attempts = 0
-
-      while (
-        (now - laneLastUsed.current[candidateLane] < LANE_COOLDOWN_MS ||
-          stationedLanes.current.has(candidateLane)) &&
-        attempts < 20
-      ) {
-        candidateLane = Math.floor(Math.random() * LANE_COUNT)
-        attempts++
-      }
-
-      if (stationedLanes.current.has(candidateLane)) {
-        const availableLanes = Array.from({ length: LANE_COUNT })
-          .map((_, i) => i)
-          .filter((lane) => !stationedLanes.current.has(lane))
-
-        if (availableLanes.length > 0) {
-          candidateLane = availableLanes[0]
-        }
-      }
-
-      laneLastUsed.current[candidateLane] = now
-
-      const speed =
-        MIN_SPEED_SECONDS +
-        Math.random() * (MAX_SPEED_SECONDS - MIN_SPEED_SECONDS)
-      const size = BASE_SIZE_PX + Math.random() * VARIANCE_SIZE_PX
-      const wiggleDuration = 2 + Math.random() * 3
-      const wiggleOffset = 5 + Math.random() * 15
-
-      const newBubble: BubbleInstance = {
-        uniqueId: `${nextItem.id}-${now}-${Math.random()}`,
-        item: nextItem,
-        config: {
-          lane: candidateLane,
-          speed,
-          size,
-          wiggleDuration,
-          wiggleOffset,
-        },
-      }
-
-      setActiveBubbles((prev) => [...prev, newBubble])
-
-      const nextDelay = 3000 + (Math.random() * 2000 - 1000)
-      timeoutId = setTimeout(releaseNextBubble, nextDelay)
+    const handleResize = () => {
+      setLaneCount(getLaneCount())
     }
 
-    releaseNextBubble()
-
-    return () => clearTimeout(timeoutId)
-  }, [items])
-
-  const handleAnimationEnd = useCallback((uniqueId: string) => {
-    setActiveBubbles((prev) => prev.filter((b) => b.uniqueId !== uniqueId))
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
   }, [])
 
   return (
-    <div className={styles.bubblyContainer}>
+    <div className={styles.bubblyContainer} ref={containerRef}>
+      <ConnectionLine
+        activeBubbles={activeBubbles}
+        bubbleRefs={bubbleRefs}
+        containerRef={containerRef}
+      />
       {activeBubbles.map((bubble) => (
         <BubblyItem
           key={bubble.uniqueId}
-          uniqueId={bubble.uniqueId}
           id={bubble.item.id}
           imageSrc={bubble.item.imageSrc}
           title={bubble.item.title}
           url={bubble.item.url}
           trajectoryConfig={bubble.config}
-          onComplete={handleAnimationEnd}
-          onStation={handleStation}
-          exitStation={exitStation}
+          laneCount={laneCount}
+          onWrapperRefChange={(element) => {
+            if (element) {
+              bubbleRefs.current.set(bubble.uniqueId, element)
+              return
+            }
+            bubbleRefs.current.delete(bubble.uniqueId)
+          }}
         />
       ))}
     </div>
   )
+}
+
+function getWiggleConfig() {
+  const wiggleDuration = 1.1 + Math.random() * 1.4
+  const wiggleOffset = 7 + Math.random() * 13
+  const wiggleOffsetY = 4 + Math.random() * 10
+  const floatDepth = 0.8 + Math.random() * 0.6
+  const floatPhase = Math.random() * 1.2
+
+  return {
+    wiggleDuration,
+    wiggleOffset,
+    wiggleOffsetY,
+    floatDepth,
+    floatPhase,
+  }
+}
+
+type Rect = {
+  left: number
+  right: number
+  top: number
+  bottom: number
+}
+
+function getCenteredPanelBlacklistRect(
+  viewportWidth: number,
+  viewportHeight: number
+): Rect {
+  const left = viewportWidth / 2 - PANEL_BLACKLIST_WIDTH_PX / 2
+  const top = (PANEL_BLACKLIST_TOP_PERCENT / 100) * viewportHeight
+
+  return {
+    left,
+    right: left + PANEL_BLACKLIST_WIDTH_PX,
+    top,
+    bottom: top + PANEL_BLACKLIST_HEIGHT_PX,
+  }
+}
+
+function getBlacklistRects(
+  viewportWidth: number,
+  viewportHeight: number
+): Rect[] {
+  const isMobileViewport = getIsMobile(viewportWidth)
+
+  if (isMobileViewport) {
+    const topCutoff = (MOBILE_TOP_BLACKLIST_PERCENT / 100) * viewportHeight
+    const bottomStart =
+      ((100 - MOBILE_BOTTOM_BLACKLIST_PERCENT) / 100) * viewportHeight
+
+    return [
+      {
+        left: 0,
+        right: viewportWidth,
+        top: 0,
+        bottom: topCutoff,
+      },
+      {
+        left: 0,
+        right: viewportWidth,
+        top: bottomStart,
+        bottom: viewportHeight,
+      },
+    ]
+  }
+
+  return [getCenteredPanelBlacklistRect(viewportWidth, viewportHeight)]
+}
+
+function getLaneLeftPx(
+  lane: number,
+  laneCount: number,
+  viewportWidth: number,
+  size: number
+) {
+  const usableWidth = Math.max(0, viewportWidth - LANE_PADDING_PX * 2)
+  const laneWidth = laneCount > 0 ? usableWidth / laneCount : usableWidth
+  const centeredLeft =
+    LANE_PADDING_PX + laneWidth * lane + (laneWidth - size) / 2
+
+  return Math.min(
+    viewportWidth - LANE_PADDING_PX - size,
+    Math.max(LANE_PADDING_PX, centeredLeft)
+  )
+}
+
+function intersectsBlacklist(
+  lane: number,
+  laneCount: number,
+  topPercent: number,
+  size: number,
+  viewportWidth: number,
+  viewportHeight: number,
+  blacklistRects: Rect[]
+) {
+  const left = getLaneLeftPx(lane, laneCount, viewportWidth, size)
+  const right = left + size
+  const top = (topPercent / 100) * viewportHeight
+  const bottom = top + size
+
+  return blacklistRects.some((blacklistRect) => {
+    const horizontalOverlap =
+      left < blacklistRect.right && right > blacklistRect.left
+    const verticalOverlap =
+      top < blacklistRect.bottom && bottom > blacklistRect.top
+
+    return horizontalOverlap && verticalOverlap
+  })
+}
+
+function getRandomTopPercent() {
+  return MIN_TOP_PERCENT + Math.random() * (MAX_TOP_PERCENT - MIN_TOP_PERCENT)
+}
+
+function getActiveItems(items: WebsiteBubbleProps[], laneCount: number) {
+  const BASE_SIZE = 34
+  const viewportWidth =
+    typeof window === 'undefined' ? 1366 : Math.max(1, window.innerWidth)
+  const viewportHeight =
+    typeof window === 'undefined' ? 768 : Math.max(1, window.innerHeight)
+  const blacklistRects = getBlacklistRects(viewportWidth, viewportHeight)
+  const isMobileViewport = getIsMobile(viewportWidth)
+  const shuffled = shuffleArray(items).slice(0, laneCount)
+  const bubbles: BubbleInstance[] = shuffled.map((item, i) => {
+    const size = BASE_SIZE
+    let top = getRandomTopPercent()
+    let attempts = 0
+
+    while (
+      intersectsBlacklist(
+        i,
+        laneCount,
+        top,
+        size,
+        viewportWidth,
+        viewportHeight,
+        blacklistRects
+      ) &&
+      attempts < TOP_RETRY_ATTEMPTS
+    ) {
+      top = getRandomTopPercent()
+      attempts++
+    }
+
+    if (
+      intersectsBlacklist(
+        i,
+        laneCount,
+        top,
+        size,
+        viewportWidth,
+        viewportHeight,
+        blacklistRects
+      )
+    ) {
+      if (isMobileViewport) {
+        const sizePercent = (size / viewportHeight) * 100
+        const minSafeTop = Math.max(
+          MIN_TOP_PERCENT,
+          MOBILE_TOP_BLACKLIST_PERCENT + 2
+        )
+        const maxSafeTop = Math.min(
+          MAX_TOP_PERCENT,
+          100 - MOBILE_BOTTOM_BLACKLIST_PERCENT - sizePercent - 2
+        )
+
+        if (minSafeTop <= maxSafeTop) {
+          top = minSafeTop + Math.random() * (maxSafeTop - minSafeTop)
+        }
+      } else {
+        const panelRect = blacklistRects[0]
+        const belowPanelPercent = (panelRect.bottom / viewportHeight) * 100 + 2
+        const abovePanelPercent = (panelRect.top / viewportHeight) * 100 - 2
+
+        if (belowPanelPercent <= MAX_TOP_PERCENT) {
+          top = belowPanelPercent
+        } else if (abovePanelPercent >= MIN_TOP_PERCENT) {
+          top = abovePanelPercent
+        }
+      }
+    }
+
+    return {
+      uniqueId: `${item.id}-${Date.now()}-${i}`,
+      item,
+      config: {
+        lane: i,
+        size,
+        top,
+        ...getWiggleConfig(),
+      },
+    }
+  })
+
+  return bubbles
 }

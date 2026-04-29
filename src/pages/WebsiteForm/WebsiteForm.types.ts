@@ -9,3 +9,10 @@ export type StepComponentProps = {
   preregister: IPreregisterWebsite | null
   onSuccess: (website: IRegisterWebsite) => void
 }
+
+export type WebsiteFormContextProps = {
+  isOpen: boolean
+  handleClose: () => void
+  handleCreate: () => void
+  handleSuccess: () => void
+}

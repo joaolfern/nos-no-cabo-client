@@ -1,25 +1,114 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/breakpoints.scss' as *;
+
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/breakpoints.scss' as *;
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes pulseGlow {
+  0% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+  100% {
+    opacity: 0.7;
+    transform: translateX(-50%) scale(1.05);
+  }
+}
+
+@mixin fade-in($duration: 1s, $delay: 0s, $timing-function: ease-in-out) {
+  animation: fadeIn $duration $timing-function $delay forwards;
+  opacity: 0;
+}
+
 .landingPage {
+  position: relative;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+  pointer-events: none;
+
+  @media (max-width: $breakpoint-md) {
+    &::after {
+      content: '';
+      position: absolute;
+      top: -70%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 250vw;
+      height: 250vw;
+      background: radial-gradient(
+        circle,
+        rgba(255, 84, 126, 0.6) 0%,
+        transparent 60%
+      );
+      z-index: 0;
+      opacity: 0;
+      animation:
+        fadeIn 2s 0.5s ease-out forwards,
+        pulseGlow 3s 2.5s ease-in-out infinite alternate;
+    }
+  }
 }
 
-.loadingBarContainer {
+.panel {
   position: absolute;
-  inset: 0;
-  z-index: 2;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  padding-inline: 1rem;
+  transform: translateX(-50%);
+  left: 50%;
+  bottom: 0;
+  top: 10%;
+  width: 100%;
+  z-index: 1;
+
+  @media (min-width: $breakpoint-md) {
+    top: 25%;
+    bottom: auto;
+  }
+}
+
+.buttonGroup {
   display: flex;
   justify-content: center;
-  align-items: center;
-  background-color: var(--color-background-400);
+  gap: 1rem;
+  z-index: 1;
+  pointer-events: auto;
+  margin-top: auto;
+  margin-bottom: 15%;
+
+  @media (min-width: $breakpoint-md) {
+    flex-wrap: wrap;
+    margin-top: $spacing-xxl;
+    margin-bottom: unset;
+  }
 }
 
-.fallbackHeader {
-  position: absolute;
-  top: 10%;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 2rem;
-  color: var(--color-text-700);
-  text-align: center;
+.button {
+  font-size: 95%;
+  padding: calc(#{$spacing-xs} * 0.85) calc(#{$spacing-md} * 0.85);
+  gap: calc(#{$spacing-xxs} * 0.85);
+  min-width: 163px;
+
+  @media (min-width: $breakpoint-md) {
+    min-width: 188px;
+  }
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+
+  pointer-events: none;
 }

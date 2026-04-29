@@ -1,5 +1,4 @@
 import { Topbar } from '@/layouts/AppLayout/components/Topbar/Topbar'
-import { BackgroundEffect } from '@/layouts/AppLayout/components/BackgroundEffect/BackgroundEffect'
 import type { AppLayoutProps } from '@/layouts/AppLayout/AppLayoutInterfaces'
 import clsx from 'clsx'
 import styles from './AppLayout.module.scss'
@@ -7,7 +6,6 @@ import styles from './AppLayout.module.scss'
 export function AppLayout({ children, className, ...props }: AppLayoutProps) {
   return (
     <>
-      <BackgroundEffect />
       <section className={clsx(styles.container, className)} {...props}>
         {children}
       </section>

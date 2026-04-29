@@ -41,4 +41,6 @@ export const DARK_THEME_VARIABLES: Record<ThemeVariables, string> = {
   'color-background-300': '#2c2e31',
   'color-background-400': '#050313',
   'color-background-500': '#1d1f21',
+
+  'foreground-color': '#f2f0f2',
 }

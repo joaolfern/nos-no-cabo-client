@@ -1,6 +1,6 @@
 import { Input } from '@/components/Input/Input'
 import type { IPreregisterWebsite } from '@/interfaces/IWebsite'
-import type { StepComponentProps } from '@/pages/WebsiteForm/_WebsiteFormProps'
+import type { StepComponentProps } from '@/pages/WebsiteForm/WebsiteForm.types'
 import { ConfirmButton } from '@/pages/WebsiteForm/components/ConfirmButton/ConfirmButton'
 import { StepContainer } from '@/pages/WebsiteForm/components/StepContainer/StepContainer'
 import { StepDescription } from '@/pages/WebsiteForm/components/StepDescription/StepDescription'
