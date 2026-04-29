@@ -7,7 +7,7 @@ import { BubblyItem } from '../BubblyItem/BubblyItem'
 import { ConnectionLine } from '../ConnectionLine/ConnectionLine'
 import { getIsMobile } from '@/utils/getIsMobile/getIsMobile'
 
-const PANEL_BLACKLIST_WIDTH_PX = 400
+const PANEL_BLACKLIST_WIDTH_PX = 500
 const PANEL_BLACKLIST_HEIGHT_PX = 230
 const PANEL_BLACKLIST_TOP_PERCENT = 25
 const MOBILE_TOP_BLACKLIST_PERCENT = 100 / 3
