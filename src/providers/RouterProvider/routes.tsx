@@ -2,13 +2,14 @@ import { NosNoCaboLayout } from '@/layouts/NosNoCaboLayout/NosNoCaboLayout'
 import { Feed } from '@/pages/Feed/Feed'
 import { LandingPage } from '@/pages/LandingPage/LandingPage'
 import { NotFound } from '@/pages/NotFound/NotFound'
-import { FloatingButtons } from '@/pages/Website/components/FloatingButtons/FloatingButtons'
 import { Website } from '@/pages/Website/Website'
+import { WebsiteFormProvider } from '@/pages/WebsiteForm/contexts/WebsiteFormContext/WebsiteFormProvider'
+import { WebsiteFormModal } from '@/pages/WebsiteForm/WebsiteFormModal'
 import { Route, Routes } from 'react-router'
 
 export function Router() {
   return (
-    <>
+    <WebsiteFormProvider>
       <Routes>
         <Route Component={LandingPage} index />
         <Route Component={NosNoCaboLayout}>
@@ -17,7 +18,7 @@ export function Router() {
         </Route>
         <Route Component={NotFound} path='*' />
       </Routes>
-      <FloatingButtons />
-    </>
+      <WebsiteFormModal />
+    </WebsiteFormProvider>
   )
 }

@@ -1,6 +1,4 @@
-import { FloatingButton } from '@/components/FloatingButton/FloatingButton'
-import { MdAdd } from 'react-icons/md'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import type {
   IPreregisterWebsite,
   IRegisterWebsite,
@@ -8,16 +6,15 @@ import type {
 import { InitialStep } from '@/pages/WebsiteForm/components/InitialStep/InitialStep'
 import { PreregisterStep } from '@/pages/WebsiteForm/components/PreregisterStep/PreregisterStep'
 import { ReviewStep } from '@/pages/WebsiteForm/components/ReviewStep/ReviewStep'
-import styles from './WebsiteForm.module.scss'
 import { KeywordsStep } from '@/pages/WebsiteForm/components/KeywordsStep/KeywordsStep'
 import { GithubStep } from '@/pages/WebsiteForm/components/GithubStep/GithubStep'
-import { Modal } from '@/components/Modal/Modal'
-import { useNavigate } from 'react-router'
 import { useMessage } from '@/contexts/useMessage'
 
-export function WebsiteForm() {
-  const navigate = useNavigate()
-  const [isOpen, setIsOpen] = useState(false)
+type WebsiteFormProps = {
+  onSuccess?: () => void
+}
+
+export function WebsiteForm({ onSuccess }: WebsiteFormProps) {
   const [stepIndex, setStepIndex] = useState(0)
   const [preregister, setPreregister] = useState<IPreregisterWebsite | null>(
     null
@@ -26,52 +23,24 @@ export function WebsiteForm() {
   const { showMessage } = useMessage()
 
   const CurrentStep = STEPS[stepIndex]
-  const isClosed = !isOpen
 
-  useEffect(() => {
-    if (isClosed) {
-      setStepIndex(0)
-    }
-  }, [isClosed])
-
-  function onSucess(website: IRegisterWebsite) {
-    setIsOpen(false)
+  function handleSuccess(website: IRegisterWebsite) {
+    if (onSuccess) onSuccess()
     setPreregister(null)
     setStepIndex(0)
 
     showMessage(`"${website.name ?? '-'}" foi adicionado!`)
   }
 
-  function handleClose() {
-    setIsOpen(false)
-  }
-
-  function handleCreate() {
-    setIsOpen(true)
-    navigate('/websites')
-  }
-
   return (
-    <div className={styles.container}>
-      <Modal onClose={handleClose} isOpen={isOpen}>
-        {CurrentStep && (
-          <CurrentStep
-            preregister={preregister}
-            setPreregister={setPreregister}
-            updateStep={setStepIndex}
-            onSuccess={onSucess}
-          />
-        )}
-      </Modal>
-      <FloatingButton
-        className={styles.button}
-        variant={isOpen ? 'secondary' : 'primary'}
-        onClick={handleCreate}
-      >
-        Adicionar meu site
-        <MdAdd />
-      </FloatingButton>
-    </div>
+    CurrentStep && (
+      <CurrentStep
+        preregister={preregister}
+        setPreregister={setPreregister}
+        updateStep={setStepIndex}
+        onSuccess={handleSuccess}
+      />
+    )
   )
 }
 

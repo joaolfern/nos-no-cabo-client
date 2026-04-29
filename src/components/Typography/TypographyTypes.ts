@@ -21,4 +21,5 @@ export type TypographyProps = TypographyElementProps & {
   secondary?: boolean
   numberOfLines?: number
   asVariant?: boolean
+  color?: 'fore' | 'back' | 'tint'
 }

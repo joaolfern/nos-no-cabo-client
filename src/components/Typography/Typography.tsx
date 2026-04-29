@@ -16,6 +16,7 @@ export function Typography({
   numberOfLines,
   style,
   asVariant,
+  color,
   ...props
 }: TypographyProps) {
   const VariantComponent = VARIANT_COMPONENT[variant]
@@ -37,6 +38,7 @@ export function Typography({
         { [styles.strong]: strong },
         { [styles.secondary]: secondary },
         { [styles.ellipsis]: numberOfLines },
+        { [styles[`${color}Color`]]: color },
         className
       )}
       variant={variant}

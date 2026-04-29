@@ -6,19 +6,33 @@ export type WebsiteBubbleExtendedProps = WebsiteBubbleProps & {
 }
 
 export function WebsiteBubble({
-  id,
+  id: _id,
   imageSrc,
   title,
   url,
   isStationed,
 }: WebsiteBubbleExtendedProps) {
+  const containerClasses = [
+    styles.container,
+    isStationed ? styles.stationed : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
+
   return (
-    <a
-      href={url}
-      className={`${styles.container} ${isStationed ? styles.stationed : ''}`}
-    >
-      <img src={imageSrc} alt={title} className={styles.image} />
-      <span>{title}</span>
+    <a draggable={false} href={url} className={containerClasses}>
+      <img
+        draggable={false}
+        src={imageSrc}
+        alt={title}
+        className={styles.image}
+        onError={(e) => {
+          e.currentTarget.style.filter = 'grayscale(100%)'
+          e.currentTarget.style.opacity = '0.5'
+          e.currentTarget.style.backgroundColor = 'transparent'
+        }}
+      />
+      <span className={styles.title}>{title}</span>
     </a>
   )
 }
