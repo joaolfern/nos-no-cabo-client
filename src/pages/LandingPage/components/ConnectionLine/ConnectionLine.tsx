@@ -6,7 +6,7 @@ import { useIsMobile } from '@/hooks/useIsMobile'
 
 const INTERACTION_RADIUS_PX = 50
 const IDLE_TAKEOVER_DELAY_MS = 3000
-const IDLE_PATH_SPEED_PX = 70
+const IDLE_PATH_SPEED_PX = 100
 
 const getControlPoint = (
   current: { x: number; y: number },
@@ -45,8 +45,10 @@ export function ConnectionLine({
     initialized: false,
     segmentIndex: 0,
     segmentProgress: 0,
+    direction: 1 as 1 | -1,
   })
   const lastFrameTs = useRef<number | null>(null)
+  const idleReadyAt = useRef<number | null>(null)
   const cachedContainerRect = useRef<DOMRect | null>(null)
 
   const simulatedY = useRef<number | null>(null)
@@ -77,10 +79,6 @@ export function ConnectionLine({
         }
 
         const targetNode = e.target instanceof Node ? e.target : null
-        const isOverLine =
-          !!targetNode &&
-          !!canvasRef.current &&
-          canvasRef.current.contains(targetNode)
 
         let isOverBubble = false
         if (targetNode && bubbleRefs.current) {
@@ -92,7 +90,7 @@ export function ConnectionLine({
           }
         }
 
-        isHoveringInteractiveArea.current = isOverLine || isOverBubble
+        isHoveringInteractiveArea.current = isOverBubble
         if (isHoveringInteractiveArea.current) {
           lastInteractiveTs.current = performance.now()
         }
@@ -197,35 +195,58 @@ export function ConnectionLine({
           }
         } else {
           const orderedPoints = [...points].sort((a, b) => a.x - b.x)
+          const N = orderedPoints.length
 
-          if (!idleState.current.initialized) {
+          if (idleReadyAt.current === null) {
+            idleReadyAt.current = now + IDLE_TAKEOVER_DELAY_MS
+          }
+
+          if (!idleState.current.initialized && now >= idleReadyAt.current) {
             idleState.current.initialized = true
             idleState.current.segmentIndex = 0
             idleState.current.segmentProgress = 0
+            idleState.current.direction = 1
             idleState.current.x = orderedPoints[0].x
             idleState.current.y = orderedPoints[0].y
           }
 
-          if (!isHoveringInteractiveArea.current && orderedPoints.length > 1) {
+          // Clamp in case bubble count changed since last frame
+          idleState.current.segmentIndex = Math.min(
+            idleState.current.segmentIndex,
+            Math.max(0, N - 2)
+          )
+
+          if (!isHoveringInteractiveArea.current && N > 1) {
             let remainingDistance = IDLE_PATH_SPEED_PX * deltaSeconds
 
             while (remainingDistance > 0) {
-              const start =
-                orderedPoints[
-                  idleState.current.segmentIndex % orderedPoints.length
-                ]
-              const end =
-                orderedPoints[
-                  (idleState.current.segmentIndex + 1) % orderedPoints.length
-                ]
+              const si = idleState.current.segmentIndex
+              const dir = idleState.current.direction
+              const ptA = dir === 1 ? orderedPoints[si] : orderedPoints[si + 1]
+              const ptB = dir === 1 ? orderedPoints[si + 1] : orderedPoints[si]
 
-              const dx = end.x - start.x
-              const dy = end.y - start.y
+              const dx = ptB.x - ptA.x
+              const dy = ptB.y - ptA.y
               const segmentLength = Math.sqrt(dx * dx + dy * dy)
 
               if (segmentLength < 0.001) {
-                idleState.current.segmentIndex =
-                  (idleState.current.segmentIndex + 1) % orderedPoints.length
+                if (dir === 1) {
+                  const next = si + 1
+                  if (next >= N - 1) {
+                    idleState.current.direction = -1
+                    idleState.current.segmentIndex = N - 2
+                  } else {
+                    idleState.current.segmentIndex = next
+                  }
+                } else {
+                  const next = si - 1
+                  if (next < 0) {
+                    idleState.current.direction = 1
+                    idleState.current.segmentIndex = 0
+                  } else {
+                    idleState.current.segmentIndex = next
+                  }
+                }
                 idleState.current.segmentProgress = 0
                 continue
               }
@@ -235,31 +256,42 @@ export function ConnectionLine({
               const distanceToEnd = segmentLength - traveledDistance
 
               if (remainingDistance >= distanceToEnd) {
-                idleState.current.segmentIndex =
-                  (idleState.current.segmentIndex + 1) % orderedPoints.length
-                idleState.current.segmentProgress = 0
                 remainingDistance -= distanceToEnd
+                if (dir === 1) {
+                  const next = si + 1
+                  if (next >= N - 1) {
+                    idleState.current.direction = -1
+                    idleState.current.segmentIndex = N - 2
+                  } else {
+                    idleState.current.segmentIndex = next
+                  }
+                } else {
+                  const next = si - 1
+                  if (next < 0) {
+                    idleState.current.direction = 1
+                    idleState.current.segmentIndex = 0
+                  } else {
+                    idleState.current.segmentIndex = next
+                  }
+                }
+                idleState.current.segmentProgress = 0
               } else {
-                const nextDistance = traveledDistance + remainingDistance
-                idleState.current.segmentProgress = nextDistance / segmentLength
+                idleState.current.segmentProgress =
+                  (traveledDistance + remainingDistance) / segmentLength
                 remainingDistance = 0
               }
             }
           }
 
-          if (orderedPoints.length > 1) {
-            const start =
-              orderedPoints[
-                idleState.current.segmentIndex % orderedPoints.length
-              ]
-            const end =
-              orderedPoints[
-                (idleState.current.segmentIndex + 1) % orderedPoints.length
-              ]
+          if (N > 1) {
+            const si = idleState.current.segmentIndex
+            const dir = idleState.current.direction
+            const ptA = dir === 1 ? orderedPoints[si] : orderedPoints[si + 1]
+            const ptB = dir === 1 ? orderedPoints[si + 1] : orderedPoints[si]
             const t = idleState.current.segmentProgress
 
-            idleState.current.x = start.x + (end.x - start.x) * t
-            idleState.current.y = start.y + (end.y - start.y) * t
+            idleState.current.x = ptA.x + (ptB.x - ptA.x) * t
+            idleState.current.y = ptA.y + (ptB.y - ptA.y) * t
           } else {
             idleState.current.x = orderedPoints[0].x
             idleState.current.y = orderedPoints[0].y
@@ -267,12 +299,40 @@ export function ConnectionLine({
 
           let userIsNear = false
           if (userMousePos.current) {
+            const ux = userMousePos.current.x
+            const uy = userMousePos.current.y
+
+            // Near a bubble center
             for (const p of points) {
-              const dx = p.x - userMousePos.current.x
-              const dy = p.y - userMousePos.current.y
+              const dx = p.x - ux
+              const dy = p.y - uy
               if (Math.sqrt(dx * dx + dy * dy) <= INTERACTION_RADIUS_PX) {
                 userIsNear = true
                 break
+              }
+            }
+
+            // Near the line segments (canvas has pointer-events:none so we check manually)
+            if (!userIsNear) {
+              for (let i = 0; i < points.length - 1; i++) {
+                const ax = points[i].x
+                const ay = points[i].y
+                const bx = points[i + 1].x
+                const by = points[i + 1].y
+                const dx = bx - ax
+                const dy = by - ay
+                const lenSq = dx * dx + dy * dy
+                if (lenSq < 0.001) continue
+                const t = Math.max(
+                  0,
+                  Math.min(1, ((ux - ax) * dx + (uy - ay) * dy) / lenSq)
+                )
+                const px = ax + dx * t - ux
+                const py = ay + dy * t - uy
+                if (Math.sqrt(px * px + py * py) <= INTERACTION_RADIUS_PX) {
+                  userIsNear = true
+                  break
+                }
               }
             }
           }
@@ -282,7 +342,8 @@ export function ConnectionLine({
 
           const shouldUseUserTarget =
             Boolean(userMousePos.current) &&
-            ((isHoveringInteractiveArea.current && userIsNear) ||
+            (isHoveringInteractiveArea.current ||
+              userIsNear ||
               withinTakeoverDelay)
 
           if (!shouldUseUserTarget && wasUsingUserTarget.current) {
@@ -292,9 +353,9 @@ export function ConnectionLine({
             let bestProgress = 0
             let bestDistanceSq = Infinity
 
-            for (let i = 0; i < orderedPoints.length; i++) {
+            for (let i = 0; i < N - 1; i++) {
               const start = orderedPoints[i]
-              const end = orderedPoints[(i + 1) % orderedPoints.length]
+              const end = orderedPoints[i + 1]
               const dx = end.x - start.x
               const dy = end.y - start.y
               const segmentLengthSq = dx * dx + dy * dy
@@ -319,13 +380,17 @@ export function ConnectionLine({
 
             idleState.current.segmentIndex = bestSegment
             idleState.current.segmentProgress = bestProgress
+            idleState.current.direction = 1
             const start = orderedPoints[bestSegment]
-            const end = orderedPoints[(bestSegment + 1) % orderedPoints.length]
+            const end = orderedPoints[bestSegment + 1]
             idleState.current.x = start.x + (end.x - start.x) * bestProgress
             idleState.current.y = start.y + (end.y - start.y) * bestProgress
           }
 
           wasUsingUserTarget.current = shouldUseUserTarget
+
+          // If idle hasn't started yet and user isn't controlling, nothing to draw
+          if (!idleState.current.initialized && !shouldUseUserTarget) return
 
           const target =
             shouldUseUserTarget && userMousePos.current
@@ -383,7 +448,11 @@ export function ConnectionLine({
           0,
           mousePos.current.x,
           mousePos.current.y,
-          isMobile && points.length > 3 ? 120 : 200
+          isMobile && points.length > 3
+            ? 120
+            : wasUsingUserTarget.current
+              ? 150
+              : 100
         )
 
         maskGradient.addColorStop(0, 'rgba(255, 255, 255, 1)')
