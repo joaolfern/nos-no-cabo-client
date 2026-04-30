@@ -38,8 +38,10 @@ export const BubblyItem = memo(function BubblyItemInner({
   const enterTimerRef = useRef<gsap.core.Tween | null>(null)
   const basePositionRef = useRef({ x: 0, y: 0 })
   const tiltRectRef = useRef<DOMRect | null>(null)
-  const rotateXToRef = useRef<((value: number) => void) | null>(null)
-  const rotateYToRef = useRef<((value: number) => void) | null>(null)
+  const rotateXSetRef = useRef<((value: number) => void) | null>(null)
+  const rotateYSetRef = useRef<((value: number) => void) | null>(null)
+  const tiltStateRef = useRef({ x: 0, y: 0, targetX: 0, targetY: 0 })
+  const tiltTickerRef = useRef<gsap.TickerCallback | null>(null)
 
   useEffect(() => {
     statusRef.current = status
@@ -97,15 +99,24 @@ export const BubblyItem = memo(function BubblyItemInner({
       const setX = gsap.quickSetter(floatEl, 'x', 'px')
       const setY = gsap.quickSetter(floatEl, 'y', 'px')
 
-      rotateXToRef.current = gsap.quickTo(tiltEl, 'rotateX', {
-        duration: 0.2,
-        ease: 'power1.out',
-      })
-      rotateYToRef.current = gsap.quickTo(tiltEl, 'rotateY', {
-        duration: 0.2,
-        ease: 'power1.out',
-      })
+      rotateXSetRef.current = gsap.quickSetter(tiltEl, 'rotateX', 'deg') as (
+        value: number
+      ) => void
+      rotateYSetRef.current = gsap.quickSetter(tiltEl, 'rotateY', 'deg') as (
+        value: number
+      ) => void
       gsap.set(tiltEl, { transformPerspective: 500 })
+
+      const tiltLerp = 0.15
+      const ticker: gsap.TickerCallback = () => {
+        const state = tiltStateRef.current
+        state.x += (state.targetX - state.x) * tiltLerp
+        state.y += (state.targetY - state.y) * tiltLerp
+        rotateXSetRef.current?.(state.x)
+        rotateYSetRef.current?.(state.y)
+      }
+      tiltTickerRef.current = ticker
+      gsap.ticker.add(ticker)
 
       const getWaveOffsets = (t: number) => {
         const slowWaveX = Math.sin(t * (0.55 + seedA * 0.08)) * swayAmplitude
@@ -177,6 +188,10 @@ export const BubblyItem = memo(function BubblyItemInner({
         leaveTimerRef.current?.kill()
         enterTimerRef.current?.kill()
         gsap.ticker.remove(tickFloat)
+        if (tiltTickerRef.current) {
+          gsap.ticker.remove(tiltTickerRef.current)
+          tiltTickerRef.current = null
+        }
       }
     },
     { scope: wrapperRef }
@@ -201,17 +216,13 @@ export const BubblyItem = memo(function BubblyItemInner({
     const y = e.clientY - rect.top
     const rotateX = ((y - rect.height / 2) / (rect.height / 2)) * -10
     const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 10
-    rotateXToRef.current?.(rotateX)
-    rotateYToRef.current?.(rotateY)
+    tiltStateRef.current.targetX = rotateX
+    tiltStateRef.current.targetY = rotateY
   }, [])
 
   const resetTilt = useCallback(() => {
-    gsap.to(tiltRef.current, {
-      duration: 0.3,
-      rotateX: 0,
-      rotateY: 0,
-      ease: 'power1.inOut',
-    })
+    tiltStateRef.current.targetX = 0
+    tiltStateRef.current.targetY = 0
   }, [])
 
   const handlePointerEnter = useCallback(() => {

@@ -7,6 +7,9 @@ import { useIsMobile } from '@/hooks/useIsMobile'
 const INTERACTION_RADIUS_PX = 50
 const IDLE_TAKEOVER_DELAY_MS = 3000
 const IDLE_PATH_SPEED_PX = 100
+const IDLE_PATH_SPEED_REFERENCE_WIDTH = 1440
+const IDLE_MOBILE_SPEED_PX_PER_S = 120
+const IDLE_MOBILE_SPEED_REFERENCE_HEIGHT = 900
 
 const getControlPoint = (
   current: { x: number; y: number },
@@ -166,7 +169,10 @@ export function ConnectionLine({
               simulatedY.current = height + 100
             }
 
-            simulatedY.current -= 3
+            const scaledMobileSpeed =
+              IDLE_MOBILE_SPEED_PX_PER_S *
+              (height / IDLE_MOBILE_SPEED_REFERENCE_HEIGHT)
+            simulatedY.current -= scaledMobileSpeed * deltaSeconds
 
             if (simulatedY.current < -100) {
               simulatedY.current = height + 100
@@ -217,7 +223,9 @@ export function ConnectionLine({
           )
 
           if (!isHoveringInteractiveArea.current && N > 1) {
-            let remainingDistance = IDLE_PATH_SPEED_PX * deltaSeconds
+            const scaledSpeed =
+              IDLE_PATH_SPEED_PX * (width / IDLE_PATH_SPEED_REFERENCE_WIDTH)
+            let remainingDistance = scaledSpeed * deltaSeconds
 
             while (remainingDistance > 0) {
               const si = idleState.current.segmentIndex
