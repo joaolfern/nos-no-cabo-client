@@ -8,6 +8,7 @@ import { PreregisterStep } from '@/pages/WebsiteForm/components/PreregisterStep/
 import { ReviewStep } from '@/pages/WebsiteForm/components/ReviewStep/ReviewStep'
 import { KeywordsStep } from '@/pages/WebsiteForm/components/KeywordsStep/KeywordsStep'
 import { GithubStep } from '@/pages/WebsiteForm/components/GithubStep/GithubStep'
+import { CodeStep } from '@/pages/WebsiteForm/components/CodeStep/CodeStep'
 import { useMessage } from '@/contexts/useMessage'
 
 type WebsiteFormProps = {
@@ -19,6 +20,7 @@ export function WebsiteForm({ onSuccess }: WebsiteFormProps) {
   const [preregister, setPreregister] = useState<IPreregisterWebsite | null>(
     null
   )
+  const [bannerCode, setBannerCode] = useState('')
 
   const { showMessage } = useMessage()
 
@@ -39,6 +41,8 @@ export function WebsiteForm({ onSuccess }: WebsiteFormProps) {
         setPreregister={setPreregister}
         updateStep={setStepIndex}
         onSuccess={handleSuccess}
+        bannerCode={bannerCode}
+        setBannerCode={setBannerCode}
       />
     )
   )
@@ -46,6 +50,7 @@ export function WebsiteForm({ onSuccess }: WebsiteFormProps) {
 
 const STEPS = [
   InitialStep,
+  CodeStep,
   PreregisterStep,
   ReviewStep,
   GithubStep,

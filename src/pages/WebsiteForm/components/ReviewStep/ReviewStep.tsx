@@ -24,12 +24,12 @@ export function ReviewStep({
   }
 
   function onConfirm() {
-    updateStep(3)
+    updateStep(4)
   }
 
   return (
     <StepContainer>
-      <StepTitle updateStep={updateStep} text='Revise' index={2} />
+      <StepTitle updateStep={updateStep} text='Revise' index={3} />
       <ReviewItem label='Nome do site'>
         <EditableText
           onSave={(value) => handleChange('name', value)}

@@ -19,14 +19,14 @@ export function PreregisterStep({
 
   useEffect(() => {
     if (data) {
-      updateStep(2)
+      updateStep(3)
       setPreregister(data)
     }
   }, [data, setPreregister, updateStep])
 
   return (
     <StepContainer>
-      <StepTitle updateStep={updateStep} text='Informe sua URL' index={1} />
+      <StepTitle updateStep={updateStep} text='Informe sua URL' index={2} />
       <StepDescription>
         Vamos obter as informações necessárias para o seu cadastro.
       </StepDescription>
