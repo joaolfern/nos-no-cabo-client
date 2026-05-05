@@ -15,7 +15,7 @@ export function GithubStep({
   const [repo, setRepo] = useState<string>('')
 
   function onConfirm() {
-    updateStep(4)
+    updateStep(5)
     setPreregister({
       ...(preregister as IPreregisterWebsite),
       repo,
@@ -24,7 +24,7 @@ export function GithubStep({
 
   return (
     <StepContainer>
-      <StepTitle updateStep={updateStep} text='Repositório Online' index={2} />
+      <StepTitle updateStep={updateStep} text='Repositório Online' index={4} />
       <StepDescription>
         Se desejar, compartilhe o código fonte do seu site.
       </StepDescription>

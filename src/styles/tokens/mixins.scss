@@ -4,4 +4,46 @@
   border: $border-width-base solid var(--color-background-300);
   backdrop-filter: blur(var(--blur-background));
   background: var(--color-background-000);
+  border: $border-card;
+  background:
+    radial-gradient(
+      circle at top left,
+      rgb(255 154 139 / 0.15),
+      transparent 45%
+    ),
+    linear-gradient(135deg, rgb(12 17 23 / 0.88), rgb(28 35 49 / 0.92));
+  box-shadow: 0 20px 45px rgb(15 23 42 / 0.18);
+}
+
+@mixin scrollbar {
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background:
+      radial-gradient(
+        circle at top left,
+        rgb(255 154 139 / 0.2),
+        transparent 45%
+      ),
+      linear-gradient(135deg, rgb(12 17 23 / 0.6), rgb(28 35 49 / 0.7));
+    border-radius: 4px;
+    border: 1px solid rgb(255 255 255 / 0.1);
+
+    &:hover {
+      background:
+        radial-gradient(
+          circle at top left,
+          rgb(255 154 139 / 0.3),
+          transparent 45%
+        ),
+        linear-gradient(135deg, rgb(12 17 23 / 0.8), rgb(28 35 49 / 0.9));
+    }
+  }
 }
