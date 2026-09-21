@@ -25,7 +25,7 @@ export function Dialog({
     <Portal container={container || document.body}>
       <section className={styles.container}>
         <div className={clsx(styles.content)}>
-          <Typography variant='h2' className={styles.title}>
+          <Typography as='h2' className={styles.title}>
             {title}
           </Typography>
           {children}

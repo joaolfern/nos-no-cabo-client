@@ -1,3 +1,5 @@
+import type { CSSProperties, ElementType } from 'react'
+
 export type _variant =
   | 'body'
   | 'bodySmall'
@@ -16,9 +18,23 @@ export type TypographyElementProps =
 export type TypographyElement<T extends TypographyElementProps> =
   React.ElementType<T>
 
-export type TypographyProps = TypographyElementProps & {
-  strong?: boolean
-  secondary?: boolean
-  numberOfLines?: number
-  asVariant?: boolean
+export interface TypographyProps {
+  as?: ElementType
+  variant?: Variant
+  color?: Color
+  lines?: number
+  className?: string
+  children: React.ReactNode
+  style?: CSSProperties
 }
+
+type Variant =
+  | 'titleLg'
+  | 'titleMd'
+  | 'titleSm'
+  | 'bodyLg'
+  | 'bodyMd'
+  | 'bodySm'
+  | 'caption'
+
+type Color = 'base' | 'muted' | 'subtle' | 'primary'

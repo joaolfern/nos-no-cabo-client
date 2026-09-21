@@ -4,13 +4,15 @@
 .feed {
   display: flex;
   flex-direction: column;
-  gap: $spacing-xs;
+  margin-inline: $spacing-xl;
+  margin-block: $spacing-md;
 }
 
 .container {
+  display: flex;
+  flex-grow: 1;
   @media (min-width: $breakpoint-md) {
     display: grid;
-    grid-template-columns: 3fr 9fr;
-    gap: $spacing-lg;
+    grid-template-columns: 18fr 82fr;
   }
 }

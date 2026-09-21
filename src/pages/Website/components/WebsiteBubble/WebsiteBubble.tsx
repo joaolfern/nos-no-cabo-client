@@ -6,7 +6,6 @@ export type WebsiteBubbleExtendedProps = WebsiteBubbleProps & {
 }
 
 export function WebsiteBubble({
-  id,
   imageSrc,
   title,
   url,

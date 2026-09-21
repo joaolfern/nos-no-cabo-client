@@ -7,7 +7,7 @@
 
 .container {
   display: flex;
-  border-radius: $radius-lg;
+  border-radius: $radius-md;
   box-shadow: $shadow-sm;
   overflow: hidden;
   position: relative;
@@ -61,10 +61,6 @@
       transform: scale(1.05);
     }
   }
-}
-
-.description {
-  height: 3.25rem;
 }
 
 .keywords {

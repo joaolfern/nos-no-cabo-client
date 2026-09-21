@@ -4,14 +4,15 @@
 .container {
   min-height: 100dvh;
   position: relative;
+  background: var(--color-background-100);
+  display: flex;
+  flex-direction: column;
 }
 
 .content {
-  padding: $spacing-md $spacing-sm;
-
-  @media (min-width: $breakpoint-sm) {
-    padding: $spacing-xxl $spacing-xxxxl;
-  }
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .topbarContent {

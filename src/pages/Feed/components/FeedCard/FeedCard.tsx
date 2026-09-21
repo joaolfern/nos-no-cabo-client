@@ -67,7 +67,8 @@ const FeedCardInner = ({
         <Typography
           className={styles.description}
           variant='bodySmall'
-          numberOfLines={3}
+          color='muted'
+          lines={3}
         >
           <p>{description}</p>
         </Typography>

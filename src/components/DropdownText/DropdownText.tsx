@@ -28,14 +28,14 @@ export function DropdownText<T, M extends boolean | undefined>({
         {...props}
       >
         {!isMobile && (
-          <Typography variant='bodySmall' secondary={true} strong={true}>
+          <Typography color='muted' variant='bodySm'>
             {children}
           </Typography>
         )}
         <button className={clsx(styles.content, classNames?.content)}>
           <Typography
             className={clsx(styles.text, classNames?.text)}
-            variant='bodySmall'
+            variant='bodyMd'
           >
             {valueLabel ? String(valueLabel) : '-'}
           </Typography>

@@ -3,5 +3,5 @@
 @mixin card {
   border: $border-width-base solid var(--color-background-300);
   backdrop-filter: blur(var(--blur-background));
-  background: var(--color-background-000);
+  background: var(--color-background-200);
 }

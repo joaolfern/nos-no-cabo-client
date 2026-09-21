@@ -1,10 +1,11 @@
 import { Input } from '@/components/Input/Input'
-import { MdArrowBack, MdClose, MdSearch } from 'react-icons/md'
+import { MdClose, MdSearch } from 'react-icons/md'
 import styles from './Search.module.scss'
 import clsx from 'clsx'
 import React, { useCallback, useEffect } from 'react'
 import { ButtonIcon } from '@/components/ButtonIcon/ButtonIcon'
 import type { SearchProps } from '@/components/Search/SearchInterfaces'
+import { Typography } from '../Typography/Typography'
 
 export function Search({
   className,
@@ -71,24 +72,12 @@ export function Search({
         })}
       >
         <div className={styles.inputContainer} onClick={handleFocus}>
-          {isFocused && (
-            <ButtonIcon
-              label='Close search'
-              variant='transparent'
-              onClick={handleBack}
-              className={styles.backButton}
-            >
-              <MdArrowBack />
-            </ButtonIcon>
-          )}
+          <Typography className={styles.searchIcon} color='subtle'>
+            <MdSearch key='search' />
+          </Typography>
+
           {!isFocused ? (
-            <ButtonIcon
-              key='search'
-              label='Search'
-              className={styles.mainButton}
-            >
-              <MdSearch />
-            </ButtonIcon>
+            <></>
           ) : (
             <ButtonIcon
               key='clear'

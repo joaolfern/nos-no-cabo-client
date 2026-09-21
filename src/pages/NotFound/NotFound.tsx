@@ -11,7 +11,7 @@ export function NotFound() {
   return (
     <div className={styles.container}>
       <Scene
-        fallbackBackground='var(--color-background-400)'
+        fallbackBackground='var(--color-background-300)'
         fallbackAccent='red'
         jsonFilePath={`/unicornStudio/${mode}/notFound.json`}
         width='400px'
