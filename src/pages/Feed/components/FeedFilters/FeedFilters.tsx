@@ -5,7 +5,6 @@ import styles from './FeedFilters.module.scss'
 import { RadioGroup } from '@/components/RadioGroup/RadioGroup'
 import type { DropdownButtonProps } from '@/components/DropdownButton/DropdownButtonInterfaces'
 import { Typography } from '@/components/Typography/Typography'
-import { MdTune } from 'react-icons/md'
 import type { IFilterEvent } from '@/interfaces/IFilters'
 import { useWebsites } from '@/pages/Feed/hooks/useWebsites'
 
@@ -37,20 +36,19 @@ FeedFilters.Panel = function FeedFiltersPanel({ onChange }: FeedFiltersProps) {
   }
 
   return (
-    <div className={styles.panel}>
+    <aside className={styles.panel}>
       <header className={styles.header}>
-        <MdTune />
-        <Typography variant='h3' asVariant={true}>
+        <Typography color='primary' variant='bodyLg'>
           Filtros
         </Typography>
         <button className={styles.clear} onClick={clear}>
-          <Typography variant='body' asVariant={true} strong={true}>
+          <Typography variant='bodySm' color='primary'>
             Limpar
           </Typography>
         </button>
       </header>
       <KeywordFilter variant='panel' onChange={onChange} />
-    </div>
+    </aside>
   )
 }
 

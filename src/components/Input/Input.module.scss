@@ -3,9 +3,10 @@
 
 .input {
   background: transparent;
-  padding: $spacing-xxs $spacing-md;
+  padding: $spacing-md;
+  height: 48px;
   border: $border-base;
-  border-radius: $radius-full;
+  border-radius: $radius-md;
   color: var(--color-neutral-600);
 
   &:hover,

@@ -2,7 +2,6 @@ import { NosNoCaboLayout } from '@/layouts/NosNoCaboLayout/NosNoCaboLayout'
 import { Feed } from '@/pages/Feed/Feed'
 import { LandingPage } from '@/pages/LandingPage/LandingPage'
 import { NotFound } from '@/pages/NotFound/NotFound'
-import { FloatingButtons } from '@/pages/Website/components/FloatingButtons/FloatingButtons'
 import { Website } from '@/pages/Website/Website'
 import { Route, Routes } from 'react-router'
 
@@ -17,7 +16,7 @@ export function Router() {
         </Route>
         <Route Component={NotFound} path='*' />
       </Routes>
-      <FloatingButtons />
+      {/* <FloatingButtons /> */}
     </>
   )
 }

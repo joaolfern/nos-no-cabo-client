@@ -83,7 +83,6 @@ const MOCK_BUBBLE_ITEMS = [
 ]
 
 export function LandingPage() {
-  const { opacity } = useLoadingBar()
   const navigate = useNavigate()
 
   function goToWebsites() {
@@ -103,12 +102,6 @@ export function LandingPage() {
             Conectando a comunidade brasileira de tecnologia
           </Typography>
         </div>
-        {/* <animated.div
-          className={styles.loadingBarContainer}
-          style={{ opacity }}
-        >
-          <LoadingBar />
-        </animated.div> */}
       </div>
 
       <FloatingButton

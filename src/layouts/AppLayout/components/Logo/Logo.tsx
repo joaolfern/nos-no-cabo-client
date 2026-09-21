@@ -10,11 +10,11 @@ export function Logo() {
       <div className={styles.container}>
         <Image
           className={styles.image}
-          src='/logos/logo.svg'
+          src='/logos/logo.png'
           alt='Nós no cabo'
         />
         <span>
-          <Typography className={styles.subtitle} variant='body'>
+          <Typography className={styles.subtitle} variant='titleSm'>
             {isAdminMode ? 'Sysadmin.' : 'Nós no cabo'}
           </Typography>
         </span>

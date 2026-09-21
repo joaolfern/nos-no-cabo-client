@@ -1,4 +1,3 @@
-import { Typography } from '@/components/Typography/Typography'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import type { IFilterEvent } from '@/interfaces/IFilters'
 import { FeedFilters } from '@/pages/Feed/components/FeedFilters/FeedFilters'
@@ -23,12 +22,5 @@ export function FeedAside() {
     return null
   }
 
-  return (
-    <aside>
-      <Typography variant='h1' asVariant={true}>
-        Nós no cabo
-      </Typography>
-      <FeedFilters.Panel onChange={handleFilter} />
-    </aside>
-  )
+  return <FeedFilters.Panel onChange={handleFilter} />
 }

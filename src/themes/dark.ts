@@ -30,15 +30,15 @@ export const DARK_THEME_VARIABLES: Record<ThemeVariables, string> = {
   'color-danger-100': '#ffeaea',
   'color-danger-700': '#e63946',
 
-  'color-border-400': '#ffffff45',
-
   'blur-background': '50px',
 
-  'color-background-000': '#1a1a1e38',
+  'color-border-400': '#2A2A2E',
 
-  'color-background-100': '#121217',
-  'color-background-200': '#1a1a1e',
+  'color-background-100': '#0C0D10',
+  'color-background-200': '#0B0B0F',
   'color-background-300': '#2c2e31',
-  'color-background-400': '#050313',
-  'color-background-500': '#1d1f21',
+
+  'color-text-base': '#DDD7D4',
+  'color-text-muted': '#A39B97',
+  'color-text-subtle': '#74706D',
 }

@@ -1,68 +1,68 @@
 @use '@/styles/tokens/typography.scss' as *;
-
 @use '@/styles/tokens/breakpoints.scss' as *;
 
-.body {
-  color: var(--color-text, var(--color-primary-500));
-  line-height: $line-height-base;
+.root {
+  color: var(--color-text-base);
 }
 
-.bodyDefault {
-  font-size: $font-size-md;
-  font-weight: $font-weight-normal;
+.base {
+  color: var(--color-text-base);
 }
 
-.bodyLarge {
-  font-size: $font-size-xl;
-  font-weight: $font-weight-semi-bold;
+.muted {
+  color: var(--color-text-muted);
 }
 
-.bodySmall {
-  font-size: $font-size-sm;
-  font-weight: $font-weight-normal;
+.subtle {
+  color: var(--color-text-subtle);
 }
 
-.strong {
-  font-weight: $font-weight-semi-bold;
+.primary {
+  color: var(--color-primary-400);
 }
 
-.secondary {
-  color: var(--color-text, var(--color-neutral-600));
-}
-
-.ellipsis > *,
-.ellipsis.title {
+.clamp {
   display: -webkit-box;
-  -webkit-line-clamp: var(--line-number);
-  line-clamp: var(--line-number);
   -webkit-box-orient: vertical;
   overflow: hidden;
+  -webkit-line-clamp: var(--line-clamp);
+  line-clamp: var(--line-clamp);
 }
 
-.title {
-  color: var(--color-text, var(--color-primary-400));
-}
-
-.h1 {
+.titleLg {
   font-size: $font-size-xxxl;
   font-weight: $font-weight-bold;
   line-height: $line-height-heading;
 }
 
-.h2 {
+.titleMd {
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
   line-height: $line-height-heading;
-
-  @media (min-width: $breakpoint-md) {
-    font-size: $font-size-xxxl;
-  }
 }
 
-.h3 {
+.titleSm {
   font-size: $font-size-lg;
   font-weight: $font-weight-bold;
   line-height: $line-height-heading;
+}
+
+.bodyLg {
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  line-height: $line-height-base;
+}
+
+.bodyMd {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semi-bold;
+  line-height: $line-height-base;
+}
+
+.bodySm {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-normal;
+  line-height: $line-height-base;
 }
 
 .caption {

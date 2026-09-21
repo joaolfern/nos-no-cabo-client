@@ -4,6 +4,7 @@
 .list {
   display: grid;
   gap: $spacing-md;
+
   @media (min-width: $breakpoint-sm) {
     grid-template-columns: repeat(2, 1fr);
   }

@@ -10,7 +10,7 @@ export const BackgroundEffect = memo(function BackgroundEffect() {
   return (
     <div className={`${styles.container} `}>
       <Scene
-        fallbackBackground='var(--color-background-400)'
+        fallbackBackground='var(--color-background-300)'
         fallbackAccent='var(--color-secondary-400)'
         jsonFilePath={`/unicornStudio/${filename}`}
       />
