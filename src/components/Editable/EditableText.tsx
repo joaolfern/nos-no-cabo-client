@@ -32,7 +32,7 @@ export function EditableText<T extends string | undefined>({
       display={
         <Typography
           className={clsx(styles.typography, className)}
-          variant='body'
+          variant='bodyMd'
           {...props}
         >
           {value || '-'}

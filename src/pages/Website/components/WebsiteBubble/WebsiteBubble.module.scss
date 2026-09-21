@@ -13,15 +13,18 @@ $fuschia: #ff0081;
   align-items: center;
   padding: $spacing-xxxs $spacing-xxs;
   font-weight: 600;
+  line-height: 1.2;
   gap: $spacing-xxs;
   background-color: #ffffff56;
-  backdrop-filter: blur(20px);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
   cursor: pointer;
   text-decoration: none;
   color: inherit;
   transition:
     transform ease-in 0.1s,
     box-shadow ease-in 0.25s;
+  will-change: transform;
   z-index: 1;
   box-shadow: 0 2px 25px rgba(255, 0, 130, 0.2);
 
@@ -78,9 +81,14 @@ $fuschia: #ff0081;
         radial-gradient(1px 1px at 30% 80%, $fuschia 100%, transparent),
         radial-gradient(1.5px 1.5px at 60% 70%, $fuschia 100%, transparent);
       background-size: 150px 150px;
-      animation: driftDustLayerTwo 18s linear infinite;
+      // animation: driftDustLayerTwo 18s linear infinite;
     }
   }
+}
+
+.title {
+  display: block;
+  line-height: 1.2;
 }
 
 .image {

@@ -18,7 +18,7 @@ export function NotFound() {
         height='400px'
         fallbackText='Página não encontrada'
       />
-      <Typography variant='body'>
+      <Typography variant='bodyMd'>
         <Link to='/websites'>
           <MdHome /> Voltar para a página inicial
         </Link>

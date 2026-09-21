@@ -59,14 +59,14 @@ const FeedCardInner = ({
           />
         )}
         <div className={styles.externalLinkContainer}>
-          <Typography className={styles.title} variant='h3' numberOfLines={2}>
+          <Typography className={styles.title} variant='titleSm' lines={2}>
             <h3>{name}</h3>
           </Typography>
           <VisitButton url={url} />
         </div>
         <Typography
           className={styles.description}
-          variant='bodySmall'
+          variant='bodySm'
           color='muted'
           lines={3}
         >

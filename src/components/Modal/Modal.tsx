@@ -26,7 +26,7 @@ export function Modal({
       <section className={styles.container}>
         <div className={clsx(styles.content, CONTENT_STYLE_VARIANT[variant])}>
           {title && (
-            <Typography variant='h2' className={styles.title}>
+            <Typography variant='titleMd' className={styles.title}>
               {title}
             </Typography>
           )}

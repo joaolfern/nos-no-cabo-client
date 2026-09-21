@@ -14,7 +14,7 @@ export function StepTitle({ updateStep, text, index }: StepTitleProps) {
   }
 
   return (
-    <Typography variant='h3'>
+    <Typography variant='titleSm'>
       <button className={styles.buttonBack} onClick={handleClick}>
         <MdArrowBack size={18} />
         {text}

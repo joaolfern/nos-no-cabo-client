@@ -1,0 +1,29 @@
+.connectionLine {
+  stroke: url(#line-gradient);
+  stroke-width: 1.5px;
+  fill: none;
+  filter: url(#glow);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.connectionsSvg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -2;
+}
+
+.connectionsCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -2;
+  filter: drop-shadow(0 0 16px rgba(255, 0, 129, 0.8));
+}

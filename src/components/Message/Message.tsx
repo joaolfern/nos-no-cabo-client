@@ -16,7 +16,7 @@ export function Message({
 
   return (
     <div className={clsx(styles.message, className)} {...props}>
-      <Typography variant='body'>{label}</Typography>
+      <Typography variant='bodyMd'>{label}</Typography>
       {action && (
         <button className={styles.action} onClick={action.onPress}>
           {action.label}

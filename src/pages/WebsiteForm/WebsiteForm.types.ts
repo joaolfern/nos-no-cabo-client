@@ -8,4 +8,13 @@ export type StepComponentProps = {
   setPreregister: (website: IPreregisterWebsite) => void
   preregister: IPreregisterWebsite | null
   onSuccess: (website: IRegisterWebsite) => void
+  bannerCode?: string
+  setBannerCode?: (code: string) => void
+}
+
+export type WebsiteFormContextProps = {
+  isOpen: boolean
+  handleClose: () => void
+  handleCreate: () => void
+  handleSuccess: () => void
 }

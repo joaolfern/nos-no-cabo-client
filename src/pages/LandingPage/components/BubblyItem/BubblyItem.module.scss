@@ -1,0 +1,52 @@
+.bubblyItemWrapper {
+  position: absolute;
+  top: var(--top);
+  left: clamp(
+    var(--lane-padding),
+    calc(
+      var(--lane-padding) +
+        ((100% - (var(--lane-padding) * 2)) / var(--lane-count) * var(--lane)) +
+        (
+          (
+              (100% - (var(--lane-padding) * 2)) /
+                var(--lane-count) - var(--size)
+            ) /
+            2
+        )
+    ),
+    calc(100% - var(--lane-padding) - var(--size))
+  );
+  // width: var(--size);
+  height: var(--size);
+  will-change: transform;
+  pointer-events: auto;
+  border-radius: 50%;
+  z-index: -1;
+
+  &:focus-visible a {
+    outline: 3px solid rgba(255, 255, 255, 0.8);
+    outline-offset: 3px;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    // inset: -1rem;
+  }
+}
+
+.tiltLayer {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.stationedWrapper {
+  z-index: 10;
+}
+
+.draggingWrapper {
+  z-index: 9999;
+  cursor: grabbing;
+}

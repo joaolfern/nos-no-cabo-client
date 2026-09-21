@@ -1,7 +1,7 @@
 import { FloatingButton } from '@/components/FloatingButton/FloatingButton'
 import { useAnimationToggler } from '@/pages/Website/hooks/useAnimationToggler'
 import { useThemeSwitcher } from '@/pages/Website/hooks/useThemeSwitcher'
-import { WebsiteForm } from '@/pages/WebsiteForm/WebsiteForm'
+import { WebsiteFormFloating } from '@/pages/WebsiteForm/WebsiteFormFloating'
 
 export function FloatingButtons() {
   const { handleTheme, themeIcon } = useThemeSwitcher()
@@ -9,7 +9,7 @@ export function FloatingButtons() {
 
   return (
     <>
-      <WebsiteForm />
+      <WebsiteFormFloating />
       <FloatingButton position='left' onClick={handleTheme} variant='secondary'>
         {themeIcon}
       </FloatingButton>

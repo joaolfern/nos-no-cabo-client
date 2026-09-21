@@ -21,7 +21,7 @@ WebsiteAuthorAndDate.Compact = function Compact({
 }: ContentProps) {
   return (
     <div>
-      <Typography className={styles.compact} variant='caption' secondary={true}>
+      <Typography className={styles.compact} variant='caption' color='muted'>
         <LastName aria-label='Written by' lastName={authorName} />
         <Date date={createdAt} />
       </Typography>
@@ -40,7 +40,7 @@ WebsiteAuthorAndDate.Detailed = function Detailed({
         <Typography variant='caption'>
           Written by: <LastName lastName={authorName} />
         </Typography>
-        <Typography variant='caption' secondary={true}>
+        <Typography variant='caption' color='muted'>
           <Date date={createdAt} />
         </Typography>
       </div>

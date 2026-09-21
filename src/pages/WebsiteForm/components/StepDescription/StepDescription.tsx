@@ -9,8 +9,7 @@ export function StepDescription({ className, ...props }: StepDescriptionProps) {
   return (
     <Typography
       className={clsx(styles.description, className)}
-      variant='bodySmall'
-      asVariant={true}
+      variant='bodySm'
       {...props}
     />
   )
