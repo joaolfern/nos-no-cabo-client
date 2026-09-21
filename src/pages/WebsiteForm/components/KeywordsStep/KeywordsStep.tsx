@@ -2,7 +2,7 @@ import { InputList } from '@/components/Input/InputList'
 import { Typography } from '@/components/Typography/Typography'
 import { useRegisterWebsite } from '@/hooks/useDataHooks'
 import type { IRegisterWebsite } from '@/interfaces/IWebsite'
-import type { StepComponentProps } from '@/pages/WebsiteForm/_WebsiteFormProps'
+import type { StepComponentProps } from '@/pages/WebsiteForm/WebsiteForm.types'
 import { ConfirmButton } from '@/pages/WebsiteForm/components/ConfirmButton/ConfirmButton'
 import { StepContainer } from '@/pages/WebsiteForm/components/StepContainer/StepContainer'
 import { StepDescription } from '@/pages/WebsiteForm/components/StepDescription/StepDescription'
@@ -35,7 +35,7 @@ export function KeywordsStep({
 
   return (
     <StepContainer>
-      <StepTitle updateStep={updateStep} text='Palavras-chave' index={4} />
+      <StepTitle updateStep={updateStep} text='Palavras-chave' index={5} />
       <StepDescription>
         Nos ajude a classificar seu site adicionando algumas palavras-chave.
       </StepDescription>

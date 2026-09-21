@@ -6,7 +6,6 @@ import styles from './AppLayout.module.scss'
 export function AppLayout({ children, className, ...props }: AppLayoutProps) {
   return (
     <>
-      {/* <BackgroundEffect /> */}
       <section className={clsx(styles.container, className)} {...props}>
         {children}
       </section>

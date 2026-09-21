@@ -28,7 +28,7 @@ export const Scene = memo(function Scene({
           style={{ backgroundColor: fallbackBackground, width, height }}
         >
           {props.fallbackText && (
-            <Typography className={styles.fallbackText} variant='bodyLarge'>
+            <Typography className={styles.fallbackText} variant='bodyLg'>
               {props.fallbackText}
             </Typography>
           )}

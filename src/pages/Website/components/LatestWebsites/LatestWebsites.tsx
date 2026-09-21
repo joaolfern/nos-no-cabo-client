@@ -18,7 +18,7 @@ export function LatestWebsites({ websiteId }: LatestWebsitesProps) {
 
   return (
     <section className={styles.container}>
-      <Typography variant='h3' asVariant={true}>
+      <Typography as='h3' variant='titleSm'>
         Novos Sites
       </Typography>
       <FeedCardList span={400} isLoading={isLoading} data={websites} />

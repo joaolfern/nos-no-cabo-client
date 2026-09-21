@@ -32,7 +32,7 @@ Menu.Item = function MenuItem<T>({
       onClick={() => onClick(value)}
       aria-pressed={selected}
     >
-      <Typography variant='body'>{children}</Typography>
+      <Typography variant='bodyMd'>{children}</Typography>
       {selected && (
         <MdCheck
           className={`${styles.checkIcon} ${selected ? '' : styles.checkIconHidden}}`}
@@ -47,7 +47,7 @@ Menu.Empty = function MenuEmpty() {
   return (
     <div className={styles.empty}>
       <MdOutlineInfo />
-      <Typography variant='bodySmall'>Sem opções</Typography>
+      <Typography variant='bodySm'>Sem opções</Typography>
     </div>
   )
 }

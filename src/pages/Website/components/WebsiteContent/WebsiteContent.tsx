@@ -25,7 +25,7 @@ export function WebsiteContent() {
     <WebsiteLoader isLoading={isLoading}>
       <section className={styles.container}>
         <header className={styles.header}>
-          <Typography variant='h3' asVariant={true} numberOfLines={2}>
+          <Typography as='h3' variant='titleSm' lines={2}>
             {website.name}
           </Typography>
           <GithubButton repo={website.repo} />
@@ -50,7 +50,7 @@ export function WebsiteContent() {
           color={website.color}
         />
         {website.description && (
-          <Typography variant='body' numberOfLines={2} asVariant={true}>
+          <Typography as='p' variant='bodyMd' lines={2}>
             {website.description.split('\n').map((line, idx) => (
               <React.Fragment key={idx}>
                 {line}

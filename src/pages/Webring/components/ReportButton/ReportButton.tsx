@@ -67,7 +67,7 @@ export function ReportButton({
         onCancel={handleCloseDialog}
         onConfirm={handleReport}
       >
-        <Typography variant='body'>{textContent.message}</Typography>
+        <Typography variant='bodyMd'>{textContent.message}</Typography>
       </Dialog>
     </>
   )

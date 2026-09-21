@@ -29,9 +29,7 @@ export function RadioGroup<T, M extends boolean | undefined>({
 
   return (
     <div className={styles.container}>
-      <Typography variant='body' strong={true}>
-        {label}
-      </Typography>
+      <Typography variant='bodyMd'>{label}</Typography>
       {loading ? (
         <Loading />
       ) : (

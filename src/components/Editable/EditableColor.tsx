@@ -31,10 +31,9 @@ export function EditableColor<T extends string | undefined>({
       }}
       display={
         <Typography
-          variant='body'
+          variant='bodyMd'
           className={clsx(styles.typography, className)}
           style={{ color: value }}
-          strong={true}
           {...props}
         >
           {value}

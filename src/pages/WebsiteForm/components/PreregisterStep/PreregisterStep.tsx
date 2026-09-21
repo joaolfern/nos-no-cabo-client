@@ -4,7 +4,7 @@ import { Input } from '@/components/Input/Input'
 import { usePreregisterWebsite } from '@/hooks/useDataHooks'
 import { Form } from '@/components/Form/Form'
 import { StepTitle } from '@/pages/WebsiteForm/components/StepTitle/StepTitle'
-import type { StepComponentProps } from '@/pages/WebsiteForm/_WebsiteFormProps'
+import type { StepComponentProps } from '@/pages/WebsiteForm/WebsiteForm.types'
 import { StepContainer } from '@/pages/WebsiteForm/components/StepContainer/StepContainer'
 import { ConfirmButton } from '@/pages/WebsiteForm/components/ConfirmButton/ConfirmButton'
 import { StepDescription } from '@/pages/WebsiteForm/components/StepDescription/StepDescription'
@@ -19,14 +19,14 @@ export function PreregisterStep({
 
   useEffect(() => {
     if (data) {
-      updateStep(2)
+      updateStep(3)
       setPreregister(data)
     }
   }, [data, setPreregister, updateStep])
 
   return (
     <StepContainer>
-      <StepTitle updateStep={updateStep} text='Informe sua URL' index={1} />
+      <StepTitle updateStep={updateStep} text='Informe sua URL' index={2} />
       <StepDescription>
         Vamos obter as informações necessárias para o seu cadastro.
       </StepDescription>
