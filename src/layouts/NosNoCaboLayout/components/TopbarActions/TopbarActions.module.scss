@@ -1,0 +1,41 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/breakpoints.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: $spacing-xs;
+}
+
+.add {
+  font-size: 95%;
+  padding: $spacing-xxs $spacing-md;
+}
+
+// Icon-only below the sm breakpoint, still announced by screen readers.
+.addLabel {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+
+  @media (min-width: $breakpoint-sm) {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+  }
+}
+
+.themeToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: $border-base;
+  color: var(--color-text-base);
+}

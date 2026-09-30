@@ -1,15 +1,32 @@
 @use '@/styles/tokens/spacing.scss' as *;
-@use '@/styles/tokens/breakpoints.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
 
-.list {
+// The max() floor keeps a fourth column from ever fitting.
+.grid {
+  --max-columns: 3;
+
   display: grid;
-  gap: $spacing-md;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(
+      max(
+        min(18.75rem, 100%),
+        calc(
+          (100% - (var(--max-columns) - 1) * #{$spacing-xs}) /
+            var(--max-columns)
+        )
+      ),
+      1fr
+    )
+  );
+  gap: $spacing-xs;
+}
 
-  @media (min-width: $breakpoint-sm) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (min-width: $breakpoint-md) {
-    grid-template-columns: repeat(3, 1fr);
-  }
+.empty {
+  margin: 0;
+  padding: $spacing-xxxl 1.25rem;
+  border: $border-width-base dashed var(--color-border-400);
+  border-radius: $radius-md-lg;
+  color: var(--color-text-muted);
+  text-align: center;
 }

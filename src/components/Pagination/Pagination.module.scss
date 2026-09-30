@@ -1,0 +1,76 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+@use '@/styles/tokens/animations.scss' as *;
+
+.list {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: $spacing-xxs;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.control,
+.page {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: $radius-full;
+  color: var(--color-text-base);
+  cursor: pointer;
+
+  @include has-motion {
+    transition:
+      background 0.15s,
+      border-color 0.15s,
+      color 0.15s;
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--color-primary-400);
+  }
+}
+
+.control {
+  color: var(--color-text-muted);
+
+  &:hover:not(:disabled) {
+    color: var(--color-text-base);
+  }
+
+  &:disabled {
+    color: var(--color-text-subtle);
+    cursor: default;
+    opacity: 0.5;
+  }
+}
+
+.page {
+  border: $border-base;
+  font-weight: 600;
+
+  &:hover {
+    border-color: var(--color-text-subtle);
+  }
+}
+
+.current {
+  background: var(--color-primary-400);
+  border-color: var(--color-primary-400);
+  color: var(--color-primary-foreground-400);
+
+  &:hover {
+    border-color: var(--color-primary-400);
+  }
+}
+
+.ellipsis {
+  width: 24px;
+  text-align: center;
+  color: var(--color-text-subtle);
+}

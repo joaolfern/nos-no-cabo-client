@@ -1,4 +1,4 @@
-import { MdWarningAmber } from 'react-icons/md'
+import { LuFlag } from 'react-icons/lu'
 import styles from './ReportButton.module.scss'
 import { clsx } from 'clsx'
 import { isAdminMode } from '@/config/env'
@@ -57,7 +57,7 @@ export function ReportButton({
         onClick={handleClick}
         {...props}
       >
-        <MdWarningAmber />
+        <LuFlag />
         {textContent.button}
       </button>
       <Dialog
@@ -81,9 +81,9 @@ const TEXT_CONTENT = {
     action: 'removido',
   },
   default: {
-    title: 'Denunciar website',
-    message: 'Tem certeza que deseja denunciar este website?',
-    button: 'Denunciar',
-    action: 'denunciado',
+    title: 'Notificar problema',
+    message: 'Tem certeza que deseja notificar um problema neste site?',
+    button: 'Notificar problema',
+    action: 'reportado',
   },
 }

@@ -10,4 +10,6 @@ export const MOCK_KEYWORDS: IKeyword[] = [
   { id: '7', name: 'documentation' },
   { id: '8', name: 'web' },
   { id: '9', name: 'mozilla' },
+  { id: '10', name: 'education' },
+  { id: '11', name: 'other' },
 ]

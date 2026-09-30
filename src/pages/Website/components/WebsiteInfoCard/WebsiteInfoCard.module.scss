@@ -1,0 +1,110 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+
+// A visible border, not the card() mixin: that mixin's border color matches
+// this page's background almost exactly, so it read as unboxed. border-400
+// is the same token the site cards below already use visibly.
+.container {
+  display: flex;
+  flex-direction: column;
+  border: $border-base;
+  border-radius: $radius-md-lg;
+  overflow: hidden;
+  background: var(--color-surface);
+}
+
+// No background of its own (not the website's brand color either: that
+// clashed whenever it didn't match the logo's own colors).
+//
+// A fixed height (not aspect-ratio) on purpose: the logo below is sized with
+// height:100%, and aspect-ratio can't resolve against that percentage height
+// on this box's own auto height, so it silently falls back to sizing off the
+// image's intrinsic ratio instead of the intended box.
+.hero {
+  position: relative;
+  height: 11.75rem;
+  border-bottom: $border-base;
+}
+
+.heroImage {
+  // border-box so the padding insets the logo instead of adding to a
+  // 100%-sized box and overflowing past the card's clipped edges.
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: $spacing-xl;
+}
+
+// Element selectors (not just the class) so these win over Typography's own
+// variant rules, which scale up further at wider viewports — this card stays
+// a fixed, compact size at any width, matching the prototype.
+h1.title {
+  font-size: 1.75rem;
+  line-height: 1.1;
+}
+
+p.description {
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+.reportButtonSlot {
+  position: absolute;
+  top: $spacing-sm;
+  right: $spacing-sm;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  padding: 1.25rem;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-sm;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-xxs;
+}
+
+// span.tag (not just .tag) so this wins over the shared Tag component's own
+// styling, which is tuned for the main Feed page's larger, filled pills.
+// Outline only (no fill) and compact, matching the approved prototype exactly.
+span.tag {
+  padding: 0.25rem 0.6875rem;
+  border: $border-base;
+  border-radius: $radius-full;
+  background: transparent;
+  backdrop-filter: none;
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xxs;
+
+  // The votes never shrink (they clip their own overflow); "Visitar site"
+  // takes whatever width is left.
+  > :last-child {
+    flex: none;
+  }
+}
+
+a.visit {
+  flex: 1;
+  min-width: 0;
+  height: 2.625rem;
+  padding: 0 $spacing-xs;
+  font-weight: 500;
+}

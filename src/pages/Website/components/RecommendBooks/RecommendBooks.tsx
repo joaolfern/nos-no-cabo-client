@@ -1,8 +1,12 @@
+import clsx from 'clsx'
+import { LuArrowUpRight } from 'react-icons/lu'
 import { Typography } from '@/components/Typography/Typography'
-import { FeedCardList } from '@/pages/Feed/components/FeedCardList/FeedCardList'
-import { useRecommendedBooks } from '@/hooks/useDataHooks'
-import type { IKeyword, IWebsite } from '@/interfaces/IWebsite'
-import { useMemo } from 'react'
+import { Image } from '@/components/Image/Image'
+import {
+  RECOMMENDED_BOOKS_LIMIT,
+  useRecommendedBooks,
+} from '@/hooks/useDataHooks'
+import type { IKeyword } from '@/interfaces/IWebsite'
 import type { IBook } from '@/interfaces/IBook'
 import { BOOK_COVER_QUALITY } from '@/config/env'
 import styles from './RecommendBooks.module.scss'
@@ -11,56 +15,103 @@ type RecommendBooksProps = {
   keywords: IKeyword[]
 }
 
+// Measured across pages: usually one title wraps to two lines, the rest fit one.
+const SKELETON_TITLE_LINES = Array.from(
+  { length: RECOMMENDED_BOOKS_LIMIT },
+  (_, index) => (index === RECOMMENDED_BOOKS_LIMIT - 1 ? 2 : 1)
+)
+
 export function RecommendBooks({ keywords }: RecommendBooksProps) {
   const { data, isLoading } = useRecommendedBooks(keywords)
-  const formattedBooks = useMemo(
-    () => (data?.works ? formatBooksToWebsites(data.works) : []),
-    [data]
-  )
+  const books = data?.works ?? []
+
+  if (!isLoading && books.length === 0) {
+    return null
+  }
 
   return (
     <section className={styles.container}>
-      <Typography as='h3' variant='titleSm'>
-        Leituras Recomendadas
+      <Typography as='h2' variant='titleSm' className={styles.sectionTitle}>
+        Leituras recomendadas
       </Typography>
-      <FeedCardList span={400} data={formattedBooks} isLoading={isLoading} />
+      <div className={styles.list} aria-busy={isLoading}>
+        {isLoading
+          ? SKELETON_TITLE_LINES.map((titleLines, index) => (
+              <BookRowSkeleton key={index} titleLines={titleLines} />
+            ))
+          : books.map((book) => <BookRow key={book.key} book={book} />)}
+      </div>
     </section>
   )
 }
 
-function formatBooksToWebsites(books: IBook[]): IWebsite[] {
-  return books.map(
-    (book): IWebsite => ({
-      id: '',
-      name: book.title,
-      description: book.subject?.join(', ') || '',
-      url: book.key ? `https://openlibrary.org${book.key}` : '',
-      color: undefined,
-      keywords: (book.subject || []).map((s) => ({ name: s }) as IKeyword),
-      createdAt: book.first_publish_year
-        ? new Date(book.first_publish_year, 0, 1).toISOString()
-        : new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      faviconUrl: book.cover_id
-        ? `https://covers.openlibrary.org/b/id/${book.cover_id}-${BOOK_COVER_QUALITY}.jpg`
-        : '',
-      author: book.authors[0]
-        ? {
-            id: book.authors[0].key,
-            name: book.authors[0].name,
-            profilePicture: '',
-            createdAt: '',
-            updatedAt: '',
-            verified: false,
-          }
-        : {
-            id: '',
-            name: '',
-            profilePicture: '',
-            createdAt: '',
-            updatedAt: '',
-            verified: false,
-          },
-    })
+function BookRowSkeleton({ titleLines }: { titleLines: number }) {
+  return (
+    <div className={clsx(styles.row, styles.skeletonRow)} aria-hidden={true}>
+      <span className={clsx(styles.cover, styles.bone)} />
+      <div className={styles.info}>
+        <Typography variant='caption' className={styles.boneText}>
+          &nbsp;
+        </Typography>
+        <Typography
+          variant='bodyMd'
+          className={clsx(styles.title, styles.boneText, styles.boneLong)}
+        >
+          &nbsp;
+          {titleLines > 1 && (
+            <>
+              <br />
+              &nbsp;
+            </>
+          )}
+        </Typography>
+        <Typography variant='caption' className={styles.boneText}>
+          &nbsp;
+        </Typography>
+      </div>
+    </div>
+  )
+}
+
+function BookRow({ book }: { book: IBook }) {
+  const author = book.authors[0]?.name
+  const year = book.first_publish_year
+  const keywords = book.subject?.slice(0, 3).join(', ')
+  const coverUrl = book.cover_id
+    ? `https://covers.openlibrary.org/b/id/${book.cover_id}-${BOOK_COVER_QUALITY}.jpg`
+    : undefined
+
+  return (
+    <a
+      className={styles.row}
+      href={`https://openlibrary.org${book.key}`}
+      target='_blank'
+      rel='noopener noreferrer'
+    >
+      <Image className={styles.cover} src={coverUrl} alt={book.title} />
+      <div className={styles.info}>
+        {(author || year) && (
+          <Typography variant='caption' color='muted'>
+            {author}
+            {author && year && <span className={styles.bullet}> • </span>}
+            {year}
+          </Typography>
+        )}
+        <Typography variant='bodyMd' lines={2} className={styles.title}>
+          {book.title}
+        </Typography>
+        {keywords && (
+          <Typography
+            className={styles.keywords}
+            variant='caption'
+            color='muted'
+            lines={1}
+          >
+            {keywords}
+          </Typography>
+        )}
+      </div>
+      <LuArrowUpRight className={styles.icon} size='1rem' />
+    </a>
   )
 }

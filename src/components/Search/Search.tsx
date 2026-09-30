@@ -36,12 +36,6 @@ export function Search({
     }
   }
 
-  function handleBack(e: React.MouseEvent<HTMLButtonElement>) {
-    e.stopPropagation()
-
-    setIsFocused(false)
-  }
-
   function handleFocus() {
     setIsFocused(true)
   }

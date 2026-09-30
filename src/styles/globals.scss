@@ -1,5 +1,6 @@
 @use '@/styles/tokens/border.scss' as *;
 @use '@/styles/tokens/typography.scss' as *;
+@use '@/styles/viewTransitions.scss';
 
 html {
   background: var(--color-background-300);

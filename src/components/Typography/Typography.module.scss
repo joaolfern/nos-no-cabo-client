@@ -2,6 +2,7 @@
 @use '@/styles/tokens/breakpoints.scss' as *;
 
 .root {
+  margin: 0;
   color: var(--color-text-base);
 }
 
@@ -29,10 +30,10 @@
   color: transparent;
   background-image: linear-gradient(
     to right,
-    var(--color-text-subtle) 0%,
-    var(--color-text-base) 35%,
-    var(--color-text-base) 65%,
-    var(--color-text-subtle) 100%
+    var(--color-neutral-500) 0%,
+    var(--color-neutral-300) 35%,
+    var(--color-neutral-300) 65%,
+    var(--color-neutral-500) 100%
   );
   -webkit-background-clip: text;
   background-clip: text;

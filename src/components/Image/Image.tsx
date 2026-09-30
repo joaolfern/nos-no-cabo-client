@@ -1,12 +1,12 @@
 import type { ImageProps } from '@/components/Image/ImageInterfaces'
 import clsx from 'clsx'
 import { useCallback, useEffect, useState } from 'react'
-import FallbackSvg from '@/assets/imageFallback.svg?react'
 import styles from './Image.module.scss'
 
 export function Image({
   fallback,
   src,
+  alt,
   avatar,
   className,
   style,
@@ -31,7 +31,15 @@ export function Image({
 
   if (!imgSrc || hasError) {
     return (
-      <FallbackSvg className={clsx({ [styles.avatar]: avatar }, className)} />
+      <span
+        role='img'
+        aria-label={alt}
+        className={clsx(
+          styles.placeholder,
+          { [styles.avatar]: avatar },
+          className
+        )}
+      />
     )
   }
 
@@ -41,6 +49,7 @@ export function Image({
       style={completeStyle}
       loading='lazy'
       src={imgSrc}
+      alt={alt}
       onError={handleError}
       {...props}
     />

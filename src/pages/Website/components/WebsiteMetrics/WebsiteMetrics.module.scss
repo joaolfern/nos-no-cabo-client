@@ -1,0 +1,142 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+@use '@/styles/tokens/breakpoints.scss' as *;
+@use '@/styles/tokens/animations.scss' as *;
+
+// A visible border, not the card() mixin: that mixin's border color matches
+// this page's background almost exactly, so it read as unboxed. border-400
+// is the same token the site cards below already use visibly.
+.container {
+  border: $border-base;
+  border-radius: $radius-md-lg;
+  overflow: hidden;
+  background: var(--color-surface);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $border-width-base;
+  background: var(--color-border-400);
+
+  @media (min-width: $breakpoint-sm) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xxs;
+  padding: 1.125rem 1.25rem;
+  background: var(--color-surface);
+}
+
+// Same height for numbers and counter, so the cells line up.
+.value,
+.counter {
+  height: 2.375rem;
+}
+
+.value {
+  color: var(--color-text-base);
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 2.375rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.counter {
+  display: flex;
+  gap: 0.1875rem;
+}
+
+.digit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.625rem;
+  border: $border-base;
+  border-radius: $radius-sm;
+  // A faint seam across the middle, like an odometer drum.
+  background:
+    linear-gradient(
+      transparent calc(50% - 0.5px),
+      var(--color-border-400) calc(50% - 0.5px) calc(50% + 0.5px),
+      transparent calc(50% + 0.5px)
+    ),
+    var(--color-raised);
+  color: var(--color-text-base);
+  font-size: 1.375rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.description {
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+// Fixed columns so name length never moves the links (long names truncate).
+.nav {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-xs;
+  border-top: $border-base;
+}
+
+.navPrevious {
+  justify-self: start;
+}
+
+.navNext {
+  justify-self: end;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xxs;
+  max-width: 100%;
+  min-width: 0;
+  padding: $spacing-xxs $spacing-sm;
+  border-radius: $radius-full;
+  color: var(--color-text-base);
+  font-size: 0.8125rem;
+  text-decoration: none;
+
+  svg {
+    flex: none;
+  }
+
+  @include has-motion {
+    transition: background 0.15s;
+  }
+
+  &:hover {
+    background: var(--color-raised);
+    text-decoration: none;
+  }
+}
+
+.navName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.navMuted {
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.navAccent {
+  color: var(--color-primary-400);
+
+  &:hover {
+    background: var(--color-primary-100);
+  }
+}

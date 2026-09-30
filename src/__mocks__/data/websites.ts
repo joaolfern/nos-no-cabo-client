@@ -136,4 +136,40 @@ export const MOCK_WEBSITES: IWebsite[] = [
     updatedAt: '2025-12-19T00:00:00.000Z',
     faviconUrl: 'https://deepmed.net.br/favicon.png',
   },
+  {
+    id: '13',
+    name: 'Portaldosaber',
+    description:
+      'Uma plataforma colaborativa para compartilhar conhecimento e ideias.',
+    url: 'https://portaldosaber.obmep.org.br',
+    color: '#f59e0b',
+    keywords: [MOCK_KEYWORDS[9], MOCK_KEYWORDS[10], MOCK_KEYWORDS[2]],
+    createdAt: '2022-05-01T00:00:00.000Z',
+    updatedAt: '2025-06-10T00:00:00.000Z',
+    faviconUrl: '',
+  },
+  {
+    id: '14',
+    name: 'Projeto de exemplo 1',
+    description:
+      'Site de exemplo usado apenas para preencher a segunda página da listagem em desenvolvimento.',
+    url: 'https://example.com/1',
+    color: '#10b981',
+    keywords: [MOCK_KEYWORDS[9], MOCK_KEYWORDS[7]],
+    createdAt: '2021-03-01T00:00:00.000Z',
+    updatedAt: '2025-02-01T00:00:00.000Z',
+    faviconUrl: '',
+  },
+  {
+    id: '15',
+    name: 'Projeto de exemplo 2',
+    description:
+      'Segundo site de exemplo, usado apenas para preencher a listagem em desenvolvimento.',
+    url: 'https://example.com/2',
+    color: '#ef4444',
+    keywords: [MOCK_KEYWORDS[10], MOCK_KEYWORDS[0]],
+    createdAt: '2020-08-01T00:00:00.000Z',
+    updatedAt: '2025-01-01T00:00:00.000Z',
+    faviconUrl: '',
+  },
 ]

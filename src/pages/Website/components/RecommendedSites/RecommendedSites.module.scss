@@ -1,0 +1,35 @@
+@use '@/styles/tokens/spacing.scss' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-sm;
+}
+
+// h2.sectionTitle (not just .sectionTitle) so this wins over Typography's
+// own variant rule, which is bold and scales up further at wider viewports.
+h2.sectionTitle {
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: normal;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.seeAll {
+  font-size: 0.8125rem;
+  white-space: nowrap;
+  color: var(--color-primary-400);
+}

@@ -1,4 +1,4 @@
-import { TbArrowsSort } from 'react-icons/tb'
+import { LuArrowUpDown } from 'react-icons/lu'
 import { DropdownText } from '@/components/DropdownText/DropdownText'
 import styles from './FeedSort.module.scss'
 import {
@@ -18,15 +18,15 @@ export function FeedSort() {
 
   return (
     <DropdownText
-      classNames={{ text: styles.sort, panel: styles.sortPanel }}
+      classNames={{
+        content: styles.sortContent,
+      }}
       valueLabel={sortLabel}
       options={WEBSITES_SORT_OPTIONS}
       onChange={updateSort}
-      Icon={TbArrowsSort}
+      Icon={LuArrowUpDown}
       value={selectedSort}
       multiple={false}
-    >
-      Ordenar por:
-    </DropdownText>
+    />
   )
 }

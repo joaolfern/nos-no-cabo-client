@@ -12,3 +12,12 @@ export const NOS_NO_CABO_URL =
   import.meta.env.VITE_NOS_NO_CABO_URL || 'https://nosnocabo.pages.dev'
 export const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD
 export const isAdminMode = Boolean(ADMIN_PASSWORD)
+export const GITHUB_URL =
+  import.meta.env.VITE_GITHUB_URL ||
+  'https://github.com/joaolfern/nos-no-cabo-client'
+export const TWITTER_URL = import.meta.env.VITE_TWITTER_URL as
+  | string
+  | undefined
+export const CONTACT_EMAIL = import.meta.env.VITE_CONTACT_EMAIL as
+  | string
+  | undefined

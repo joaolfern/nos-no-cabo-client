@@ -1,41 +1,32 @@
-import type { MenuProps } from '@/components/Menu/MenuInterfaces'
+import type { ReactNode } from 'react'
+import type { IconType } from 'react-icons'
 
 export type DropdownOption<T> = {
   label: string
   value: T
+  Icon?: IconType
+  endContent?: ReactNode
 }
 
 export type ValueType<T, M extends boolean | undefined> = M extends true
   ? T[]
   : T
 
-export type CommonProps<T, M extends boolean | undefined> = Omit<
-  MenuProps,
+export type DropdownPosition = 'left' | 'right'
+
+export type DropdownProps<T, M extends boolean | undefined> = Omit<
+  React.HTMLAttributes<HTMLDivElement>,
   'onChange'
 > & {
-  options?: DropdownOption<T>[]
-  position?: 'left' | 'right'
-  multiple?: M
-  value: ValueType<T, M>
-}
-
-export type DropdownProps<T, M extends boolean | undefined> = CommonProps<
-  T,
-  M
-> & {
   options: DropdownOption<T>[]
+  value: ValueType<T, M>
   onChange: (value: T) => void
-  container?: HTMLElement | null
+  multiple?: M
+  // 'left' opens toward the left (right edges aligned), 'right' the opposite.
+  position?: DropdownPosition
+  loading?: boolean
   classNames?: {
     trigger?: string
     panel?: string
   }
-}
-
-export type PanelProps<T, M extends boolean | undefined = false> = CommonProps<
-  T,
-  M
-> & {
-  isOpen: boolean
-  handleChange: (value: T) => void
 }

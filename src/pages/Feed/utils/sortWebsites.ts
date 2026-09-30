@@ -1,5 +1,6 @@
 import type { IWebsite } from '@/interfaces/IWebsite'
 import type { _sortType } from '@/interfaces/ISort'
+import { mockWebsiteLikes } from '@/pages/Website/utils/mockWebsiteMetrics/mockWebsiteMetrics'
 
 export function sortWebsites(
   websites: IWebsite[],
@@ -21,6 +22,10 @@ export function sortWebsites(
       return websitesCopy.sort((a, b) => a.name.localeCompare(b.name))
     case 'title_desc':
       return websitesCopy.sort((a, b) => b.name.localeCompare(a.name))
+    case 'likes_desc':
+      return websitesCopy.sort(
+        (a, b) => mockWebsiteLikes(b.id) - mockWebsiteLikes(a.id)
+      )
     default:
       return websitesCopy
   }

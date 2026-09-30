@@ -1,89 +1,162 @@
-@use '@/styles/tokens/border.scss' as *;
-
-@use '@/styles/tokens/shadow.scss' as *;
 @use '@/styles/tokens/spacing.scss' as *;
-@use '@/styles/tokens/breakpoints.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
 @use '@/styles/tokens/animations.scss' as *;
 
-.container {
-  display: flex;
-  border-radius: $radius-md;
-  box-shadow: $shadow-sm;
-  overflow: hidden;
+.card {
   position: relative;
-  backdrop-filter: blur(5px);
-  transition:
-    background 0.15s ease-in,
-    box-shadow 0.15s ease-in;
-  border: $border-width-base solid var(--color-border-400);
+  display: flex;
+  gap: $spacing-sm;
+  padding: $spacing-sm;
+  border: $border-base;
+  border-radius: $radius-md-lg;
+  background: var(--color-surface);
 
-  &.clickable {
-    &:hover:not(&:has(.externalLinkContainer a:hover)) {
-      box-shadow: $shadow-md;
-    }
+  @include has-motion {
+    transition: border-color 0.15s;
+  }
 
-    &:focus-within:focus-visible {
-      border: $border-width-base solid var(--color-accent-400);
-    }
+  &:has(.detailsLink:hover) {
+    border-color: var(--color-primary-400);
+  }
+}
 
-    @include has-motion {
-      &:hover .image {
-        transform: scale(1.1);
-      }
+.thumb {
+  flex: none;
+  width: 3.5rem;
+  height: 3.5rem;
+  object-fit: contain;
+  padding: $spacing-xxxs;
+  border: $border-base;
+  border-radius: $radius-md;
+  background: var(--color-raised);
 
-      &:hover .title {
-        color: var(--website-color);
-      }
-    }
+  .detailed & {
+    width: 3.75rem;
+    height: 3.75rem;
   }
 }
 
 .content {
+  min-width: 0;
   flex: 1;
-  padding: $spacing-md $spacing-md $spacing-md 0;
-  gap: $spacing-md;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  gap: $spacing-xxxs;
 }
 
-.image {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  width: 120px;
-  padding-inline: $spacing-md;
+.titleRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $spacing-xxs;
+}
 
-  @include has-motion {
-    transition: transform 0.35s ease-out;
-    will-change: transform;
+// Element + class selectors so these win over Typography's own variant
+// rules, which change size and weight at wider viewports.
+h3.title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.45;
+}
 
-    &:hover {
-      transform: scale(1.05);
-    }
+p.description {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+
+  // Always two lines tall, so every card in the grid is the same height.
+  .detailed & {
+    min-height: calc(2 * 1.45em);
   }
 }
 
-.keywords {
-  margin-top: auto;
+.externalLink {
+  position: relative;
+  z-index: 2;
+  flex: none;
+  display: flex;
+  color: var(--color-primary-400);
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: $spacing-xxxs;
+}
+
+// span.tag beats the shared Tag's own rules (filled pills, line-height: 1).
+span.tag {
+  padding: 0.125rem 0.5625rem;
+  border: $border-base;
+  border-radius: $radius-full;
+  background: transparent;
+  backdrop-filter: none;
+  color: var(--color-text-base);
+  font-size: 0.6875rem;
+  line-height: 1.45;
+}
+
+.likes {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xxxs;
+  margin-left: auto;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+
+  svg {
+    width: 0.8125rem;
+    height: 0.8125rem;
+  }
 }
 
 .detailsLink {
   all: unset;
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    cursor: pointer;
-  }
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
 }
 
-.externalLinkContainer {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: $spacing-sm;
+// Skeleton: same boxes and line-heights as the loaded card, painted as bars.
+.bone {
+  display: block;
 }
 
-.skeleton {
-  height: 252px;
+.boneText {
+  display: block;
+  color: transparent;
+  background: linear-gradient(
+      transparent 20%,
+      var(--color-raised) 20% 80%,
+      transparent 80%
+    )
+    0 0 / 100% 1lh repeat-y;
+}
+
+.skeletonTitle {
+  width: 40%;
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+.skeletonDescription {
+  width: 90%;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+span.skeletonTag {
+  width: 5.5rem;
+  color: transparent;
 }

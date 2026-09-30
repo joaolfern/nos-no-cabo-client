@@ -1,21 +1,31 @@
 @use '@/styles/tokens/shadow.scss' as *;
 @use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
 
+// Neutral, not alarm-red: this is a low-key "flag an issue" action, not a
+// warning that needs to grab attention on its own.
 .reportButton {
   position: relative;
-  color: var(--color-danger-700);
   display: flex;
   align-items: center;
-  gap: $spacing-xxxs;
+  gap: 0.375rem;
+  height: 1.875rem;
+  padding: 0 0.625rem;
+  border: $border-base;
+  border-radius: $radius-full;
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  font-size: 0.75rem;
+  font-weight: 500;
 
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 6px;
+  svg {
+    width: 0.875rem;
+    height: 0.875rem;
   }
 
   &:hover {
+    color: var(--color-danger-700);
+    border-color: var(--color-danger-700);
     background: var(--color-background-300);
     box-shadow: $shadow-md;
   }

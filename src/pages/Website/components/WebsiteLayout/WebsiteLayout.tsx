@@ -1,4 +1,3 @@
-import { InnerRouteAside } from '@/pages/Webring/components/InnerRouteAside/InnerRouteAside'
 import styles from './WebsiteLayout.module.scss'
 import type { NosNoCaboLayoutProps } from '@/layouts/NosNoCaboLayout/NosNoCaboLayoutInterfaces'
 
@@ -11,7 +10,6 @@ export function WebsiteLayout({
 }: WebsiteLayoutProps) {
   return (
     <div className={styles.container} {...props}>
-      <InnerRouteAside />
       {children}
     </div>
   )
