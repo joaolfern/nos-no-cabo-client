@@ -1,0 +1,29 @@
+@use '@/styles/tokens/spacing.scss' as *;
+
+.field {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.label {
+  padding-bottom: $spacing-xxs;
+  color: var(--color-text-base);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+// One line always reserved, so a message appearing never shifts the form.
+.message {
+  min-height: 1.3em;
+  box-sizing: content-box;
+  margin: 0;
+  padding: $spacing-xxs 0 $spacing-md;
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.3;
+}
+
+.error {
+  color: var(--color-danger-700);
+}

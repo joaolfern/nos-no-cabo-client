@@ -28,21 +28,30 @@ submit -> api : POST /websites
 api --> submit : 202 Website {id, status: checking}
 submit -> store : add draft {id, …, status: checking, submittedAt}
 page --> Submitter : success screen\n"Em análise" · "Ver no feed" · "Adicionar o selo"
+opt "Avise-me quando for publicado"
+  page -> Submitter : Notification.requestPermission()
+  page -> store : draft.notify = true
+end
 
 == Later, including after a page refresh ==
 Submitter -> feed : /websites
 feed -> store : drafts
 feed --> Submitter : drafts at the top\n(dashed border + loading)
-poll -> api : GET /websites/:id (every 5 s while checking,\nstops when the tab is hidden)
+poll -> api : GET /websites/status?ids=… (one request for all drafts;\nevery 15 s for 2 min while visible, then on load/focus)
 alt published
   api --> poll : status published
   poll -> store : drop draft
   poll -> feed : invalidate ['websites']
-  feed --> Submitter : card now comes from the server list\n(toast "foi publicado")
+  feed --> Submitter : card now comes from the server list
+  opt opted in to notifications and a tab is open
+    poll -> Submitter : local Notification "{name} foi publicado"
+  end
 else rejected
   api --> poll : status rejected, reason
   poll -> store : mark rejected
   feed --> Submitter : rejected card with reason + "Dispensar"
+else nobody is on the site
+  note over poll, api : nothing polls; the next visit checks once.\nFuture: Web Push from the backend on setStatus
 else still checking after 7 days
   poll -> store : expire draft
 end

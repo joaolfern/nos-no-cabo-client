@@ -1,0 +1,119 @@
+import { screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { render } from '@/__tests__/utils.test'
+import { resetMockSubmissions } from '@/__mocks__/data/submissions'
+import { SubmitWebsite } from '@/pages/SubmitWebsite/SubmitWebsite'
+
+const urlInput = () => screen.getByLabelText('Endereço do site')
+const nameInput = () => screen.getByLabelText('Nome')
+const submitButton = () => screen.getByRole('button', { name: 'Enviar site' })
+
+async function typeUrl(url: string) {
+  await userEvent.type(urlInput(), url)
+}
+
+beforeEach(resetMockSubmissions)
+
+describe('SubmitWebsite', () => {
+  it('prefills from the preview and submits in one screen', async () => {
+    await render(<SubmitWebsite />)
+
+    await typeUrl('meu-projeto.dev')
+    await waitFor(() => expect(nameInput()).toHaveValue('Meu-projeto'))
+    expect(screen.getByLabelText('Descrição')).toHaveValue(
+      'Projeto independente publicado em meu-projeto.dev.'
+    )
+
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Educação' }))
+    await userEvent.click(submitButton())
+
+    expect(
+      await screen.findByRole('heading', { name: 'Recebemos Meu-projeto!' })
+    ).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Ver no feed' })).toHaveAttribute(
+      'href',
+      '/websites'
+    )
+  })
+
+  it('links to the existing page and blocks a duplicate', async () => {
+    await render(<SubmitWebsite />)
+
+    await typeUrl('www.queridodiario.ok.org.br')
+
+    expect(
+      await screen.findByText(/Esse site já está no Nós no Cabo/)
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: 'Ver página do site' })
+    ).toHaveAttribute('href', '/website/1')
+
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Cidades' }))
+    await userEvent.click(submitButton())
+
+    expect(
+      screen.queryByRole('heading', { name: /Recebemos/ })
+    ).not.toBeInTheDocument()
+  })
+
+  it('lets an unreachable site be filled in by hand', async () => {
+    await render(<SubmitWebsite />)
+
+    await typeUrl('site-inacessivel.org')
+    expect(
+      await screen.findByText(/Não conseguimos acessar esse endereço/)
+    ).toBeInTheDocument()
+
+    await userEvent.type(nameInput(), 'Site manual')
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Saúde' }))
+    await userEvent.click(submitButton())
+
+    expect(
+      await screen.findByRole('heading', { name: 'Recebemos Site manual!' })
+    ).toBeInTheDocument()
+  })
+
+  it('shows every validation error and focuses the first one', async () => {
+    await render(<SubmitWebsite />)
+
+    await userEvent.click(submitButton())
+
+    expect(urlInput()).toHaveFocus()
+    expect(urlInput()).toHaveAttribute('aria-invalid', 'true')
+    expect(screen.getByText(/Informe um endereço válido/)).toBeInTheDocument()
+    expect(screen.getByText(/pelo menos 3 caracteres/)).toBeInTheDocument()
+    expect(
+      screen.getByText('Escolha pelo menos uma categoria.')
+    ).toBeInTheDocument()
+  })
+
+  it('keeps edited fields when the url changes', async () => {
+    await render(<SubmitWebsite />)
+
+    await typeUrl('primeiro.dev')
+    await waitFor(() => expect(nameInput()).toHaveValue('Primeiro'))
+
+    await userEvent.clear(nameInput())
+    await userEvent.type(nameInput(), 'Meu nome')
+    await userEvent.clear(urlInput())
+    await typeUrl('segundo.dev')
+
+    await waitFor(() =>
+      expect(screen.getByLabelText('Descrição')).toHaveValue(
+        'Projeto independente publicado em segundo.dev.'
+      )
+    )
+    expect(nameInput()).toHaveValue('Meu nome')
+  })
+
+  it('allows at most three categories', async () => {
+    await render(<SubmitWebsite />)
+
+    for (const name of ['Educação', 'Saúde', 'Cidades']) {
+      await userEvent.click(screen.getByRole('checkbox', { name }))
+    }
+
+    expect(screen.getByRole('checkbox', { name: 'Inclusão' })).toBeDisabled()
+    expect(screen.getByRole('checkbox', { name: 'Saúde' })).toBeEnabled()
+  })
+})

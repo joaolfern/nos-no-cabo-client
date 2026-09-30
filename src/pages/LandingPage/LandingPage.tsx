@@ -8,10 +8,8 @@ import { Link } from '@/components/Link/Link'
 import { MOCK_BUBBLE_ITEMS } from './mocks'
 import { LANDING_THEME } from './landingTheme'
 import { useTheme } from '@/hooks/useTheme'
-import { useWebsiteForm } from '../WebsiteForm/hooks/useWebsiteForm'
 
 export function LandingPage() {
-  const { handleCreate } = useWebsiteForm()
   const { mode } = useTheme()
 
   return (
@@ -31,19 +29,21 @@ export function LandingPage() {
             </p>
           </div>
           <div className={styles.buttonGroup}>
-            <Link to='/websites'>
-              <Button className={styles.button}>
+            <Button className={styles.button} asChild>
+              <Link to='/websites'>
                 <MdHome />
                 Conferir sites
-              </Button>
-            </Link>
+              </Link>
+            </Button>
             <Button
               variant='secondary'
               className={clsx(styles.button, styles.secondaryButton)}
-              onClick={handleCreate}
+              asChild
             >
-              <MdAdd />
-              Adicionar meu site
+              <Link to='/websites/novo'>
+                <MdAdd />
+                Adicionar um site
+              </Link>
             </Button>
           </div>
         </div>

@@ -1,0 +1,23 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+
+.textarea {
+  min-height: 6rem;
+  padding: $spacing-xs $spacing-md;
+  border: $border-base;
+  border-radius: $radius-md;
+  background: transparent;
+  color: var(--color-text-base);
+  font: inherit;
+  line-height: 1.5;
+  resize: vertical;
+
+  &::placeholder {
+    color: var(--color-text-subtle);
+  }
+
+  &:hover,
+  &:focus {
+    border-color: var(--color-accent-400);
+  }
+}

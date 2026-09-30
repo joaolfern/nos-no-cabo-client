@@ -21,3 +21,7 @@ export const TWITTER_URL = import.meta.env.VITE_TWITTER_URL as
 export const CONTACT_EMAIL = import.meta.env.VITE_CONTACT_EMAIL as
   | string
   | undefined
+const TURNSTILE_TEST_SITE_KEY = '1x00000000000000000000AA'
+export const TURNSTILE_SITE_KEY: string | undefined =
+  import.meta.env.VITE_TURNSTILE_SITE_KEY ||
+  (ENABLE_MOCKS ? TURNSTILE_TEST_SITE_KEY : undefined)

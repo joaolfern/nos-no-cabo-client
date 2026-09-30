@@ -1,0 +1,85 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+@use '@/styles/tokens/breakpoints.scss' as *;
+
+.layout {
+  display: grid;
+  grid-template-areas:
+    'header'
+    'preview'
+    'form';
+  gap: $spacing-lg;
+
+  @media (min-width: $breakpoint-md) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 22rem);
+    grid-template-areas:
+      'header header'
+      'form preview';
+    column-gap: $spacing-xxxl;
+    align-items: start;
+  }
+}
+
+.header {
+  grid-area: header;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xxs;
+  max-width: 40rem;
+}
+
+.preview {
+  grid-area: preview;
+
+  @media (min-width: $breakpoint-md) {
+    position: sticky;
+    top: $spacing-xl;
+  }
+}
+
+.form {
+  grid-area: form;
+  display: flex;
+  flex-direction: column;
+}
+
+.colorRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.swatch {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  padding: $spacing-xxxs;
+  border: $border-base;
+  border-radius: $radius-md;
+  background: transparent;
+  cursor: pointer;
+}
+
+.colorInput {
+  flex: 1;
+  min-width: 0;
+  max-width: 10rem;
+  font-family: monospace;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.submitMessage {
+  min-height: 1.3em;
+  box-sizing: content-box;
+  margin: 0;
+  padding-top: $spacing-xxs;
+  color: var(--color-danger-700);
+  font-size: 0.8125rem;
+  line-height: 1.3;
+}

@@ -18,12 +18,14 @@ type FeedCardProps = {
   website: IWebsite
   variant?: FeedCardVariant
   highlightKeywordId?: string
+  readOnly?: boolean
 }
 
 function FeedCardInner({
   website,
   variant = 'detailed',
   highlightKeywordId,
+  readOnly = false,
 }: FeedCardProps) {
   const primaryKeyword = getPrimaryKeyword(website, highlightKeywordId)
   const otherKeywordsCount = website.keywords.length - 1
@@ -76,7 +78,7 @@ function FeedCardInner({
           {otherKeywordsCount > 0 && (
             <Tag className={styles.tag}>+{otherKeywordsCount}</Tag>
           )}
-          {variant === 'detailed' && (
+          {variant === 'detailed' && !readOnly && (
             <span className={styles.likes} title='Curtidas'>
               <LuThumbsUp aria-hidden={true} />
               {formatCompactNumber(mockWebsiteLikes(website.id))}
@@ -84,11 +86,13 @@ function FeedCardInner({
           )}
         </div>
       </div>
-      <Link
-        className={styles.detailsLink}
-        to={`/website/${website.id}`}
-        aria-label={website.name}
-      />
+      {!readOnly && (
+        <Link
+          className={styles.detailsLink}
+          to={`/website/${website.id}`}
+          aria-label={website.name}
+        />
+      )}
     </article>
   )
 }

@@ -3,13 +3,19 @@ import type { AppLayoutProps } from '@/layouts/AppLayout/AppLayoutInterfaces'
 import clsx from 'clsx'
 import styles from './AppLayout.module.scss'
 
-export function AppLayout({ children, className, ...props }: AppLayoutProps) {
+export function AppLayout({
+  children,
+  className,
+  variant = 'wide',
+  ...props
+}: AppLayoutProps) {
   return (
-    <>
-      <section className={clsx(styles.container, className)} {...props}>
-        {children}
-      </section>
-    </>
+    <section
+      className={clsx(styles.container, styles[variant], className)}
+      {...props}
+    >
+      {children}
+    </section>
   )
 }
 

@@ -5,11 +5,22 @@ import { clsx } from 'clsx'
 type TopbarProps = React.JSX.IntrinsicElements['header'] & {
   children: React.ReactNode
   ref?: React.Ref<HTMLElement>
+  focused?: boolean
 }
 
-export function Topbar({ children, ref, className, ...props }: TopbarProps) {
+export function Topbar({
+  children,
+  ref,
+  className,
+  focused = false,
+  ...props
+}: TopbarProps) {
   return (
-    <header className={clsx(styles.topbar, className)} ref={ref} {...props}>
+    <header
+      className={clsx(styles.topbar, { [styles.focused]: focused }, className)}
+      ref={ref}
+      {...props}
+    >
       <div className={styles.content}>
         <Logo />
         {children}

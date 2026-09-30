@@ -26,3 +26,15 @@
     padding-inline: $spacing-xl;
   }
 }
+
+// Focused pages: the divider stays full width, the content lines up with the page.
+.focused {
+  border-bottom: $border-lg;
+
+  .content {
+    display: flex;
+    max-width: $layout-focused-max-width;
+    margin-inline: auto;
+    border-bottom: none;
+  }
+}

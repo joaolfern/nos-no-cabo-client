@@ -5,16 +5,23 @@ import { TopbarActions } from '@/layouts/NosNoCaboLayout/components/TopbarAction
 import type { NosNoCaboLayoutProps } from '@/layouts/NosNoCaboLayout/NosNoCaboLayoutInterfaces'
 import { Outlet } from 'react-router'
 
-export function NosNoCaboLayout({ children, ...props }: NosNoCaboLayoutProps) {
+export function NosNoCaboLayout({
+  children,
+  variant = 'wide',
+  ...props
+}: NosNoCaboLayoutProps) {
   const topbarRef = useRef<HTMLElement>(null)
+  const isFocused = variant === 'focused'
 
   return (
-    <AppLayout {...props}>
-      <AppLayout.Topbar ref={topbarRef}>
-        <AppLayout.TopbarContent>
-          <SearchFeed container={topbarRef} />
-        </AppLayout.TopbarContent>
-        <TopbarActions />
+    <AppLayout variant={variant} {...props}>
+      <AppLayout.Topbar ref={topbarRef} focused={isFocused}>
+        {!isFocused && (
+          <AppLayout.TopbarContent>
+            <SearchFeed container={topbarRef} />
+          </AppLayout.TopbarContent>
+        )}
+        <TopbarActions showAddSite={!isFocused} />
       </AppLayout.Topbar>
       <AppLayout.Content>
         <Outlet />
