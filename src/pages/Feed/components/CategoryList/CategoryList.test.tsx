@@ -1,14 +1,15 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { LuLayers } from 'react-icons/lu'
 import { CategoryList } from './CategoryList'
 
 const options = [
-  { label: 'web', value: 'w' },
-  { label: 'code', value: 'c' },
+  { label: 'Saúde', value: 's', Icon: LuLayers },
+  { label: 'Educação', value: 'e', Icon: LuLayers },
 ]
 const counts = new Map([
-  ['w', 3],
-  ['c', 2],
+  ['s', 3],
+  ['e', 2],
 ])
 
 function setup(props: Partial<React.ComponentProps<typeof CategoryList>> = {}) {
@@ -37,7 +38,7 @@ describe('CategoryList', () => {
       'aria-pressed',
       'true'
     )
-    expect(screen.getByRole('button', { name: /web/ })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: /Saúde/ })).toHaveAttribute(
       'aria-pressed',
       'false'
     )
@@ -49,15 +50,15 @@ describe('CategoryList', () => {
   it('selects a category', async () => {
     const { onSelect } = setup()
 
-    await userEvent.click(screen.getByRole('button', { name: /code/ }))
+    await userEvent.click(screen.getByRole('button', { name: /Educação/ }))
 
-    expect(onSelect).toHaveBeenCalledWith('c')
+    expect(onSelect).toHaveBeenCalledWith('e')
   })
 
   it('marks only the selected category as active', () => {
-    setup({ selected: 'w' })
+    setup({ selected: 's' })
 
-    expect(screen.getByRole('button', { name: /web/ })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: /Saúde/ })).toHaveAttribute(
       'aria-pressed',
       'true'
     )
@@ -68,7 +69,7 @@ describe('CategoryList', () => {
   })
 
   it('goes back to every category with "Todos"', async () => {
-    const { onSelect } = setup({ selected: 'w' })
+    const { onSelect } = setup({ selected: 's' })
 
     await userEvent.click(screen.getByRole('button', { name: /Todos/ }))
 
@@ -87,6 +88,7 @@ describe('CategoryList', () => {
     const manyOptions = ['a', 'b', 'c', 'd', 'e', 'f'].map((value) => ({
       label: `cat-${value}`,
       value,
+      Icon: LuLayers,
     }))
 
     it('moves the rest into "Mais categorias"', async () => {

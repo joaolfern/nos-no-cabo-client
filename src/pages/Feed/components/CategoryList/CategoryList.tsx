@@ -4,16 +4,14 @@ import { LuEllipsis } from 'react-icons/lu'
 import { Dropdown } from '@/components/Dropdown/Dropdown'
 import { Loading } from '@/components/Loading/Loading'
 import { Typography } from '@/components/Typography/Typography'
-import {
-  ALL_CATEGORIES,
-  getCategoryMeta,
-} from '@/pages/Feed/constants/categories'
+import { ALL_CATEGORIES } from '@/pages/Feed/constants/categories'
 import { splitVisibleCategories } from '@/pages/Feed/utils/splitVisibleCategories'
 import styles from './CategoryList.module.scss'
 
 type CategoryOption = {
   label: string
   value: string
+  Icon: IconType
 }
 
 type CategoryListProps = {
@@ -58,7 +56,7 @@ export function CategoryList({
             <CategoryRow
               key={option.value}
               label={option.label}
-              Icon={getCategoryMeta(option.label).Icon}
+              Icon={option.Icon}
               count={countOf(option.value)}
               active={selected === option.value}
               onClick={() => onSelect(option.value)}
@@ -70,7 +68,6 @@ export function CategoryList({
               classNames={{ trigger: styles.overflowTrigger }}
               options={hidden.map((option) => ({
                 ...option,
-                Icon: getCategoryMeta(option.label).Icon,
                 endContent: countOf(option.value),
               }))}
               value={selected ?? ''}

@@ -2,6 +2,7 @@ import { Tag } from '@/components/Tag/Tag'
 import styles from './WebsiteKeywords.module.scss'
 import { clsx } from 'clsx'
 import type { IKeyword } from '@/interfaces/IWebsite'
+import { getCategoryLabel } from '@/pages/Feed/constants/categories'
 
 type WebsiteKeywordsProps = React.HTMLAttributes<HTMLDivElement> & {
   keywords: IKeyword[]
@@ -17,7 +18,9 @@ export function WebsiteKeywords({
 
   return (
     <div className={clsx(styles.container, className)} {...props}>
-      {shownKeyword && <Tag key={shownKeyword.id}>{shownKeyword.name}</Tag>}
+      {shownKeyword && (
+        <Tag key={shownKeyword.id}>{getCategoryLabel(shownKeyword.name)}</Tag>
+      )}
       {hasMore && <Tag>+ {keywords.length - 1}</Tag>}
     </div>
   )

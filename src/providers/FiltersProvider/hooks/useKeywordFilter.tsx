@@ -1,17 +1,29 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo } from 'react'
+import { useSearchParams } from 'react-router'
 import { useKeywordsData } from '@/hooks/useDataHooks'
-import type { IFilterEvent } from '@/interfaces/IFilters'
 import type { IKeyword, IWebsite } from '@/interfaces/IWebsite'
+import {
+  getCategoryLabel,
+  sortByCategoryOrder,
+} from '@/pages/Feed/constants/categories'
+
+export const CATEGORY_SEARCH_PARAM = 'categoria'
 
 export function useKeywordFilter() {
-  const [selectedKeywords, setSelectedKeywords] = useState<string[]>([])
+  const [searchParams, setSearchParams] = useSearchParams()
   const { data: keywords, isLoading: keywordIsLoading } = useKeywordsData()
+  const selectedName = searchParams.get(CATEGORY_SEARCH_PARAM)
 
   const keywordsMap = useMemo(() => {
     const map = new Map<string, IKeyword>()
     keywords?.forEach((keyword) => map.set(keyword.id, keyword))
     return map
   }, [keywords])
+
+  const selectedKeywords = useMemo(() => {
+    const selected = keywords?.find((keyword) => keyword.name === selectedName)
+    return selected ? [selected.id] : []
+  }, [keywords, selectedName])
 
   const getKeywordById = useCallback(
     (id: string) => keywordsMap.get(id),
@@ -20,20 +32,36 @@ export function useKeywordFilter() {
 
   const keywordOptions = useMemo(
     () =>
-      keywords
-        ? keywords.map((keyword) => ({
-            label: keyword.name,
-            value: keyword.id,
-          }))
-        : [],
+      sortByCategoryOrder(keywords ?? []).map((keyword) => ({
+        label: getCategoryLabel(keyword.name),
+        value: keyword.id,
+      })),
     [keywords]
   )
 
-  const updateKeywords = useCallback((changedItem: string): IFilterEvent => {
-    setSelectedKeywords([changedItem])
+  const setSelectedName = useCallback(
+    (name: string | undefined) => {
+      setSearchParams(
+        (params) => {
+          if (name) params.set(CATEGORY_SEARCH_PARAM, name)
+          else params.delete(CATEGORY_SEARCH_PARAM)
+          return params
+        },
+        { replace: true }
+      )
+    },
+    [setSearchParams]
+  )
 
-    return { updatedKeywords: [changedItem] }
-  }, [])
+  const updateKeywords = useCallback(
+    (id: string) => setSelectedName(keywordsMap.get(id)?.name),
+    [keywordsMap, setSelectedName]
+  )
+
+  const clearKeywords = useCallback(
+    () => setSelectedName(undefined),
+    [setSelectedName]
+  )
 
   const filterByKeyword = useCallback(
     (websites: IWebsite[], selectedKeywords: string[]): IWebsite[] => {
@@ -47,10 +75,6 @@ export function useKeywordFilter() {
     },
     []
   )
-
-  const clearKeywords = useCallback(() => {
-    setSelectedKeywords([])
-  }, [])
 
   return {
     selectedKeywords,

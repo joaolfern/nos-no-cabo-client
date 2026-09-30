@@ -12,7 +12,7 @@ import { useMemo, useRef, useState } from 'react'
 import styles from './Feed.module.scss'
 
 export function Feed() {
-  const { websites, websitesRaw, isLoading, updateWebsites } = useWebsites()
+  const { websites, isLoading } = useWebsites()
   const {
     filterBySearch,
     search,
@@ -52,7 +52,6 @@ export function Feed() {
   function clearFilters() {
     clearKeywords()
     clearSearch()
-    if (websitesRaw) updateWebsites(websitesRaw)
   }
 
   return (

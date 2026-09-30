@@ -53,17 +53,17 @@ export function useKeywordData(id: string) {
 
 export const RECOMMENDED_BOOKS_LIMIT = 3
 
-export function useRecommendedBooks(keywords: IKeyword[]) {
+export function useRecommendedBooks(subject: string | undefined) {
   return useQuery({
-    enabled: ENABLE_OPEN_LIBRARY_API,
-    queryKey: ['recommendedBooks', keywords],
+    enabled: ENABLE_OPEN_LIBRARY_API && !!subject,
+    queryKey: ['recommendedBooks', subject],
     retry: false,
     refetchOnWindowFocus: false,
 
     queryFn: () =>
       openLibraryApi
         .get<IOpenLibraryResponse>(
-          `subjects/${keywords[0].name.replace(' ', '_')}.json?limit=${RECOMMENDED_BOOKS_LIMIT}`
+          `subjects/${subject}.json?limit=${RECOMMENDED_BOOKS_LIMIT}`
         )
         .then((res) => res.data ?? []),
   })

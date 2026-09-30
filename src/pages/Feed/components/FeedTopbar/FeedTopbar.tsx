@@ -5,7 +5,6 @@ import { ViewToggle } from '@/pages/Feed/components/ViewToggle/ViewToggle'
 import styles from './FeedTopbar.module.scss'
 import { useWebsites } from '@/pages/Feed/hooks/useWebsites'
 import { useFilters } from '@/pages/Feed/hooks/useFilters'
-import type { IFilterEvent } from '@/interfaces/IFilters'
 import type { FeedView } from '@/interfaces/IFeedView'
 import {
   ALL_CATEGORIES,
@@ -26,22 +25,17 @@ export function FeedTopbar({
 }: FeedTopbarProps) {
   const isMobile = useIsMobile()
 
-  const { updateWebsites, websitesRaw } = useWebsites()
-  const { filterByKeyword, selectedKeywords, getKeywordById } = useFilters()
+  const { websitesRaw } = useWebsites()
+  const { selectedKeywords, getKeywordById } = useFilters()
   const count = total ?? websitesRaw?.length
   const category = getKeywordById(selectedKeywords[0] ?? '')
-  const { Icon, description } = category
+  const {
+    Icon,
+    description,
+    label: title,
+  } = category
     ? getCategoryMeta(category.name)
-    : ALL_CATEGORIES
-
-  function handleFilter(props?: IFilterEvent) {
-    if (websitesRaw) {
-      const { updatedKeywords } = props || {}
-      const keywords = updatedKeywords ?? selectedKeywords
-
-      updateWebsites(filterByKeyword(websitesRaw, keywords))
-    }
-  }
+    : { ...ALL_CATEGORIES, label: ALL_CATEGORIES.title }
 
   return (
     <div data-testid='feed-top-bar' className={styles.feedTopbar}>
@@ -51,9 +45,7 @@ export function FeedTopbar({
           nosnocabo/{category?.name ?? ''}
         </span>
         <div className={styles.titleRow}>
-          <h1 className={styles.title}>
-            {category ? capitalize(category.name) : ALL_CATEGORIES.title}
-          </h1>
+          <h1 className={styles.title}>{title}</h1>
           {count !== undefined && (
             <span
               className={styles.count}
@@ -65,7 +57,7 @@ export function FeedTopbar({
         </div>
         <p className={styles.description}>{description}</p>
       </div>
-      {isMobile && <FeedFilters.Inline onChange={handleFilter} />}
+      {isMobile && <FeedFilters.Inline />}
       <div className={styles.controls}>
         {onViewChange && (
           <div className={styles.viewToggle}>
@@ -76,8 +68,4 @@ export function FeedTopbar({
       </div>
     </div>
   )
-}
-
-function capitalize(text: string) {
-  return text.charAt(0).toUpperCase() + text.slice(1)
 }

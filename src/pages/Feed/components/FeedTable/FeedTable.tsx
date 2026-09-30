@@ -8,6 +8,7 @@ import { getPrimaryKeyword } from '@/pages/Feed/utils/getPrimaryKeyword'
 import { mockWebsiteLikes } from '@/pages/Website/utils/mockWebsiteMetrics/mockWebsiteMetrics'
 import { formatCompactNumber } from '@/utils/formatCompactNumber/formatCompactNumber'
 import styles from './FeedTable.module.scss'
+import { getCategoryLabel } from '@/pages/Feed/constants/categories'
 
 type FeedTableProps = {
   data: IWebsite[]
@@ -63,7 +64,9 @@ export function FeedTable({
                     {website.description}
                   </td>
                   <td className={clsx(styles.category, styles.optional)}>
-                    {getPrimaryKeyword(website, highlightKeywordId)?.name}
+                    {getCategoryLabel(
+                      getPrimaryKeyword(website, highlightKeywordId)?.name ?? ''
+                    )}
                   </td>
                   {showLikes && (
                     <td className={styles.likes}>

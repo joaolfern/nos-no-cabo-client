@@ -19,7 +19,6 @@ export interface IWebsitesContext {
   isLoading: boolean
   error: Error | null
   getWebsiteById: (id: string) => IWebsite
-  updateWebsites: (newWebsites: IWebsite[]) => void
   websitesRaw: IWebsite[] | undefined
 }
 

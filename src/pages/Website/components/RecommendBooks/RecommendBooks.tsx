@@ -9,6 +9,7 @@ import {
 import type { IKeyword } from '@/interfaces/IWebsite'
 import type { IBook } from '@/interfaces/IBook'
 import { BOOK_COVER_QUALITY } from '@/config/env'
+import { getCategoryMeta } from '@/pages/Feed/constants/categories'
 import styles from './RecommendBooks.module.scss'
 
 type RecommendBooksProps = {
@@ -22,7 +23,10 @@ const SKELETON_TITLE_LINES = Array.from(
 )
 
 export function RecommendBooks({ keywords }: RecommendBooksProps) {
-  const { data, isLoading } = useRecommendedBooks(keywords)
+  const primaryKeyword = keywords[0]
+  const { data, isLoading } = useRecommendedBooks(
+    primaryKeyword && getCategoryMeta(primaryKeyword.name).bookSubject
+  )
   const books = data?.works ?? []
 
   if (!isLoading && books.length === 0) {

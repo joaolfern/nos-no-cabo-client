@@ -2,7 +2,6 @@ import { useMemo, useRef, useState } from 'react'
 import { LuFilter, LuTag } from 'react-icons/lu'
 import { DropdownButton } from '@/components/DropdownButton/DropdownButton'
 import { Input } from '@/components/Input/Input'
-import type { IFilterEvent } from '@/interfaces/IFilters'
 import { CategoryList } from '@/pages/Feed/components/CategoryList/CategoryList'
 import { FeedPromo } from '@/pages/Feed/components/FeedPromo/FeedPromo'
 import { SocialLinks } from '@/pages/Feed/components/SocialLinks/SocialLinks'
@@ -13,37 +12,33 @@ import {
   countWebsitesByKeyword,
   sortByCountDesc,
 } from '@/pages/Feed/utils/keywordCounts'
+import { getCategoryMeta } from '@/pages/Feed/constants/categories'
 import { MIN_VISIBLE_CATEGORIES } from '@/pages/Feed/utils/splitVisibleCategories'
 import { standardizeString } from '@/utils/standardize'
 import styles from './FeedFilters.module.scss'
 
 const MIN_CATEGORY_ROWS = MIN_VISIBLE_CATEGORIES + 2
 
-type FeedFiltersProps = {
-  onChange: (filter?: IFilterEvent) => void
-}
-
 export function FeedFilters() {}
 
-FeedFilters.Inline = function FeedFiltersInline({
-  onChange,
-}: FeedFiltersProps) {
+FeedFilters.Inline = function FeedFiltersInline() {
   return (
     <div className={styles.inline}>
-      <KeywordFilter onChange={onChange} />
+      <KeywordFilter />
     </div>
   )
 }
 
-FeedFilters.Panel = function FeedFiltersPanel({ onChange }: FeedFiltersProps) {
+FeedFilters.Panel = function FeedFiltersPanel() {
   const {
     keywordOptions,
     keywordIsLoading,
     selectedKeywords,
     updateKeywords,
     clearKeywords,
+    getKeywordById,
   } = useFilters()
-  const { updateWebsites, websitesRaw } = useWebsites()
+  const { websitesRaw } = useWebsites()
   const [keywordQuery, setKeywordQuery] = useState('')
   const selected = selectedKeywords[0] ?? null
   const categoriesRef = useRef<HTMLDivElement>(null)
@@ -71,29 +66,24 @@ FeedFilters.Panel = function FeedFiltersPanel({ onChange }: FeedFiltersProps) {
         )
       : inUse
 
-    return sortByCountDesc(matching, counts)
-  }, [keywordOptions, keywordQuery, counts, selected])
-
-  function clearSelection() {
-    clearKeywords()
-
-    if (websitesRaw) {
-      updateWebsites(websitesRaw)
-    }
-  }
+    return sortByCountDesc(matching, counts).map((option) => ({
+      ...option,
+      Icon: getCategoryMeta(getKeywordById(option.value)?.name ?? '').Icon,
+    }))
+  }, [keywordOptions, keywordQuery, counts, selected, getKeywordById])
 
   function clear() {
     setKeywordQuery('')
-    clearSelection()
+    clearKeywords()
   }
 
   function handleSelect(value: string | null) {
     if (value === null) {
-      clearSelection()
+      clearKeywords()
       return
     }
 
-    onChange(updateKeywords(value))
+    updateKeywords(value)
   }
 
   return (
@@ -146,30 +136,24 @@ FeedFilters.Panel = function FeedFiltersPanel({ onChange }: FeedFiltersProps) {
   )
 }
 
-function KeywordFilter({ onChange }: Partial<FeedFiltersProps>) {
-  const {
-    keywordOptions,
-    selectedKeywords,
-    updateKeywords,
-    getKeywordById,
-    keywordIsLoading,
-  } = useFilters()
+function KeywordFilter() {
+  const { keywordOptions, selectedKeywords, updateKeywords, keywordIsLoading } =
+    useFilters()
   const selected = selectedKeywords[0] ?? ''
-
-  function handleChange(value: string) {
-    const props = updateKeywords(value)
-
-    if (onChange) {
-      onChange(props)
-    }
-  }
+  const { websitesRaw } = useWebsites()
+  const selectedLabel =
+    keywordOptions.find((option) => option.value === selected)?.label ?? ''
+  const optionsByCount = useMemo(
+    () => sortByCountDesc(keywordOptions, countWebsitesByKeyword(websitesRaw)),
+    [keywordOptions, websitesRaw]
+  )
 
   return (
     <DropdownButton
       label='Palavras-chave'
-      labelOfSelected={getKeywordById(selected)?.name ?? ''}
-      onChange={handleChange}
-      options={keywordOptions}
+      labelOfSelected={selectedLabel}
+      onChange={updateKeywords}
+      options={optionsByCount}
       value={selected}
       multiple={false}
       loading={keywordIsLoading}
