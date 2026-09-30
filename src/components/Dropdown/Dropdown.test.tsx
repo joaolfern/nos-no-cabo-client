@@ -135,8 +135,59 @@ describe('Dropdown', () => {
     const panel = screen.getByRole('listbox')
     expect(panel).toBeInTheDocument()
 
-    panel.dispatchEvent(new Event('scroll', { bubbles: true }))
+    act(() => {
+      panel.dispatchEvent(new Event('scroll', { bubbles: true }))
+    })
 
     expect(screen.getByText('Option 1')).toBeInTheDocument()
+  })
+
+  it('exposes the open state and the selected option', async () => {
+    render(
+      <TestDropdown options={options}>
+        <button type='button'>Trigger</button>
+      </TestDropdown>
+    )
+    const trigger = screen.getByRole('button', { name: 'Trigger' })
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
+
+    await userEvent.click(trigger)
+
+    expect(trigger).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByRole('option', { name: 'Option 1' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
+    expect(screen.getByRole('option', { name: 'Option 1' })).toHaveFocus()
+  })
+
+  it('moves between options with the arrow keys', async () => {
+    render(
+      <TestDropdown options={options}>
+        <button type='button'>Trigger</button>
+      </TestDropdown>
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Trigger' }))
+
+    await userEvent.keyboard('{ArrowDown}')
+    expect(screen.getByRole('option', { name: 'Option 2' })).toHaveFocus()
+
+    await userEvent.keyboard('{ArrowDown}')
+    expect(screen.getByRole('option', { name: 'Option 1' })).toHaveFocus()
+  })
+
+  it('closes with Escape and returns focus to the trigger', async () => {
+    render(
+      <TestDropdown options={options}>
+        <button type='button'>Trigger</button>
+      </TestDropdown>
+    )
+    const trigger = screen.getByRole('button', { name: 'Trigger' })
+    await userEvent.click(trigger)
+
+    await userEvent.keyboard('{Escape}')
+
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument()
+    expect(trigger).toHaveFocus()
   })
 })

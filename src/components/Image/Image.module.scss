@@ -1,8 +1,16 @@
 @use '@/styles/tokens/border.scss' as *;
+@use '@/styles/tokens/mixins.scss' as *;
 
 .avatar {
   border-radius: $radius-full;
   width: 50px;
   height: 50px;
   object-fit: cover;
+}
+
+// span.placeholder so the stripes win over callers' own image background.
+span.placeholder {
+  display: block;
+
+  @include hatch-placeholder(5px);
 }

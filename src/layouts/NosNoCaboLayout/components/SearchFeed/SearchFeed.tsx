@@ -52,7 +52,7 @@ export function SearchFeed({ container }: SearchFeedProps) {
       container={container}
       className={styles.search}
       classNames={{ contentFocused: styles.focused }}
-      placeholder='Buscar projetos'
+      placeholder='Buscar projetos…'
       value={value}
       onChange={handleChange}
     />

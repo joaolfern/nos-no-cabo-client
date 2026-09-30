@@ -45,4 +45,5 @@ const VARIANT_CLASSES: Record<_buttonVariant, string> = {
   primary: styles.primary,
   secondary: styles.secondary,
   tertiary: styles.tertiary,
+  outline: styles.outline,
 }

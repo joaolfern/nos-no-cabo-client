@@ -1,0 +1,37 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+@use '@/styles/tokens/animations.scss' as *;
+
+.list {
+  display: flex;
+  gap: $spacing-xs;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: $border-base;
+  border-radius: $radius-full;
+  color: var(--color-text-base);
+
+  @include has-motion {
+    transition:
+      background 0.15s,
+      border-color 0.15s;
+  }
+
+  &:hover {
+    background: var(--color-background-200);
+    border-color: var(--color-text-subtle);
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--color-primary-400);
+  }
+}

@@ -1,7 +1,0 @@
-@use '@/styles/tokens/spacing.scss' as *;
-
-.container {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-md;
-}

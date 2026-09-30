@@ -1,7 +1,108 @@
 @use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+@use '@/styles/tokens/animations.scss' as *;
 
 .container {
   display: flex;
   flex-direction: column;
-  gap: $spacing-md;
+  gap: $spacing-sm;
+}
+
+// h2.sectionTitle (not just .sectionTitle) so this wins over Typography's
+// own variant rule, which is bold and scales up further at wider viewports.
+h2.sectionTitle {
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: normal;
+}
+
+span.title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.bullet {
+  color: var(--color-secondary-400);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xxs;
+}
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-sm;
+  padding: $spacing-xs;
+  margin-inline: -$spacing-xs;
+  border-radius: $radius-md;
+  color: var(--color-text-base);
+  text-decoration: none;
+
+  @include has-motion {
+    transition: background 0.15s;
+  }
+
+  &:hover {
+    background: var(--color-surface);
+    text-decoration: none;
+  }
+}
+
+.cover {
+  flex: none;
+  width: 2.75rem;
+  height: 3.75rem;
+  object-fit: cover;
+  border-radius: $radius-sm;
+  border: $border-base;
+}
+
+.info {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xxxs;
+}
+
+.keywords {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.icon {
+  flex: none;
+  margin-top: $spacing-xxxs;
+  color: var(--color-primary-400);
+}
+
+.skeletonRow {
+  pointer-events: none;
+}
+
+.bone {
+  background: var(--color-raised);
+}
+
+// A bar per text line (1lh tall tiles), keeping the real line-height so the
+// skeleton row is exactly as tall as the loaded one.
+.boneText {
+  width: 55%;
+  color: transparent;
+  background: linear-gradient(
+      transparent 20%,
+      var(--color-raised) 20% 80%,
+      transparent 80%
+    )
+    0 0 / 100% 1lh repeat-y;
+}
+
+.boneLong {
+  width: 90%;
 }

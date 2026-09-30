@@ -29,26 +29,11 @@ export function useKeywordFilter() {
     [keywords]
   )
 
-  const updateKeywords = useCallback(
-    (changedItem: string): IFilterEvent => {
-      const isAdding = !selectedKeywords.includes(changedItem)
+  const updateKeywords = useCallback((changedItem: string): IFilterEvent => {
+    setSelectedKeywords([changedItem])
 
-      if (isAdding) {
-        setSelectedKeywords((prev) => addToList(prev, changedItem))
-
-        return {
-          updatedKeywords: addToList(selectedKeywords, changedItem),
-        }
-      } else {
-        setSelectedKeywords((prev) => removeFromList(prev, changedItem))
-
-        return {
-          updatedKeywords: removeFromList(selectedKeywords, changedItem),
-        }
-      }
-    },
-    [selectedKeywords]
-  )
+    return { updatedKeywords: [changedItem] }
+  }, [])
 
   const filterByKeyword = useCallback(
     (websites: IWebsite[], selectedKeywords: string[]): IWebsite[] => {
@@ -76,12 +61,4 @@ export function useKeywordFilter() {
     filterByKeyword,
     clearKeywords,
   }
-}
-
-function addToList(list: string[], item: string) {
-  return [...list, item]
-}
-
-function removeFromList(list: string[], item: string) {
-  return list.filter((id) => id !== item)
 }

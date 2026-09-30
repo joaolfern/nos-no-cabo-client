@@ -4,7 +4,7 @@
 
 .githubButton {
   position: relative;
-  color: black;
+  color: var(--color-text-base);
   display: flex;
   align-items: center;
   gap: $spacing-xxxs;

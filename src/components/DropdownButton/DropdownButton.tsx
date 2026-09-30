@@ -1,11 +1,9 @@
-import { Dropdown } from '@/components/Dropdown/Dropdown'
-import { useRef } from 'react'
 import clsx from 'clsx'
-import styles from './DropdownButton.module.scss'
+import { LuChevronDown } from 'react-icons/lu'
+import { Dropdown } from '@/components/Dropdown/Dropdown'
 import type { DropdownButtonProps } from '@/components/DropdownButton/DropdownButtonInterfaces'
-import { Button } from '@/components/Button/Button'
-import { FaChevronDown } from 'react-icons/fa6'
 import { useIsMobile } from '@/hooks/useIsMobile'
+import styles from './DropdownButton.module.scss'
 
 export function DropdownButton<T, M extends boolean | undefined>({
   label,
@@ -14,36 +12,33 @@ export function DropdownButton<T, M extends boolean | undefined>({
   classNames,
   ...props
 }: DropdownButtonProps<T, M>) {
-  const containerRef = useRef<HTMLDivElement | null>(null)
   const isMobile = useIsMobile()
   const hasValue = Array.isArray(props.value)
     ? props.value.length > 0
     : Boolean(props.value)
 
-  const hasValueIndicator = isMobile && hasValue
-
   return (
-    <div ref={containerRef} className={clsx(styles.container, className)}>
-      <Dropdown
-        container={containerRef.current}
-        classNames={{
-          trigger: clsx(styles.trigger, classNames?.trigger),
-          panel: clsx(styles.panel, classNames?.panel),
-        }}
-        {...props}
+    <Dropdown
+      className={className}
+      classNames={{
+        trigger: classNames?.trigger,
+        panel: classNames?.panel,
+      }}
+      {...props}
+    >
+      <button
+        type='button'
+        className={clsx(
+          styles.content,
+          { [styles.active]: isMobile && hasValue },
+          classNames?.content
+        )}
       >
-        <Button
-          variant={hasValueIndicator ? 'primary' : 'secondary'}
-          className={clsx(styles.content, classNames?.content)}
-        >
+        <span className={clsx(styles.text, classNames?.text)}>
           {isMobile ? label : labelOfSelected}
-          <FaChevronDown
-            size='1rem'
-            className={styles.icon}
-            data-testid='dropdown-icon'
-          />
-        </Button>
-      </Dropdown>
-    </div>
+        </span>
+        <LuChevronDown className={styles.icon} data-testid='dropdown-icon' />
+      </button>
+    </Dropdown>
   )
 }

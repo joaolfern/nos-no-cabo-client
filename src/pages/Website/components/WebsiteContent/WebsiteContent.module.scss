@@ -1,18 +1,98 @@
 @use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/breakpoints.scss' as *;
 
 .container {
   display: flex;
   flex-direction: column;
-  gap: $spacing-md;
+  gap: $spacing-lg;
 }
 
-.header {
+.topRow {
   display: flex;
   align-items: center;
   gap: $spacing-md;
   flex-wrap: wrap;
 }
 
-.reportButton {
-  margin-left: auto;
+// Element + class selectors so these win over the shared Button's pink
+// outline variant and Typography's size rules.
+a.back {
+  height: 2.125rem;
+  padding: 0 0.875rem 0 0.625rem;
+  border-color: var(--color-border-400);
+  color: var(--color-text-base);
+  font-size: 0.8125rem;
+  font-weight: 500;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--color-primary-400);
+    color: var(--color-primary-400);
+    background: transparent;
+  }
+}
+
+nav.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xxs;
+  min-width: 0;
+  font-size: 0.8125rem;
+
+  a {
+    color: inherit;
+  }
+}
+
+.current {
+  color: var(--color-text-base);
+}
+
+// Explicit breakpoints (not flex-wrap) so a side column is sticky exactly
+// when it sits beside the scrolling primary column, and never when stacked.
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: 'info' 'primary' 'reads';
+  align-items: start;
+  gap: $spacing-lg;
+
+  @media (min-width: $breakpoint-md) {
+    grid-template-columns: 18.75rem minmax(0, 1fr);
+    grid-template-areas:
+      'info primary'
+      'info reads';
+  }
+
+  @media (min-width: $breakpoint-lg) {
+    grid-template-columns: 18.75rem minmax(0, 1fr) 17.5rem;
+    grid-template-areas: 'info primary reads';
+  }
+}
+
+.infoColumn {
+  grid-area: info;
+
+  @media (min-width: $breakpoint-md) {
+    position: sticky;
+    top: $spacing-lg;
+  }
+}
+
+.primaryColumn {
+  grid-area: primary;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xl;
+}
+
+.readsColumn {
+  grid-area: reads;
+  min-width: 0;
+
+  @media (min-width: $breakpoint-lg) {
+    position: sticky;
+    top: $spacing-lg;
+  }
 }

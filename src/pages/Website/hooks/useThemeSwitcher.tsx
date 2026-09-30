@@ -1,16 +1,14 @@
 import { useTheme } from '@/hooks/useTheme'
+import { useThemeToggleTransition } from '@/hooks/useThemeToggleTransition'
 
 export function useThemeSwitcher() {
-  const { mode, updateThemeMode } = useTheme()
-
-  const handleTheme = () => {
-    updateThemeMode(mode === 'dark' ? 'light' : 'dark')
-  }
+  const { mode } = useTheme()
+  const { toggleTheme } = useThemeToggleTransition()
 
   const themeIcon = ICON_BY_MODE[mode]
 
   return {
-    handleTheme,
+    handleTheme: toggleTheme,
     themeIcon,
   }
 }

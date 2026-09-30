@@ -61,6 +61,20 @@
   }
 }
 
+.outline {
+  background: transparent;
+  color: var(--color-primary-400);
+  border: $border-width-base solid var(--color-primary-400);
+  font-weight: 600;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--color-primary-300);
+    border-color: var(--color-primary-300);
+    background: var(--color-primary-100);
+  }
+}
+
 .small {
   padding: $spacing-xs $spacing-md;
   line-height: $line-height-sm;

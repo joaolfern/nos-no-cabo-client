@@ -12,11 +12,17 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: $spacing-xs;
 
+  height: var(--topbar-height);
   padding: $spacing-xs $spacing-sm;
   border-bottom: $border-lg;
 
+  // Logo | centered search | actions
   @media (min-width: $breakpoint-sm) {
-    padding-inline: $spacing-xxxxl;
+    display: grid;
+    grid-template-columns: 1fr minmax(0, 40rem) 1fr;
+    gap: $spacing-md;
+    padding-inline: $spacing-xl;
   }
 }

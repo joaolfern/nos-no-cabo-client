@@ -38,6 +38,9 @@ export const DARK_THEME_VARIABLES: Record<ThemeVariables, string> = {
   'color-background-200': '#0B0B0F',
   'color-background-300': '#2c2e31',
 
+  'color-surface': '#131317',
+  'color-raised': '#1b1b1f',
+
   'color-text-base': '#DDD7D4',
   'color-text-muted': '#A39B97',
   'color-text-subtle': '#74706D',

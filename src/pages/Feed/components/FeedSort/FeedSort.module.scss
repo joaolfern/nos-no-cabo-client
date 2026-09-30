@@ -1,9 +1,7 @@
 @use '@/styles/tokens/spacing.scss' as *;
 
-.sort {
-  min-width: 80.56px;
-}
-
-.sortPanel {
-  margin-top: $spacing-xxs;
+// Icon before the label, like the prototype.
+button.sortContent {
+  flex-direction: row-reverse;
+  padding: 0 $spacing-sm 0 0.6875rem;
 }

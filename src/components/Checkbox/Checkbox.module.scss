@@ -1,0 +1,66 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+@use '@/styles/tokens/animations.scss' as *;
+
+.container {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding-block: $spacing-xxxs;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+
+// Visually hidden but still focusable and announced.
+.input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  pointer-events: none;
+}
+
+.box {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: $radius-sm;
+  border: $border-width-base solid var(--color-background-300);
+  color: transparent;
+
+  @include has-motion {
+    transition:
+      background 0.15s,
+      border-color 0.15s;
+  }
+}
+
+.container:hover .box {
+  border-color: var(--color-text-subtle);
+}
+
+.input:checked + .box {
+  background: var(--color-primary-400);
+  border-color: var(--color-primary-400);
+  color: var(--color-primary-foreground-400);
+}
+
+.input:focus-visible + .box {
+  box-shadow:
+    0 0 0 2px var(--color-background-100),
+    0 0 0 4px var(--color-primary-400);
+}
+
+.label {
+  flex: 1;
+  min-width: 0;
+}
+
+.end {
+  margin-left: auto;
+}

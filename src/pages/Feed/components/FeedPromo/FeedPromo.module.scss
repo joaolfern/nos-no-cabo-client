@@ -1,0 +1,50 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+
+.promo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  padding: $spacing-md;
+  border: $border-base;
+  border-radius: $radius-md-lg;
+  background: var(--color-surface);
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xxs;
+  margin: 0;
+  color: var(--color-primary-400);
+  font-size: 0.875rem;
+  font-weight: 500;
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+.text {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+// button.button beats the shared Button's own padding and weight.
+button.button {
+  width: 100%;
+  height: 2.125rem;
+  padding: 0;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}

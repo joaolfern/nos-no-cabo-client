@@ -1,18 +1,27 @@
 @use '@/styles/tokens/spacing.scss' as *;
 @use '@/styles/tokens/breakpoints.scss' as *;
 
-.feed {
-  display: flex;
-  flex-direction: column;
-  margin-inline: $spacing-xl;
-  margin-block: $spacing-md;
-}
-
 .container {
   display: flex;
   flex-grow: 1;
+
   @media (min-width: $breakpoint-md) {
     display: grid;
-    grid-template-columns: 18fr 82fr;
+    grid-template-columns: 16.5rem minmax(0, 1fr);
   }
+}
+
+.feed {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.125rem;
+  padding: 1.375rem $spacing-xl $spacing-xxxl;
+}
+
+.clearFilters {
+  color: var(--color-primary-400);
+  font: inherit;
+  cursor: pointer;
 }

@@ -1,0 +1,20 @@
+// Drives the theme-toggle wave manually via the Web Animations API
+// (see useThemeToggleTransition), so the browser's own cross-fade/slide
+// defaults are disabled here and left to that JS-driven clip-path instead.
+::view-transition-group(root) {
+  animation-duration: 0s;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 2;
+}

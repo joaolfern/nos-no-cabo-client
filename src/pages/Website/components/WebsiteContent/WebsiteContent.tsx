@@ -1,16 +1,14 @@
+import { LuArrowLeft } from 'react-icons/lu'
 import { Typography } from '@/components/Typography/Typography'
+import { Button } from '@/components/Button/Button'
+import { Link } from '@/components/Link/Link'
 import { useWebsiteDetails } from '@/pages/Website/hooks/useWebsiteDetails'
-import { WebsiteAuthorAndDate } from '@/pages/Webring/components/WebsiteAuthorAndDate/WebsiteAuthorAndDate'
-import { CardImage } from '@/pages/Webring/components/CardImage/CardImage'
-import { Divider } from '@/components/Divider/Divider'
 import { WebsiteLoader } from '@/pages/Website/components/WebsiteLoader/WebsiteLoader'
-import styles from './WebsiteContent.module.scss'
-import { LatestWebsites } from '@/pages/Website/components/LatestWebsites/LatestWebsites'
-import React from 'react'
+import { WebsiteInfoCard } from '@/pages/Website/components/WebsiteInfoCard/WebsiteInfoCard'
+import { WebsiteMetrics } from '@/pages/Website/components/WebsiteMetrics/WebsiteMetrics'
+import { RecommendedSites } from '@/pages/Website/components/RecommendedSites/RecommendedSites'
 import { RecommendBooks } from '@/pages/Website/components/RecommendBooks/RecommendBooks'
-import { VisitButton } from '@/pages/Webring/components/VisitButton/VisitButton'
-import { ReportButton } from '@/pages/Webring/components/ReportButton/ReportButton'
-import { GithubButton } from '@/pages/Webring/components/GithubButton/GithubButton'
+import styles from './WebsiteContent.module.scss'
 
 export function WebsiteContent() {
   const { website, isLoading } = useWebsiteDetails()
@@ -24,44 +22,44 @@ export function WebsiteContent() {
   return (
     <WebsiteLoader isLoading={isLoading}>
       <section className={styles.container}>
-        <header className={styles.header}>
-          <Typography as='h3' variant='titleSm' lines={2}>
-            {website.name}
+        <div className={styles.topRow}>
+          <Button
+            asChild={true}
+            variant='outline'
+            small={true}
+            className={styles.back}
+          >
+            <Link to='/websites'>
+              <LuArrowLeft size='1rem' />
+              Voltar
+            </Link>
+          </Button>
+          <Typography
+            as='nav'
+            variant='bodySm'
+            color='muted'
+            className={styles.breadcrumb}
+          >
+            <Link to='/websites'>Projetos</Link>
+            <span>/</span>
+            <span className={styles.current}>{website.name}</span>
           </Typography>
-          <GithubButton repo={website.repo} />
-          <VisitButton url={website.url}>Visitar site</VisitButton>
-          <ReportButton
-            className={styles.reportButton}
-            id={website.id}
-            name={website.name}
-          />
-        </header>
+        </div>
 
-        {website.author && (
-          <WebsiteAuthorAndDate.Detailed
-            authorName={website.author.name}
-            createdAt={website.createdAt}
-            authorImage={website.author.profilePicture}
-          />
-        )}
-        <CardImage
-          src={website.faviconUrl}
-          alt={website.name}
-          color={website.color}
-        />
-        {website.description && (
-          <Typography as='p' variant='bodyMd' lines={2}>
-            {website.description.split('\n').map((line, idx) => (
-              <React.Fragment key={idx}>
-                {line}
-                <br />
-              </React.Fragment>
-            ))}
-          </Typography>
-        )}
-        <Divider />
-        <LatestWebsites websiteId={website.id} />
-        <RecommendBooks keywords={website.keywords} />
+        <div className={styles.layout}>
+          <div className={styles.infoColumn}>
+            <WebsiteInfoCard website={website} />
+          </div>
+
+          <div className={styles.primaryColumn}>
+            <WebsiteMetrics website={website} />
+            <RecommendedSites websiteId={website.id} />
+          </div>
+
+          <div className={styles.readsColumn}>
+            <RecommendBooks keywords={website.keywords} />
+          </div>
+        </div>
       </section>
     </WebsiteLoader>
   )

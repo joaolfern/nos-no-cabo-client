@@ -1,4 +1,5 @@
 import { MOCK_WEBSITES } from '@/__mocks__/data/websites'
+import { mockWebsiteLikes } from '@/pages/Website/utils/mockWebsiteMetrics/mockWebsiteMetrics'
 import { sortWebsites } from './sortWebsites'
 
 const mockedWebsites = [MOCK_WEBSITES[0], MOCK_WEBSITES[1], MOCK_WEBSITES[2]]
@@ -22,6 +23,12 @@ describe('sortWebsites', () => {
   it('sorts by title descending', () => {
     const sorted = sortWebsites(mockedWebsites, 'title_desc')
     expect(sorted.map((p) => p.id)).toEqual(['1', '4', '2'])
+  })
+
+  it('sorts by likes descending', () => {
+    const sorted = sortWebsites(mockedWebsites, 'likes_desc')
+    const likes = sorted.map((website) => mockWebsiteLikes(website.id))
+    expect(likes).toEqual([...likes].sort((a, b) => b - a))
   })
 
   it('returns original order for unknown sortType', () => {

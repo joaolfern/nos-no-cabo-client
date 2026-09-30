@@ -1,0 +1,95 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+@use '@/styles/tokens/animations.scss' as *;
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.title {
+  padding: 0 0.625rem $spacing-xxs;
+  color: var(--color-text-muted);
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  height: 2.375rem;
+  padding: 0 0.625rem;
+  border-radius: $radius-md;
+  color: var(--color-text-base);
+  font-size: 0.875rem;
+  text-align: left;
+  cursor: pointer;
+
+  @include has-motion {
+    transition:
+      background 0.15s,
+      color 0.15s;
+  }
+
+  &:hover {
+    background: var(--color-raised);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-primary-400);
+  }
+}
+
+.icon {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  color: var(--color-text-muted);
+}
+
+.label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.count {
+  min-width: 1.375rem;
+  padding: 0.0625rem 0.4375rem;
+  border-radius: $radius-full;
+  background: var(--color-raised);
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.active {
+  background: var(--color-primary-100);
+  color: var(--color-primary-400);
+  font-weight: 500;
+
+  &:hover {
+    background: var(--color-primary-100);
+  }
+
+  .icon {
+    color: var(--color-primary-400);
+  }
+
+  .count {
+    background: var(--color-primary-400);
+    color: var(--color-primary-foreground-400);
+  }
+}
+
+.overflowTrigger > .row {
+  flex: 1;
+  min-width: 0;
+}

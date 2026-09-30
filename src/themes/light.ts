@@ -36,6 +36,9 @@ export const LIGHT_THEME_VARIABLES: Record<ThemeVariables, string> = {
   'color-background-200': '#e6e0e3',
   'color-background-300': '#c5c0c8',
 
+  'color-surface': '#faf9fa',
+  'color-raised': '#e9e5e8',
+
   'blur-background': '20px',
 
   'color-text-base': '#242220',

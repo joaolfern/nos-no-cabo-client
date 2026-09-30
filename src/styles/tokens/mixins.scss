@@ -6,6 +6,15 @@
   background: var(--color-background-200);
 }
 
+// Diagonal stripes standing in for a missing image.
+@mixin hatch-placeholder($stripe: 5px) {
+  background: repeating-linear-gradient(
+    135deg,
+    var(--color-raised) 0 $stripe,
+    var(--color-surface) $stripe ($stripe * 2)
+  );
+}
+
 @mixin scrollbar {
   &::-webkit-scrollbar {
     width: 8px;

@@ -2,21 +2,20 @@
 
 @use '@/styles/tokens/breakpoints.scss' as *;
 
-.search:not(.focused) {
+.search {
   @media (min-width: $breakpoint-sm) {
-    width: 37vw;
+    width: 100%;
   }
 }
 
+// Only the collapsed mobile search expands over the top bar. From the sm
+// breakpoint up the field is always open in the middle column.
 .focused {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  left: $spacing-xs;
-  right: $spacing-sm;
-
-  @media (min-width: $breakpoint-sm) {
-    right: $spacing-xxxxl;
-    left: $spacing-xxxxl;
+  @media (max-width: $breakpoint-sm - 1px) {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: $spacing-xs;
+    right: $spacing-sm;
   }
 }

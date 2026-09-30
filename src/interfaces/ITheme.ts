@@ -34,6 +34,8 @@ export type ThemeVariables =
   | 'color-background-100'
   | 'color-background-200'
   | 'color-background-300'
+  | 'color-surface'
+  | 'color-raised'
   | 'blur-background'
   | 'color-text-base'
   | 'color-text-muted'

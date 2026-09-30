@@ -1,4 +1,9 @@
-export type _sortType = 'date_asc' | 'date_desc' | 'title_asc' | 'title_desc'
+export type _sortType =
+  | 'date_asc'
+  | 'date_desc'
+  | 'title_asc'
+  | 'title_desc'
+  | 'likes_desc'
 
 export interface ISort {
   label: string

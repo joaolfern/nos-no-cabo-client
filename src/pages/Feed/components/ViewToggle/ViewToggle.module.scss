@@ -1,0 +1,47 @@
+@use '@/styles/tokens/border.scss' as *;
+@use '@/styles/tokens/animations.scss' as *;
+
+.group {
+  display: inline-flex;
+  align-items: stretch;
+  border: $border-base;
+  border-radius: $radius-full;
+  overflow: hidden;
+}
+
+.option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.375rem;
+  height: 2rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+
+  @include has-motion {
+    transition:
+      background 0.15s,
+      color 0.15s;
+  }
+
+  & + & {
+    border-left: $border-base;
+  }
+
+  &:hover {
+    color: var(--color-text-base);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-primary-400);
+  }
+}
+
+.active {
+  background: var(--color-primary-100);
+  color: var(--color-primary-400);
+
+  &:hover {
+    color: var(--color-primary-400);
+  }
+}

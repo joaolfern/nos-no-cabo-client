@@ -1,7 +1,10 @@
 @use '@/styles/tokens/spacing.scss' as *;
 @use '@/styles/tokens/breakpoints.scss' as *;
+@use '@/styles/tokens/mixins.scss' as *;
 
 .container {
+  --topbar-height: 4.625rem;
+
   min-height: 100dvh;
   position: relative;
   background: var(--color-background-100);
@@ -15,7 +18,37 @@
   flex-direction: column;
 }
 
+// Desktop scrolls below the top bar, so the bar spans the full width while the
+// stable gutter keeps content from shifting when it starts to scroll. Mobile
+// keeps page scrolling for the collapsing address bar.
+@media (min-width: $breakpoint-md) {
+  .container {
+    height: 100dvh;
+  }
+
+  .content {
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+
+    @include scrollbar();
+  }
+}
+
 .topbarContent {
   display: flex;
   gap: $spacing-md;
+  // Mobile: keep the collapsed search icon next to the actions on the right
+  margin-left: auto;
+
+  // From sm up it fills the middle column of the top bar grid
+  @media (min-width: $breakpoint-sm) {
+    margin-left: 0;
+    min-width: 0;
+
+    > * {
+      flex: 1;
+      min-width: 0;
+    }
+  }
 }
