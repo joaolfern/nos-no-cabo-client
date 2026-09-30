@@ -1,15 +1,15 @@
 import React from 'react'
-import type { IFilterEvent, IFiltersContext } from '@/interfaces/IFilters'
+import type { IFiltersContext } from '@/interfaces/IFilters'
 
 const INITIAL_STATE: IFiltersContext = {
   selectedKeywords: [],
   keywordOptions: [],
-  updateKeywords: () => ({}) as unknown as IFilterEvent,
+  updateKeywords: () => {},
   getKeywordById: () => undefined,
   keywordIsLoading: false,
   filterByKeyword: () => [],
   search: '',
-  updateSearch: () => ({}) as unknown as IFilterEvent,
+  updateSearch: () => {},
   filterBySearch: () => [],
   clearKeywords: () => {},
   clearSearch: () => {},

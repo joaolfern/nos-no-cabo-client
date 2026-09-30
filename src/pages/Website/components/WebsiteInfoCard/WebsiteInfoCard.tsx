@@ -11,6 +11,7 @@ import { WebsiteVotes } from '@/pages/Website/components/WebsiteVotes/WebsiteVot
 import type { IWebsite } from '@/interfaces/IWebsite'
 import { mockWebsiteLikes } from '@/pages/Website/utils/mockWebsiteMetrics/mockWebsiteMetrics'
 import styles from './WebsiteInfoCard.module.scss'
+import { getCategoryLabel } from '@/pages/Feed/constants/categories'
 
 interface WebsiteInfoCardProps {
   website: IWebsite
@@ -67,7 +68,7 @@ export function WebsiteInfoCard({ website }: WebsiteInfoCardProps) {
           <div className={styles.tags}>
             {website.keywords.map((keyword) => (
               <Tag key={keyword.id} className={styles.tag}>
-                {keyword.name}
+                {getCategoryLabel(keyword.name)}
               </Tag>
             ))}
           </div>

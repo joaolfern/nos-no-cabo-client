@@ -10,6 +10,7 @@ import { mockWebsiteLikes } from '@/pages/Website/utils/mockWebsiteMetrics/mockW
 import { getPrimaryKeyword } from '@/pages/Feed/utils/getPrimaryKeyword'
 import { formatCompactNumber } from '@/utils/formatCompactNumber/formatCompactNumber'
 import styles from './FeedCard.module.scss'
+import { getCategoryLabel } from '@/pages/Feed/constants/categories'
 
 export type FeedCardVariant = 'compact' | 'detailed'
 
@@ -68,7 +69,9 @@ function FeedCardInner({
         </Typography>
         <div className={styles.footer}>
           {primaryKeyword && (
-            <Tag className={styles.tag}>{primaryKeyword.name}</Tag>
+            <Tag className={styles.tag}>
+              {getCategoryLabel(primaryKeyword.name)}
+            </Tag>
           )}
           {otherKeywordsCount > 0 && (
             <Tag className={styles.tag}>+{otherKeywordsCount}</Tag>

@@ -3,7 +3,7 @@ import type { IKeyword, IWebsite } from '@/interfaces/IWebsite'
 export interface IFiltersContext {
   selectedKeywords: string[]
   keywordOptions: { label: string; value: string }[]
-  updateKeywords: (changedItem: string) => IFilterEvent
+  updateKeywords: (id: string) => void
   getKeywordById: (id: string) => IKeyword | undefined
   keywordIsLoading: boolean
   filterByKeyword: (
@@ -16,8 +16,4 @@ export interface IFiltersContext {
   clearSearch: () => void
   hasFilters: boolean
   clearKeywords: () => void
-}
-
-export type IFilterEvent = {
-  updatedKeywords?: string[]
 }

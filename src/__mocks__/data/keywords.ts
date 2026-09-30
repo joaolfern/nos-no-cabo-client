@@ -1,15 +1,28 @@
 import type { IKeyword } from '@/interfaces/IWebsite'
 
-export const MOCK_KEYWORDS: IKeyword[] = [
-  { id: '1', name: 'code' },
-  { id: '2', name: 'repository' },
-  { id: '3', name: 'collaboration' },
-  { id: '4', name: 'questions' },
-  { id: '5', name: 'answers' },
-  { id: '6', name: 'programming' },
-  { id: '7', name: 'documentation' },
-  { id: '8', name: 'web' },
-  { id: '9', name: 'mozilla' },
-  { id: '10', name: 'education' },
-  { id: '11', name: 'other' },
-]
+const CATEGORY_NAMES = [
+  'ia-e-iot',
+  'educacao',
+  'saude',
+  'meio-ambiente',
+  'cidades',
+  'comunidades',
+  'inclusao',
+  'trabalho',
+  'arte-e-cultura',
+  'alimentacao',
+  'outros',
+] as const
+
+type MockCategoryName = (typeof CATEGORY_NAMES)[number]
+
+export const MOCK_KEYWORDS: IKeyword[] = CATEGORY_NAMES.map((name, index) => ({
+  id: String(index + 1),
+  name,
+}))
+
+export function mockKeywords(...names: MockCategoryName[]): IKeyword[] {
+  return MOCK_KEYWORDS.filter((keyword) =>
+    names.includes(keyword.name as MockCategoryName)
+  )
+}

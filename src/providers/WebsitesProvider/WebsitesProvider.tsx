@@ -1,15 +1,10 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react'
+import { useCallback, useMemo, type ReactNode } from 'react'
 import type { IWebsite, IWebsitesContext } from '@/interfaces/IWebsite'
 import { useWebsitesData } from '@/hooks/useDataHooks'
 import { WebsitesContext } from '@/contexts/WebsitesContext'
 import { sortWebsites } from '@/pages/Feed/utils/sortWebsites'
 import { useSort } from '@/pages/Feed/hooks/useSort'
+import { useFilters } from '@/pages/Feed/hooks/useFilters'
 
 type WebsitesProviderProps = {
   children: ReactNode
@@ -17,58 +12,35 @@ type WebsitesProviderProps = {
 
 export function WebsitesProvider({ children }: WebsitesProviderProps) {
   const { data: websitesRaw, isLoading, error } = useWebsitesData()
-  const [websites, setWebsites] = useState<IWebsite[]>(websitesRaw ?? [])
   const { selectedSort } = useSort()
+  const { filterByKeyword, selectedKeywords } = useFilters()
 
-  const websitesSorted = useMemo(() => {
-    if (!websites) return []
+  const websites = useMemo(() => {
+    const filtered = filterByKeyword(websitesRaw ?? [], selectedKeywords)
 
-    const result = sortWebsites(websites, selectedSort)
-
-    return result
-  }, [websites, selectedSort])
+    return sortWebsites(filtered, selectedSort)
+  }, [websitesRaw, selectedKeywords, selectedSort, filterByKeyword])
 
   const websitesIdMap = useMemo(() => {
     const map = new Map<string, IWebsite>()
-    websites?.forEach((website) => map.set(website.id, website))
+    websitesRaw?.forEach((website) => map.set(website.id, website))
     return map
-  }, [websites])
+  }, [websitesRaw])
 
   const getWebsiteById = useCallback(
-    (id: string): IWebsite => {
-      const targetMap = websitesIdMap
-      return targetMap.get(id) as IWebsite
-    },
+    (id: string): IWebsite => websitesIdMap.get(id) as IWebsite,
     [websitesIdMap]
   )
 
-  const updateWebsites = useCallback((websites: IWebsite[]) => {
-    setWebsites(websites)
-  }, [])
-
-  useEffect(() => {
-    if (websitesRaw) {
-      updateWebsites(websitesRaw)
-    }
-  }, [websitesRaw, updateWebsites])
-
   const value = useMemo<IWebsitesContext>(
     (): IWebsitesContext => ({
-      websites: websitesSorted,
+      websites,
       isLoading,
       error,
       getWebsiteById,
-      updateWebsites,
       websitesRaw,
     }),
-    [
-      websitesSorted,
-      isLoading,
-      getWebsiteById,
-      error,
-      updateWebsites,
-      websitesRaw,
-    ]
+    [websites, isLoading, getWebsiteById, error, websitesRaw]
   )
 
   return (

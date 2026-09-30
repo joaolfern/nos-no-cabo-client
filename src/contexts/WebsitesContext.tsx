@@ -6,7 +6,6 @@ const INITIAL_STATE: IWebsitesContext = {
   getWebsiteById: () => ({}) as IWebsite,
   isLoading: false,
   error: null,
-  updateWebsites: () => {},
   websitesRaw: undefined,
 }
 
