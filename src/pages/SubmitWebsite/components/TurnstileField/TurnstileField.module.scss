@@ -1,0 +1,8 @@
+@use '@/styles/tokens/spacing.scss' as *;
+
+// Turnstile's managed widget is 65px tall; reserving it avoids a layout shift.
+.widget {
+  min-height: 65px;
+  box-sizing: content-box;
+  padding-bottom: $spacing-md;
+}

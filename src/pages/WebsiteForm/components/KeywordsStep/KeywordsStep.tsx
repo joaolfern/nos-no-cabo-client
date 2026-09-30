@@ -12,7 +12,7 @@ import { StepContainer } from '@/pages/WebsiteForm/components/StepContainer/Step
 import { StepDescription } from '@/pages/WebsiteForm/components/StepDescription/StepDescription'
 import { StepTitle } from '@/pages/WebsiteForm/components/StepTitle/StepTitle'
 import { useState } from 'react'
-import { CategoryChip } from './CategoryChip'
+import { CategoryChip } from '@/pages/SubmitWebsite/components/CategoryPicker/CategoryChip'
 import styles from './KeywordsStep.module.scss'
 
 export function KeywordsStep({

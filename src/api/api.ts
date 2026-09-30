@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { ADMIN_PASSWORD, API_URL, isAdminMode } from '@/config/env'
+import { toApiError } from '@/api/toApiError'
 
 export const api = axios.create({
   baseURL: `${new URL(API_URL).href}/`,
@@ -18,14 +19,7 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response) {
-      error.response.data.message = error.response.data.error || error.message
-      return Promise.reject(error.response.data)
-    }
-
-    return Promise.reject(error)
-  }
+  (error) => Promise.reject(toApiError(error))
 )
 
 export const openLibraryApi = axios.create({

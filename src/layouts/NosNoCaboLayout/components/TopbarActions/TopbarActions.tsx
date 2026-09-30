@@ -3,21 +3,28 @@ import { Button } from '@/components/Button/Button'
 import { ButtonIcon } from '@/components/ButtonIcon/ButtonIcon'
 import { useTheme } from '@/hooks/useTheme'
 import { useThemeToggleTransition } from '@/hooks/useThemeToggleTransition'
-import { useWebsiteForm } from '@/pages/WebsiteForm/hooks/useWebsiteForm'
+import { Link } from '@/components/Link/Link'
 import styles from './TopbarActions.module.scss'
 
-export function TopbarActions() {
-  const { handleCreate } = useWebsiteForm()
+type TopbarActionsProps = {
+  showAddSite?: boolean
+}
+
+export function TopbarActions({ showAddSite = true }: TopbarActionsProps) {
   const { mode } = useTheme()
   const { toggleTheme } = useThemeToggleTransition()
   const isDark = mode === 'dark'
 
   return (
     <div className={styles.actions}>
-      <Button variant='outline' className={styles.add} onClick={handleCreate}>
-        <MdAdd size={18} aria-hidden />
-        <span className={styles.addLabel}>Adicionar meu site</span>
-      </Button>
+      {showAddSite && (
+        <Button variant='outline' className={styles.add} asChild>
+          <Link to='/websites/novo' aria-label='Adicionar um site'>
+            <MdAdd size={18} aria-hidden />
+            <span className={styles.addLabel}>Adicionar um site</span>
+          </Link>
+        </Button>
+      )}
       <ButtonIcon
         variant='transparent'
         label={isDark ? 'Usar tema claro' : 'Usar tema escuro'}

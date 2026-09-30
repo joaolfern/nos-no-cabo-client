@@ -38,106 +38,117 @@ src/pages/SubmitWebsite/
   SubmitWebsite.module.scss
   SubmitWebsite.test.tsx
   components/
-    UrlField/                       input + normalized-url validation + duplicate message
-    WebsitePreviewCard/             live card (favicon, color, name, description) + skeleton
-    DetailsFields/                  name, description, color (InputColor)
+    SubmitForm/                     the one-screen form, layout with sticky preview
+    Field/                          label + control + reserved message line
+    UrlField/                       url input + preview status / duplicate message
+    WebsitePreviewCard/             read-only FeedCard + FeedCardSkeleton while fetching
     CategoryPicker/                 chips (moved CategoryChip) + description line, 1–3 picks
     TurnstileField/                 Cloudflare Turnstile widget, exposes token
-    SubmitSuccess/                  "Em análise" + CTAs
+    SubmitSuccess/                  "Recebemos {name}!" + CTAs
   hooks/
     useWebsitePreview.ts            useQuery ['websitePreview', normalizedUrl]
-    useSubmitWebsite.ts             useMutation → adds draft on 202
+    useSubmissionFields.ts          fields follow the preview until edited
+    useSubmitWebsite.ts             useMutation (phase 3: adds draft on 202)
+    usePendingSubmissions.ts (+ test)  drafts: list/add/update/remove, 7-day expiry
+    usePendingStatusPolling.ts      polls GET /v1/websites/:id while checking
   utils/
-    normalizeUrl.ts (+ test)
-    toSubmission.ts
+    submissionForm.ts (+ test)      limits, FIELD_IDS, validateSubmission, toSubmission, toHexColor
+    mergeDrafts.ts (+ test)
 
 src/pages/WidgetEditor/
   WidgetEditor.tsx                  route /websites/:id/selo
   components/                       style options + preview + copy (from InitialStep/CodeStep)
   utils/buildWidgetSnippet.ts (+ test)
 
-src/features/pendingSubmissions/
-  usePendingSubmissions.ts (+ test) list/add/update/remove, 7-day expiry
-  usePendingStatusPolling.ts        polls GET /v1/websites/:id while checking
-  mergeDrafts.ts (+ test)
-  PendingSubmissions.types.ts
-
+src/utils/normalizeUrl/             generic URL helpers (toAbsoluteUrl, normalizeUrl), done in phase 1
+src/components/Textarea/            generic textarea matching Input, done in phase 2
 src/hooks/useLocalStorageJson.ts (+ test)
 ```
 
-### Open convention question: `src/features/`
+### Where the drafts live
 
-Drafts are used by both `SubmitWebsite` and `Feed`. CLAUDE.md allows only `src/pages/<Feature>`
-(self-contained) and generic global folders, so there is no home yet for **shared business
-domains**. The plan proposes `src/features/<domain>/` for them. The same folder would later also
-fix the existing `pages/Feed/constants/categories.ts`, which is used by four places. If adopted,
-add one line to CLAUDE.md. The alternative is to keep drafts in `SubmitWebsite/` and let `Feed`
-import from it, which is a cross-feature import like the ones flagged in
-[`current/frontend/20-frontend-modules`](../architecture/current/frontend/20-frontend-modules.puml).
+No new root folders. The drafts belong to the submission feature, so they live in
+`src/pages/SubmitWebsite/hooks/` and `utils/`. The feed imports `usePendingSubmissions`,
+`usePendingStatusPolling` and `mergeDrafts` from there. This one Feed → SubmitWebsite import
+is deliberate: the feed shows the drafts but does not own them. Generic helpers go in the
+existing global folders (`src/utils/normalizeUrl`, `src/hooks/useLocalStorageJson`).
 
-## Contract and mocks (phase 1)
+## Contract and mocks (phase 1) — done
 
-- `src/interfaces/IWebsite.ts`: mirror the target `Website`, `WebsitePreview`,
-  `WebsiteSubmission`, `WebsiteStatus` and the error envelope `IApiError`
-  (`{ error: { code, message, existingId? } }`).
-  - `id` becomes a string ULID. `categories: string[]` (slugs) replaces `keywords`; the feed
-    reads categories through an adapter until the list endpoint is migrated.
-  - Add `status` and `verifiedAt`.
-- `src/api/api.ts`: a `v1` path prefix, and error normalization to `IApiError` instead of
-  copying `data.error` into `message`.
-- `src/config/env.ts`: add `TURNSTILE_SITE_KEY`. With mocks on, use Cloudflare's always-pass
-  test key `1x00000000000000000000AA`.
-- `src/__mocks__/handlers.ts` and `data/`:
-  - `GET /v1/websites/preview`: fixture metadata; one fixture URL returns 409 `{existingId}`,
-    one returns 422 unreachable.
-  - `POST /v1/websites`: 202 `checking`. It records the submission in an in-memory map; `GET`
-    returns `published` 5 s later. URLs containing `rejeitado` return `rejected` / `unsafe`.
-  - `GET /v1/websites/:id` reads the map, falling back to `MOCK_WEBSITES`.
-  - `POST /v1/websites/:id/verify`: `verified: true` for even ids, `widget_not_found` otherwise.
-  - Every mock website gains `status: 'published'` and some get `verifiedAt`.
+As built:
 
-Done when the types compile, the handlers respond, and a unit test of the handler state machine
-(checking → published / rejected) passes.
+- `src/interfaces/IWebsite.ts` gains `WebsiteStatus`, `WebsiteRejectionReason`,
+  `IWebsitePreview`, `IWebsiteSubmission`, `ISubmittedWebsite` (the `/v1` `Website`) and
+  `IVerificationResult`. `IWebsite` gets optional `status` and `verifiedAt`; they become
+  required when the feed moves to `/v1/websites`, and so does the `keywords` → `categories` switch.
+- `src/interfaces/IApiError.ts`: `ApiErrorCode`, `IApiError` (`{code, message, status?, existingId?}`)
+  and the response envelope `IApiErrorResponse`.
+- `src/api/toApiError.ts`: the axios interceptor now rejects with an `IApiError` for every
+  failure. It reads the `/v1` envelope and the legacy `{error: string}` and `{message}` bodies,
+  and derives a code from the HTTP status otherwise, so existing `error.message` callers keep working.
+  The base URL is unchanged; new calls use `v1/...` paths, and legacy endpoints keep working.
+- `src/utils/normalizeUrl/`: `toAbsoluteUrl` (adds `https://`, rejects non-web or domainless
+  input) and `normalizeUrl` (the dedupe key: lowercase host without `www.`, scheme, trailing slash or hash).
+- `src/__mocks__/data/submissions.ts`: an in-memory store whose status depends on the elapsed
+  time (`MOCK_REVIEW_DELAY_MS` = 5 s). Functions take an optional `now`, so tests don't need timers.
+- `src/__mocks__/handlers.ts`: `/v1` handlers placed before the untouched legacy ones.
+  Fixture triggers: a URL containing `inacessivel` → 422 `unreachable`; containing
+  `rejeitado` → `rejected` / `unsafe` after the delay; any URL of a mock website → 409 `duplicate`.
+  Verification succeeds when the id's last character code is even (e.g. `4`).
+- `MOCK_WEBSITES` all have `status: 'published'`; ids `1`, `4` and `9` are verified.
+- Moved to phase 2: `TURNSTILE_SITE_KEY` in `src/config/env.ts`, added together with the field that uses it.
 
-## The form page (phase 2)
+Tests: `normalizeUrl.test.ts`, `toApiError.test.ts`, `submissions.test.ts` (review state
+machine) and `handlers.test.ts` (the handlers through the real axios client).
 
-**Route.** Add `/websites/novo` inside `NosNoCaboLayout`. "Adicionar meu site"
-(`layouts/NosNoCaboLayout/components/TopbarActions`, `pages/LandingPage/LandingPage.tsx`)
-becomes a `Link`. While doing this, fix the `<Button>` nested inside a `<Link>` on the landing
-page by using `Button asChild`.
+## The form page (phase 2) — done
 
-**Layout.** One column on mobile. On desktop the fields are on the left and the preview card
-sticks on the right, so the submitter sees how the card will look in the feed (it reuses
-`FeedCard` visuals).
+As built:
 
-**Flow**
-1. `UrlField` has autofocus and accepts `exemplo.com` without a scheme; `normalizeUrl` adds
-   `https://`. The value is debounced (`@/hooks/useDebounce`, 400 ms) and then fetches the
-   preview (`useWebsitePreview`, `enabled` only for a syntactically valid URL,
-   `staleTime: Infinity`).
-   - While loading: a preview-card skeleton with the same dimensions (see the `loading-skeletons` skill).
-   - 409: an inline message "Esse site já está no Nós no Cabo" with a link to `/website/:existingId`; submit is disabled.
-   - 422: "Não conseguimos acessar esse endereço". The fields stay editable, so an unreachable
-     site can still be submitted manually.
-2. `DetailsFields` are prefilled from the preview only while the user has not edited them (a
-   `touched` flag per field), so retyping the URL does not wipe edits. Name is 3–80 characters,
-   description at most 280 with a counter, colour through `InputColor`.
-3. `CategoryPicker`: `CategoryChip` moved from `WebsiteForm/components/KeywordsStep/`, with its
-   test adapted from `KeywordsStep.test.tsx`. It allows 1–3 picks and shows the description line
-   of the last pick, as today.
-4. `TurnstileField`, then a single "Enviar" button.
+- **Route and entry points.** `/websites/novo` inside `NosNoCaboLayout`. The topbar button and the
+  landing page CTA are now `Button asChild` + `Link` to it, which also removes the landing page's
+  `<Button>` nested in a `<Link>`. The label changed from "Adicionar meu site" to
+  "Adicionar um site", since anyone can submit.
+- **Focused layout.** `/websites/novo` uses `<NosNoCaboLayout variant='focused' />`, set in the
+  route config. The top bar drops the search (it only filters the feed) and the
+  "Adicionar um site" button (it points to the current page). Its content is capped at
+  `$layout-focused-max-width` (80rem / 1280px), the same width as the page, and the page scrolls
+  normally, so the bar scrolls away instead of covering the form. The wide variant (feed,
+  website page) is unchanged. The widget editor (phase 4) reuses the focused variant.
+- **Layout.** A title and a short intro, then the fields on the left with a sticky "Assim ele
+  aparece no feed" preview on the right. On mobile the preview sits above the fields.
+- **Preview.** `WebsitePreviewCard` renders the real `FeedCard` with a new `readOnly` prop (no
+  details link, no likes) from the current field values, and `FeedCardSkeleton` while the preview
+  request runs, so the placeholder has the same size.
+- **URL field.** Accepts `exemplo.com`, debounced 400 ms, then `GET /v1/websites/preview`. Its
+  message line reports "Buscando…", "Encontramos o site", the unreachable message (fields stay
+  editable), or the duplicate error with a link to `/website/:existingId`; a duplicate blocks submit.
+  Changing the URL clears a previous submit error.
+- **Fields.** `useSubmissionFields` shows the preview's value until the user edits a field, so
+  retyping the URL never wipes edits. Name (3–80) and description (≤ 280) have counters. Colour is
+  a native colour swatch plus a hex input. `InputColor` was not reused: its swatch has no styles.
+- **Categories.** `CategoryChip` moved (with `git mv`) to `SubmitWebsite/components/CategoryPicker/`
+  and gained `disabled`; unchecked chips disable at 3. `KeywordsStep` imports it from there until phase 6.
+- **Turnstile.** `TURNSTILE_SITE_KEY` in `src/config/env.ts` (the always-pass test key when mocks
+  are on). The token is sent as the `cf-turnstile-response` header; the form asks for it when a
+  site key is configured. In Jest no key is set, so the widget is skipped.
+- **Form element.** A plain controlled `<form>`, not `@/components/Form`. `Form` builds values
+  with `new FormData(form)`, which this form doesn't need, and which throws under
+  `jest-fixed-jsdom` because that environment swaps in Node's `FormData`.
+- **Spacing.** No gap or margins on the form or on field wrappers (CLAUDE.md). Each `Field`
+  reserves its message line, which spaces the fields and keeps errors from shifting the layout.
+- **Validation.** Errors show after the first submit attempt, and focus moves to the first
+  invalid field.
+- **Success.** `SubmitSuccess`: "Recebemos {name}!" with "Ver no feed" and "Enviar outro site".
+  The "Adicionar o selo" CTA arrives with the widget editor in phase 4, so the page never links
+  to a route that doesn't exist yet.
 
-**Form handling.** `@/components/Form` builds its values with
-`Object.fromEntries(new FormData())`, which keeps only one value for repeated checkbox names. So
-categories stay in controlled state and the submit handler composes the payload with
-`toSubmission`. Keep to the CLAUDE.md form rules: no gap or margins on `<Form>` or on input wrappers.
+Tests: `SubmitWebsite.test.tsx` covers the happy path, duplicate, unreachable filled in by hand,
+validation with focus, edits surviving a URL change, and the 3-category limit.
+`submissionForm.test.ts` covers the rules. Checked in the browser at 1280 px and 390 px, and in dark mode.
 
-**Success.** The page swaps to `SubmitSuccess`: "Recebemos {name}! Ele aparece no feed para você
-enquanto verificamos o conteúdo." with the CTAs "Ver no feed" (`/websites`) and "Adicionar o selo
-ao seu site" (`/websites/:id/selo`). There is no toast.
-
-Done when a user can complete a submission with keyboard only, the 409 and 422 paths behave, and
-`SubmitWebsite.test.tsx` covers happy path, duplicate, unreachable and validation.
+Known and left alone: in dark mode the shared `Input` text colour (`--color-neutral-600`) is dim;
+that is the global component's style, worth fixing separately.
 
 ## Drafts in the feed (phase 3)
 
@@ -145,10 +156,20 @@ Done when a user can complete a submission with keyboard only, the 409 and 422 p
   `src/hooks/useLocalStorageState.ts`, with the same guarded storage access.
 - `usePendingSubmissions` stores drafts as described in ADR 0003 and drops expired ones on read.
 - `useSubmitWebsite.onSuccess` adds the draft from the 202 body.
-- `usePendingStatusPolling`: one `useQueries` over the `checking` drafts, with
-  `refetchInterval: 5000` and `refetchIntervalInBackground: false`. It is mounted once in the
-  feed page. On `published` it removes the draft and invalidates `['websites']`; on `rejected`
-  it updates the draft.
+- `usePendingStatusPolling`: one query for **all** `checking` drafts,
+  `GET /v1/websites/status?ids=a,b,c` (one request no matter how many drafts). Kept cheap on purpose:
+  - every 15 s while the tab is visible, for the first 2 minutes after the submission
+    (`refetchIntervalInBackground: false`);
+  - after that, no interval: check once when the page loads or the tab regains focus, at most once a minute;
+  - mounted once, in the feed page. On `published` it removes the draft and invalidates
+    `['websites']`; on `rejected` it updates the draft.
+- Add the batch status endpoint to the mocks (`{ id, status, rejectionReason? }[]`), and raise
+  `MOCK_REVIEW_DELAY_MS` from 5 s to 20 s so local runs show a realistic draft phase.
+- **Notification opt-in.** The success screen offers "Avise-me quando for publicado", which calls
+  `Notification.requestPermission()`. The choice is stored per draft (`notify: true`). When polling
+  sees a final status while a tab is open and permission is granted, it shows a local
+  `new Notification(...)`: "{name} foi publicado" or "{name} não foi aceito". This needs no server.
+  If the person has already left, nothing fires yet (see "Future steps").
 - `Feed.tsx`: `mergeDrafts(serverList, drafts)` puts the drafts first. They are not affected by
   the category filter (they show while the submitter is filtering, so they are never "lost").
 - `FeedCard` / `FeedTable` get `variant?: 'draft' | 'rejected'`:
@@ -156,8 +177,8 @@ Done when a user can complete a submission with keyboard only, the 409 and 422 p
     both themes if no existing token fits), a small `Loading` with "Em análise", not clickable;
   - rejected: muted card with the reason ("Conteúdo não permitido" / "Site inacessível") and "Dispensar".
 
-Done when a submission shows first in the feed, survives a reload, turns into a normal card after
-about 5 s with mocks, and a `rejeitado` URL ends as a dismissable rejected card. Unit tests cover
+Done when a submission shows first in the feed, survives a reload, turns into a normal card on the
+first check after the 20 s mock review, and a `rejeitado` URL ends as a dismissable rejected card. Unit tests cover
 `mergeDrafts`, expiry, and polling reconciliation (with fake timers). Check the draft card
 visually in the browser, per `visual-verification-playwright`.
 
@@ -198,6 +219,24 @@ the target diagrams if the implementation deviated from them.
 - `npm run lint` and `npm run build` before calling a phase done.
 - A visual check with Playwright MCP of `/websites/novo`, the success screen, the draft and
   rejected cards, and the widget editor, at mobile and desktop widths, in the light and dark themes.
+
+## Future steps
+
+**Notify people who already left (Web Push).** Phase 3 only notifies while a tab is open. To
+reach someone who closed the site:
+
+1. Client: register a service worker (a small `public/sw.js`; it must coexist with the dev-only
+   MSW worker), create a push subscription with the server's VAPID public key when the person opts
+   in, and send it with the submission (`POST /v1/websites` body `pushSubscription?`, or
+   `POST /v1/websites/:id/subscriptions`).
+2. Backend: the catalog stores the subscription next to the website (deleted after it fires or
+   after 7 days). When moderation calls `setStatus(published | rejected)`, the catalog sends the
+   Web Push (VAPID-signed, from a Worker) and deletes the subscription.
+3. The service worker shows the notification and opens `/website/:id` (published) or
+   `/websites` (rejected) on click.
+
+Cost: browser push services are free and it's one outbound request per submission, well inside
+the Workers free tier. No email address or account is needed.
 
 ## Not in scope
 

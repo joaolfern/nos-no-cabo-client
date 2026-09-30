@@ -22,6 +22,10 @@ package "catalog" {
     {field} checking/rejected: only the fields a draft needs
     {field} 404
   }
+  class "GET /v1/websites/status?ids=" as status <<new>> {
+    {field} → {id, status, rejectionReason?}[]
+    {field} one request for all of a submitter's drafts
+  }
   class "GET /v1/websites" as list <<new>> {
     {field} ?categoria=slug &q= &sort=relevance|recent|likes
     {field} &cursor= &limit=24

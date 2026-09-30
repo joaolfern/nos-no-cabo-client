@@ -18,15 +18,15 @@
   flex-direction: column;
 }
 
-// Desktop scrolls below the top bar, so the bar spans the full width while the
-// stable gutter keeps content from shifting when it starts to scroll. Mobile
-// keeps page scrolling for the collapsing address bar.
+// Wide pages scroll below the top bar on desktop, so the bar stays in view while
+// the stable gutter keeps content from shifting. Mobile and focused pages keep
+// page scrolling, so the bar scrolls away with the content.
 @media (min-width: $breakpoint-md) {
-  .container {
+  .wide {
     height: 100dvh;
   }
 
-  .content {
+  .wide .content {
     min-height: 0;
     overflow-y: auto;
     scrollbar-gutter: stable;

@@ -1,7 +1,7 @@
 import { mockKeywords } from '@/__mocks__/data/keywords'
 import type { IWebsite } from '@/interfaces/IWebsite'
 
-export const MOCK_WEBSITES: IWebsite[] = [
+const WEBSITES: IWebsite[] = [
   {
     id: '1',
     name: 'Querido Diário',
@@ -173,3 +173,12 @@ export const MOCK_WEBSITES: IWebsite[] = [
     faviconUrl: '',
   },
 ]
+
+const VERIFIED_IDS = new Set(['1', '4', '9'])
+const VERIFIED_AT = '2026-09-01T12:00:00.000Z'
+
+export const MOCK_WEBSITES: IWebsite[] = WEBSITES.map((website) => ({
+  ...website,
+  status: 'published',
+  verifiedAt: VERIFIED_IDS.has(website.id) ? VERIFIED_AT : null,
+}))

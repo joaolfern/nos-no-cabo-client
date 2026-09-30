@@ -8,7 +8,9 @@ package "src/pages/SubmitWebsite/  (route /websites/novo)" as submit {
   component "SubmitWebsite.tsx\npage: form → success screen" as page <<new>>
   component "components/\nUrlField · WebsitePreviewCard\nDetailsFields · CategoryPicker\nTurnstileField · SubmitSuccess" as submitComponents <<new>>
   component "hooks/\nuseWebsitePreview (query)\nuseSubmitWebsite (mutation)" as submitHooks <<new>>
-  component "utils/\nnormalizeUrl · toSubmission" as submitUtils <<new>>
+  component "utils/\ntoSubmission · mergeDrafts\n(drafts first)" as submitUtils <<new>>
+  component "hooks/usePendingSubmissions\nlocalStorage 'nnc-pending-submissions'" as store <<new>>
+  component "hooks/usePendingStatusPolling\nGET /v1/websites/status?ids=…\n15 s for 2 min, then on load/focus" as polling <<new>>
 }
 
 package "src/pages/WidgetEditor/  (route /websites/:id/selo)" as widget {
@@ -16,11 +18,6 @@ package "src/pages/WidgetEditor/  (route /websites/:id/selo)" as widget {
   component "utils/buildWidgetSnippet\n(one template, data-nnc-widget=id,\nring links from NOS_NO_CABO_URL)" as snippet <<new>>
 }
 
-package "src/features/pendingSubmissions/  (shared domain)" as pending {
-  component "usePendingSubmissions\nlocalStorage 'nnc-pending-submissions'" as store <<new>>
-  component "usePendingStatusPolling\nGET /v1/websites/:id every 5 s\nwhile checking" as polling <<new>>
-  component "mergeDrafts(list, drafts)\ndrafts first" as merge <<new>>
-}
 
 package "src/pages/Feed/" as feed {
   component "Feed list\n(server page, verified first)" as feedList
@@ -33,6 +30,7 @@ package "src/pages/Website/" as website {
 }
 
 package "global" {
+  component "@/utils/normalizeUrl\ntoAbsoluteUrl · normalizeUrl" as normalize <<new>>
   component "@/hooks/useLocalStorageJson\n(generic JSON variant of\nuseLocalStorageState)" as lsJson <<new>>
   component "@/components: Form, Input,\nInputColor, Button, Skeleton" as ui
   component "@/api/api.ts" as api
@@ -44,22 +42,24 @@ page --> submitHooks
 submitHooks --> api
 submitHooks --> store : add draft on 202
 submitComponents --> ui
+submitComponents --> normalize
 page --> editor : success CTA\n"Adicionar o selo"
 
 store --> lsJson
 polling --> store : update / drop
 polling --> api
-feedList --> merge
-merge --> store
+feedList -[#C62828]-> submitUtils : mergeDrafts
+feedList -[#C62828]-> polling
 feedList --> card
 verify --> api
 widgetLink --> editor
 editor --> snippet
 
-note bottom of pending
-  Used by both SubmitWebsite and Feed, so it lives
-  outside any single page (src/features/ is new:
-  shared business domains that are not generic UI).
+note top of feed
+  The one deliberate cross-feature import (red):
+  the feed shows drafts but SubmitWebsite owns them.
+  No new root folders; generic helpers go in
+  @/utils and @/hooks.
 end note
 
 note bottom of feed
