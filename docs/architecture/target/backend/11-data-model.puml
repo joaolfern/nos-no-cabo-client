@@ -1,0 +1,95 @@
+@startuml 11-data-model
+!include ../../_style.iuml
+hide circle
+skinparam linetype ortho
+title Data model (target, D1 / SQLite)
+
+package "catalog D1" {
+  entity "websites" as websites <<new>> {
+    * id : text <<PK, ULID>>
+    --
+    * url : text (as submitted)
+    * url_normalized : text <<unique>>
+    * name : text
+    description : text
+    color : text
+    favicon_url : text
+    repo : text
+    short_code : text <<unique>> (set on publish)
+    * status : text  checking | published | rejected
+    * submitted_at : integer (epoch ms)
+    published_at : integer
+    verified_at : integer (null = unverified)
+    last_verification_check_at : integer
+    * submitter_ip_hash : text
+  }
+
+  entity "categories" as categories <<new>> {
+    * slug : text <<PK>>
+    --
+    * position : integer
+  }
+
+  entity "website_categories" as wc <<new>> {
+    * website_id : text <<PK, FK>>
+    * category_slug : text <<PK, FK>>
+  }
+
+  entity "moderation_results" as moderation <<new>> {
+    * id : integer <<PK>>
+    --
+    * website_id : text <<FK>>
+    * verdict : text  safe | unsafe | error
+    categories_flagged : text (json)
+    * model : text
+    * checked_at : integer
+  }
+}
+
+package "router KV" {
+  entity "short:{code}" as short <<new>> {
+    website_id
+  }
+  entity "ring:order" as ring <<new>> {
+    [website_id…] (published,\nverified first, then published_at)
+  }
+}
+
+package "metrics D1" {
+  entity "events" as events <<new>> {
+    * id : integer <<PK>>
+    --
+    * website_id : text
+    * type : text  view | click | like
+    * at : integer
+    visitor_hash : text
+  }
+  entity "daily_stats" as daily <<new>> {
+    * website_id : text <<PK>>
+    * day : text <<PK>>
+    --
+    views : integer
+    clicks : integer
+    likes : integer
+  }
+}
+
+websites ||--o{ wc
+categories ||--o{ wc
+websites ||--o{ moderation
+websites .. short : by id (cross-service,\nno FK)
+websites .. events : by id (cross-service,\nno FK)
+events .. daily : rolled up by cron
+
+note right of websites
+  • url_normalized (lowercase host, no scheme/www/trailing slash)
+    is the dedupe key → 409 with the existing id.
+  • Timestamps are integers (epoch ms), not strings.
+  • Ids are ULIDs (sortable by creation, not guessable like
+    sequential ints). The server generates them; the 202 response
+    returns the id the client's draft tracks.
+  • submitter_ip_hash supports rate limits and abuse review
+    without storing raw IPs.
+end note
+
+@enduml

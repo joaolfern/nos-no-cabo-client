@@ -1,0 +1,85 @@
+' Shared look for every current-state diagram.
+' Elements tagged <<issue>> / <<mocked>> / <<dead>> carry migration-relevant state.
+
+skinparam shadowing false
+skinparam roundCorner 8
+skinparam defaultFontName "Helvetica"
+skinparam defaultFontSize 12
+skinparam ArrowColor #555555
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+skinparam note {
+  BackgroundColor #FFF8DC
+  BorderColor #C9B458
+}
+
+skinparam rectangle<<issue>> {
+  BackgroundColor #FDECEA
+  BorderColor #C62828
+}
+skinparam component<<issue>> {
+  BackgroundColor #FDECEA
+  BorderColor #C62828
+}
+skinparam class<<issue>> {
+  BackgroundColor #FDECEA
+  BorderColor #C62828
+}
+
+skinparam component<<mocked>> {
+  BackgroundColor #EDE7F6
+  BorderColor #5E35B1
+}
+skinparam rectangle<<mocked>> {
+  BackgroundColor #EDE7F6
+  BorderColor #5E35B1
+}
+skinparam class<<mocked>> {
+  BackgroundColor #EDE7F6
+  BorderColor #5E35B1
+}
+
+skinparam component<<dead>> {
+  BackgroundColor #EEEEEE
+  BorderColor #9E9E9E
+  FontColor #757575
+}
+skinparam rectangle<<dead>> {
+  BackgroundColor #EEEEEE
+  BorderColor #9E9E9E
+  FontColor #757575
+}
+
+skinparam component<<external>> {
+  BackgroundColor #E3F2FD
+  BorderColor #1565C0
+}
+skinparam rectangle<<external>> {
+  BackgroundColor #E3F2FD
+  BorderColor #1565C0
+}
+
+!define ISSUE_NOTE #FDECEA
+
+' Target-state additions
+skinparam component<<new>> {
+  BackgroundColor #E8F5E9
+  BorderColor #2E7D32
+}
+skinparam rectangle<<new>> {
+  BackgroundColor #E8F5E9
+  BorderColor #2E7D32
+}
+skinparam class<<new>> {
+  BackgroundColor #E8F5E9
+  BorderColor #2E7D32
+}
+skinparam database<<new>> {
+  BackgroundColor #E8F5E9
+  BorderColor #2E7D32
+}
+skinparam queue<<new>> {
+  BackgroundColor #E8F5E9
+  BorderColor #2E7D32
+}

@@ -1,0 +1,90 @@
+@startuml 30-contract-mismatches
+!include ../_style.iuml
+hide circle
+hide empty members
+left to right direction
+title Client ⇄ API contract mismatches (current state)
+
+package "nos-client (src/interfaces)" {
+  class IWebsite {
+    {field} id : string
+    {field} name : string
+    {field} description : string
+    {field} url : string
+    {field} color : string | undefined
+    {field} keywords : IKeyword[]
+    {field} createdAt : string
+    {field} updatedAt : string
+    {field} faviconUrl : string
+    {field} repo? : string
+    {field} author? : IAuthor
+  }
+  class IKeyword {
+    {field} id : string
+    {field} name : string
+  }
+  class IRegisterWebsite {
+    {field} …IPreregisterWebsite
+    {field} keywords : string[] (names)
+  }
+  class "Client-only data" as clientOnly <<mocked>> {
+    {field} likes, visits (mockWebsiteMetrics)
+    {field} votes (WebsiteVotes state)
+    {field} categories: label, icon, description, bookSubject
+    {field}   (Feed/constants/categories.ts)
+  }
+}
+
+package "nos-sr (app/schemas)" {
+  class WebsiteSchema {
+    {field} id : int
+    {field} name : str
+    {field} description : str
+    {field} url : str (short code)
+    {field} color : str = ""
+    {field} keywords : KeywordSchema[]
+    {field} createdAt : str
+    {field} updatedAt : str
+    {field} faviconUrl : str = ""
+    {field} repo : str | None
+  }
+  class KeywordSchema {
+    {field} id : int
+    {field} name : str
+    {field} createdAt : str
+  }
+  class PreWebsiteUpdateBodySchema {
+    {field} …PreWebsiteResponseSchema
+    {field} keywords : list[str]
+  }
+  class URLAnalyticsSchema <<issue>> {
+    {field} click_count, last_accessed
+    {field} (not consumed by the client)
+  }
+}
+
+IWebsite .. WebsiteSchema : <color:#C62828>id string ≠ int
+IWebsite .. WebsiteSchema : <color:#C62828>url: link ≠ short code
+IWebsite .. WebsiteSchema : <color:#C62828>author: no backend field
+IKeyword .. KeywordSchema : <color:#C62828>id string ≠ int
+IRegisterWebsite .. PreWebsiteUpdateBodySchema : <color:#C62828>keywords match by name,\n<color:#C62828>but PATCH is a stub
+
+note bottom of clientOnly
+  No backend support for: categories (curated taxonomy),
+  likes/votes, visit metrics, authors, webring prev/next/random.
+  URL analytics exist on the backend but are unused.
+end note
+
+note as endpoints
+  <b>Endpoint mismatches</b>
+  • GET /website/:id returns an object; the client types it IWebsite[]
+  • GET /authors/:id and GET /keywords/:id are called by client hooks
+    (unused) but do not exist
+  • The client calls GET /keywords, but the route is /keywords/ (blueprint prefix + '/');
+    it works only because Werkzeug 308-redirects to the trailing slash
+  • Errors: the client reads data.error → message; 403 and validators
+    return {message}, so the client shows the axios message instead
+  • MSW mocks use string ids, which hides every id-type mismatch
+end note
+
+@enduml

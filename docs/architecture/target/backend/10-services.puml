@@ -1,0 +1,75 @@
+@startuml 10-services
+!include ../../_style.iuml
+skinparam linetype polyline
+title Backend services and data ownership (target)
+
+component "gateway\nroutes /v1/*, CORS, rate limit per IP,\nerror envelope {error:{code,message}}" as gw <<new>>
+
+package "catalog (owns catalog D1)" {
+  component "websites\nlist · get · create · preview" as websites <<new>>
+  component "categories\n(11 slugs, docs/categories.md)" as categories <<new>>
+  component "scraper\nHTMLRewriter: title, description,\nfavicon, theme color" as scraper <<new>>
+  component "internal API\nsetStatus · setVerified · ringOrder" as internal <<new>>
+}
+
+package "moderation" {
+  component "queue consumer\nmoderation-jobs" as consumer <<new>>
+  component "SFW classifier\nWorkers AI llama-guard (text)\n+ optional image check" as classifier <<new>>
+}
+
+package "verification" {
+  component "verify on request\nPOST /websites/:id/verify" as verifyNow <<new>>
+  component "cron recheck\n(daily batch)" as cron <<new>>
+  component "widget detector\ndata-nnc-widget marker\n+ link to webring" as detector <<new>>
+}
+
+package "router (owns KV)" {
+  component "short links\nGET /r/:code → 302" as short <<new>>
+  component "webring navigation\n/ring/:id/next|prev|random" as ring <<new>>
+}
+
+package "metrics (owns metrics D1)" {
+  component "events\nview · click · like" as events <<new>>
+  component "daily rollups\n(Cron)" as rollups <<new>>
+}
+
+queue "moderation-jobs" as q <<new>>
+
+gw --> websites
+gw --> categories
+gw --> verifyNow
+gw --> short
+gw --> ring
+gw --> events
+
+websites --> scraper
+websites --> q : enqueue on create
+q --> consumer
+consumer --> scraper : fetch content
+consumer --> classifier
+consumer --> internal : published / rejected
+
+verifyNow --> detector
+cron --> detector
+detector --> internal : set / clear verified_at
+
+ring --> internal : ring order\n(published, verified first)
+internal --> short : createCode(websiteId)\non publish
+short ..> events : click
+ring ..> events : click
+
+note bottom of internal
+  Only catalog writes the catalog database.
+  Other services call its internal API over
+  service bindings (not exposed by the gateway),
+  which keeps each service independently deployable.
+end note
+
+note right of short
+  Short codes are no longer stored in
+  website.url; the site URL stays the
+  real URL and the link table maps
+  code → website id.
+end note
+
+@enduml

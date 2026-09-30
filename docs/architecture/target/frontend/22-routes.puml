@@ -1,0 +1,33 @@
+@startuml 22-routes
+!include ../../_style.iuml
+title nos-client — Route map (target)
+
+rectangle "/  (index)\nLandingPage" as landing
+
+rectangle "NosNoCaboLayout (pathless)\nTopbar: Logo · SearchFeed · 'Adicionar site' link" as layout {
+  rectangle "/websites\nFeed\ndrafts first, then verified first" as feed
+  rectangle "/websites/novo\nSubmitWebsite\none-screen form → success" as submit <<new>>
+  rectangle "/website/:id\nWebsite\n+ VerifiedIcon · VerifyButton" as website
+  rectangle "/websites/:id/selo\nWidgetEditor\noptional, any time" as widget <<new>>
+}
+
+rectangle "*\nNotFound" as notFound
+
+landing --> submit : "Adicionar meu site"
+landing --> feed : "Conferir sites"
+layout --> submit : topbar link
+submit --> feed : "Ver no feed"
+submit --> widget : "Adicionar o selo"
+feed --> website : card click (published only)
+website --> widget : "Adicionar o selo"
+notFound --> landing
+
+note bottom of layout
+  Removed: WebsiteFormProvider and the global WebsiteFormModal.
+  The form is a normal page, so it can be linked, refreshed
+  and navigated back from.
+  URL state (?categoria, ?q) goes only through the router's
+  useSearchParams.
+end note
+
+@enduml

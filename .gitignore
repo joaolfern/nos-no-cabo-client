@@ -33,3 +33,5 @@ ds-bundle/
 *.sln
 *.sw?
 .playwright-mcp
+# rendered architecture diagrams (npm run docs:diagrams)
+out/

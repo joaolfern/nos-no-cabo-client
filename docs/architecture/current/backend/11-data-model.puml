@@ -1,0 +1,88 @@
+@startuml 11-data-model
+!include ../../_style.iuml
+hide circle
+skinparam linetype ortho
+title nos-sr — Data model (current state)
+
+entity "website" as website {
+  * id : int <<PK>>
+  --
+  * url : varchar(600) <<unique>>
+  * name : varchar(300)
+  * description : varchar(1000)
+  * createdAt : varchar(50)
+  * updatedAt : varchar(50)
+  color : varchar(30)
+  faviconUrl : varchar(600)
+  repo : varchar(400)
+}
+
+entity "preWebsite" as prewebsite {
+  * id : int <<PK>>
+  --
+  * url : varchar(600) <<unique>>
+  * createdAt : varchar(50)
+  name : varchar(300)
+  description : varchar(1000)
+  color : varchar(30)
+  faviconUrl : varchar(600)
+}
+
+entity "keyword" as keyword {
+  * id : int <<PK>>
+  --
+  * name : varchar(100) <<unique>>
+  * createdAt : varchar(50)
+  * updatedAt : varchar(50)
+}
+
+entity "website_keyword" as wk {
+  * website_id : int <<PK, FK>>
+  * keyword_id : int <<PK, FK>>
+}
+
+entity "url_mappings" as mapping {
+  * id : int <<PK>>
+  --
+  * short_url : varchar(11) <<unique>>
+  * original_url : text
+  * created_at : timestamp
+}
+
+entity "url_analytics" as analytics {
+  * short_url : varchar(11) <<PK, FK>>
+  --
+  * click_count : int
+  * last_accessed : timestamp
+}
+
+website ||--o{ wk
+keyword ||--o{ wk
+mapping ||--o| analytics
+website .. mapping : website.url = short_url\n(convention only, no FK)
+prewebsite .. website : approve copies\nthen deletes
+
+note right of website
+  • After approval, url holds the short code (e.g. "b"),
+    not the real site URL. The pre-register duplicate
+    check compares a real URL to codes and never matches.
+  • Timestamps are stored as ISO strings (except url_* tables).
+  • The seed inserts datetime objects into the string columns.
+  • Deleting a website leaves its url_mappings row.
+end note
+
+note right of prewebsite
+  No repo column, although the schemas and
+  approve() set repo. Alembic drops this
+  table; create_all() recreates it at boot.
+end note
+
+note bottom of keyword
+  Free-text tags created during approval.
+  No categories table: the client-side
+  taxonomy maps onto keyword names.
+  Orphan keywords are deleted with the
+  last website that uses them.
+end note
+
+@enduml

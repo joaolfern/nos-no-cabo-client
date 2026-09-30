@@ -1,0 +1,90 @@
+@startuml 20-frontend-modules
+!include ../../_style.iuml
+skinparam linetype polyline
+left to right direction
+skinparam ranksep 90
+skinparam nodesep 25
+title nos-client — Module dependencies (current state)
+caption Red arrows break feature colocation: global code importing a feature, or one feature importing another.
+
+package "Global scope" {
+  package "providers/" as providers {
+    component "index.tsx\n(Providers)" as providersIndex
+    component "RouterProvider/routes.tsx" as routes
+    component "FiltersProvider\n+ useKeywordFilter, useSearch" as filtersProv
+    component "SortProvider" as sortProv
+    component "WebsitesProvider" as websitesProv
+    component "WebsiteProvider\n(WebsiteDetailsProvider)" as detailsProv
+    component "Theme · Message · Query\nIcon · ErrorBoundary" as infraProv
+  }
+  package "hooks/" {
+    component "useDataHooks.ts\n(every query and mutation)" as dataHooks
+    component "useDebounce · useIsMobile\nuseLocalStorageState · useTheme…" as genericHooks
+  }
+  package "contexts/ · interfaces/ · constants/" {
+    component "Filters/Sort/Websites/\nWebsiteDetails contexts" as featureContexts
+    component "IWebsite, IFilters, ISort,\nIFeedView (with runtime code)" as interfaces
+    component "constants/post.ts\n(sort options, page sizes)" as postConst
+  }
+  component "api/api.ts\n(axios + OpenLibrary)" as apiMod
+  component "~__mocks~__/" as mocks <<mocked>>
+  package "layouts/" {
+    component "AppLayout" as appLayout
+    component "NosNoCaboLayout\n+ SearchFeed, TopbarActions" as nncLayout
+  }
+  component "components/\n(Button, Dropdown, Modal, …)" as uiKit
+}
+
+package "pages/ (features)" {
+  component "Feed\n+ constants/categories.ts\n+ hooks useFilters/useSort/useWebsites" as feed
+  component "Website" as website
+  component "WebsiteForm" as websiteForm
+  component "LandingPage" as landing
+  component "NotFound" as notFound
+  component "Webring (leftover, not a route)\nNosNoCaboProviders + buttons" as webring <<issue>>
+}
+
+providersIndex --> infraProv
+providersIndex -[#C62828]-> webring : NosNoCaboProviders
+webring --> sortProv
+webring --> filtersProv
+webring --> websitesProv
+
+routes --> feed
+routes --> website
+routes --> landing
+routes --> notFound
+routes -[#C62828]-> websiteForm : WebsiteFormProvider\n+ WebsiteFormModal
+
+websitesProv -[#C62828]-> feed : sortWebsites,\nuseSort, useFilters
+filtersProv -[#C62828]-> feed : categories
+detailsProv -[#C62828]-> feed : useWebsites
+nncLayout -[#C62828]-> feed : useFilters
+nncLayout -[#C62828]-> websiteForm : useWebsiteForm
+
+dataHooks --> apiMod
+dataHooks -[#C62828]-> mocks : parseRegisterDataToWebsite
+websitesProv --> dataHooks
+filtersProv --> dataHooks
+detailsProv --> dataHooks
+websitesProv ..> featureContexts
+detailsProv ..> featureContexts
+
+website -[#C62828]-> feed : ViewToggle, FeedCardList,\nuseWebsites, categories
+website -[#C62828]-> webring : GithubButton, ReportButton,\nWebsiteAuthorAndDate
+feed -[#C62828]-> website : mockWebsiteMetrics
+feed -[#C62828]-> websiteForm : useWebsiteForm
+websiteForm -[#C62828]-> feed : categories
+landing -[#C62828]-> website : WebsiteBubble
+website --> detailsProv
+
+feed ..> uiKit
+website ..> uiKit
+websiteForm ..> uiKit
+
+note bottom of feed
+  categories.ts is effectively a shared domain module:
+  providers, Website and WebsiteForm all use it.
+end note
+
+@enduml

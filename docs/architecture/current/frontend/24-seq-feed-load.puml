@@ -1,0 +1,52 @@
+@startuml 24-seq-feed-load
+!include ../../_style.iuml
+title Feed load, filter, sort, search, page (current state)
+
+actor User
+participant "SearchFeed\n(layout)" as search
+participant "FiltersProvider" as filters
+participant "SortProvider" as sort
+participant "WebsitesProvider" as websites
+participant "Feed.tsx" as feed
+participant "QueryClient" as qc
+participant "nos-sr / MSW" as api
+
+== App boot (any route, even /) ==
+websites -> qc : useWebsitesData ['websites']
+qc -> api : GET /websites
+api --> qc : IWebsite[] (all rows)
+filters -> qc : useKeywordsData ['keywords']
+qc -> api : GET /keywords
+api --> qc : IKeyword[]
+
+== /websites render ==
+filters -> filters : ?categoria=<name> → keyword id\n(via name lookup + categories.ts order/labels)
+websites -> websites : filterByKeyword(raw, [id])
+websites -> sort : selectedSort (default date_desc)
+websites -> websites : sortWebsites(filtered, sort)\n(likes_desc reads mockWebsiteMetrics)
+feed -> websites : websites
+feed -> filters : search
+feed -> feed : filterBySearch(websites, search)\n(regex on name + description)
+feed -> feed : slice(0, loadedPages × pageSize)\npageSize 12 or 18 by media query
+feed -> feed : reset loadedPages when\nsearch|keyword|sort key changes
+
+== User types in search ==
+User -> search : type
+search -> search : debounce
+search -> filters : updateSearch(value)
+search -> search : history.replaceState("?s=value")
+note right #FDECEA
+  Drops ?categoria, and the router
+  never sees this change.
+end note
+
+== User picks category ==
+User -> filters : updateKeywords(id)
+filters -> filters : setSearchParams(categoria = keyword.name)
+
+note over websites, api
+  Everything is client-side: no server pagination, filtering or sorting.
+  The cost grows with the total number of websites.
+end note
+
+@enduml

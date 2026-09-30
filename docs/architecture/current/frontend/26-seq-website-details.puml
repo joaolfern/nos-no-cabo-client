@@ -1,0 +1,48 @@
+@startuml 26-seq-website-details
+!include ../../_style.iuml
+title Website details page /website/:id (current state)
+
+actor Visitor
+participant "Website.tsx" as page
+participant "WebsiteDetailsProvider" as details
+participant "WebsitesProvider\n(global)" as websites
+participant "WebsiteContent" as content
+participant "QueryClient" as qc
+participant "nos-sr / MSW" as api
+participant "OpenLibrary" as ol
+
+Visitor -> page : /website/:id
+page -> details : id (string from URL)
+details -> websites : getWebsiteById(id)
+note right #FDECEA
+  The Map is keyed by website.id. The backend sends
+  ints and the URL gives strings, so with the real
+  API this lookup misses (the string-id mocks hide it).
+end note
+details -> qc : useWebsiteDetailsData(id)
+qc -> api : GET /website/:id
+api --> qc : WebsiteSchema (object)
+details -> details : website = {...feedItem, id, ...detail}
+note right #FDECEA
+  Always an object, so the !website / 404 branch
+  never fires, and loading returns undefined
+  (WebsiteLoader spinner never shows).
+end note
+
+content -> content : WebsiteInfoCard\n<a href={website.url}>
+note right #FDECEA
+  After approval, url is a short code ("b"),
+  so the link would be relative and broken.
+end note
+content -> content : WebsiteMetrics / WebsiteVotes\n(mockWebsiteMetrics, local state)
+content -> websites : useAdjacentWebsites(id)\n(websitesRaw, id ===)
+content -> websites : RecommendedSites\nreads the filtered+sorted list
+note right #FDECEA
+  Recommendations change with the
+  active Feed category filter.
+end note
+content -> qc : useRecommendedBooks(category.bookSubject)
+qc -> ol : GET subjects/{s}.json?limit=3
+ol --> qc : works[]
+
+@enduml
