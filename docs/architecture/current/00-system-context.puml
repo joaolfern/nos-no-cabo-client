@@ -1,0 +1,43 @@
+@startuml 00-system-context
+!include ../_style.iuml
+title Nós no Cabo — System context (current state)
+
+actor "Visitor" as visitor
+actor "Site owner\n(submitter)" as owner
+actor "Admin" as admin
+
+rectangle "nos-client\nReact SPA (Vite)" as spa
+rectangle "nos-sr\nFlask API :3000" as api
+database "PostgreSQL 15\n(webring)" as db
+
+rectangle "Member websites\n(embed webring badge)" as members <<external>>
+rectangle "OpenLibrary API\nopenlibrary.org" as openlib <<external>>
+rectangle "Unicorn Studio\n(3D scene, 404 page)" as unicorn <<external>>
+rectangle "MSW worker\n(in-browser mock API)" as msw <<mocked>>
+
+visitor --> spa : browse feed,\nwebsite details
+owner --> spa : submit site\n(6-step wizard)
+admin --> spa : same UI;\nadmin mode if\nVITE_ADMIN_PASSWORD set
+
+spa --> api : REST/JSON (axios)
+spa ..> msw : when VITE_ENABLE_MOCKS != 'false'\n(default ON)
+spa --> openlib : book recommendations\n(direct from browser)
+spa --> unicorn : scene JSON (public/)
+api --> db : SQLAlchemy
+api --> members : scrape metadata\n(requests + BeautifulSoup)
+members --> api : visitors via\nGET /nos/:code redirect
+
+note right of admin
+  <b>No real auth.</b> Admin = shared password
+  sent as <i>x-admin-password</i>. The client reads
+  it from VITE_ADMIN_PASSWORD, so it is
+  shipped in the JS bundle.
+end note
+
+note bottom of msw
+  Mocks are ON by default: a build that
+  forgets VITE_ENABLE_MOCKS=false talks
+  to fake data.
+end note
+
+@enduml

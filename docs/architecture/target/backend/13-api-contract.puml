@@ -1,0 +1,120 @@
+@startuml 13-api-contract
+!include ../../_style.iuml
+hide circle
+hide empty members
+title Public HTTP API /v1 (target)
+
+package "catalog" {
+  class "GET /v1/websites/preview?url=" as preview <<new>> {
+    {field} → WebsitePreview (scraped, not stored)
+    {field} 409 duplicate {error, existingId}
+    {field} 422 unreachable / invalid url
+  }
+  class "POST /v1/websites" as create <<new>> {
+    {field} body WebsiteSubmission
+    {field} header cf-turnstile-response
+    {field} → 202 Website (status: checking)
+    {field} 409 duplicate {error, existingId}
+    {field} 429 rate limited
+  }
+  class "GET /v1/websites/:id" as get <<new>> {
+    {field} → Website
+    {field} checking/rejected: only the fields a draft needs
+    {field} 404
+  }
+  class "GET /v1/websites" as list <<new>> {
+    {field} ?categoria=slug &q= &sort=relevance|recent|likes
+    {field} &cursor= &limit=24
+    {field} → Page<Website> (published only, verified first)
+  }
+  class "GET /v1/categories" as categories <<new>> {
+    {field} → {slug, count}[]
+  }
+}
+
+package "verification" {
+  class "POST /v1/websites/:id/verify" as verify <<new>> {
+    {field} → {verified, verifiedAt, reason?}
+    {field} 429 (1 request per site per minute)
+  }
+}
+
+package "router" {
+  class "GET /r/:code" as short <<new>> {
+    {field} 302 → website.url (+ click event)
+  }
+  class "GET /ring/:id/next | prev | random" as ring <<new>> {
+    {field} 302 → neighbour website.url
+    {field} used by the widget links
+  }
+}
+
+package "metrics" {
+  class "POST /v1/websites/:id/events" as events <<new>> {
+    {field} body {type: view | click | like}
+    {field} → 204
+  }
+  class "GET /v1/websites/:id/stats" as stats <<new>> {
+    {field} → {views, clicks, likes, daily[]}
+  }
+}
+
+package "schemas" {
+  class WebsitePreview <<new>> {
+    {field} url : string
+    {field} name : string | null
+    {field} description : string | null
+    {field} color : string | null
+    {field} faviconUrl : string | null
+  }
+  class WebsiteSubmission <<new>> {
+    {field} url : string
+    {field} name : string (3..80)
+    {field} description : string (≤ 280)
+    {field} color? : string (#rrggbb)
+    {field} faviconUrl? : string
+    {field} repo? : string
+    {field} categories : slug[] (1..3)
+  }
+  class Website <<new>> {
+    {field} id : string (ULID)
+    {field} url : string (real URL)
+    {field} shortCode : string | null (set on publish)
+    {field} name, description, color, faviconUrl, repo?
+    {field} categories : slug[]
+    {field} status : checking | published | rejected
+    {field} rejectionReason? : unsafe | unreachable | error
+    {field} verifiedAt : string | null (ISO)
+    {field} submittedAt, publishedAt : string (ISO)
+  }
+  class "Page<T>" as page <<new>> {
+    {field} items : T[]
+    {field} nextCursor : string | null
+    {field} total : number
+  }
+  class "Error envelope" as error <<new>> {
+    {field} {error: {code, message, details?}}
+    {field} code: duplicate | invalid | rate_limited |
+    {field}   turnstile_failed | not_found | internal
+    {field} message in pt-BR, safe to show
+  }
+}
+
+preview ..> WebsitePreview
+create ..> WebsiteSubmission
+create ..> Website
+get ..> Website
+list ..> page
+page ..> Website
+
+note as conventions
+  <b>Conventions</b>
+  • Every route is versioned under /v1 (except the redirects /r and /ring)
+  • Plural resources; ids are strings
+  • Timestamps are ISO-8601 in responses
+  • One error envelope; the client reads error.code, never parses message
+  • No admin password in the client; moderation tooling goes behind
+    Cloudflare Access (out of scope here)
+end note
+
+@enduml

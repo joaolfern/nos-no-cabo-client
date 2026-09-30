@@ -1,0 +1,57 @@
+@startuml 14-seq-submit-moderation
+!include ../../_style.iuml
+title Submission and background SFW moderation (target)
+
+participant "SPA" as spa
+participant "gateway" as gw
+participant "catalog" as catalog
+participant "Turnstile" as ts
+database "catalog D1" as db
+queue "moderation-jobs" as q
+participant "moderation" as mod
+participant "Member site" as site
+participant "Workers AI" as ai
+
+spa -> gw : POST /v1/websites {submission}\n+ turnstile token
+gw -> gw : rate limit (per IP hash)
+gw -> catalog : create(submission)
+catalog -> ts : siteverify(token)
+ts --> catalog : ok
+catalog -> catalog : validate, normalize url
+catalog -> db : exists url_normalized?
+alt duplicate
+  catalog --> spa : 409 {error: duplicate, existingId}
+else new
+  catalog -> db : insert website (status = checking)
+  catalog -> q : send {websiteId}
+  catalog --> spa : 202 Website (checking)
+end
+
+== Background (seconds to minutes) ==
+q -> mod : deliver {websiteId}
+mod -> catalog : get(websiteId) (internal)
+mod -> site : GET url (HTMLRewriter:\ntitle, meta, visible text excerpt)
+mod -> ai : llama-guard(name + description + excerpt)
+opt og:image present and image check enabled
+  mod -> ai : vision model on og:image
+end
+alt safe
+  mod -> catalog : setStatus(published)
+  catalog -> db : status = published, published_at
+  catalog -> catalog : router.createCode(id) → short_code
+  note right: router calls go over the\nservice binding; KV stays router-owned
+  catalog -> catalog : router.invalidateRing()
+else unsafe
+  mod -> catalog : setStatus(rejected, unsafe)
+else error
+  mod -> q : retry (backoff, max 3)\nthen setStatus(rejected, error)
+end
+mod -> db : insert moderation_results (through catalog)
+
+note over spa, gw
+  The SPA never waits for moderation: it keeps a local
+  draft and polls GET /v1/websites/:id
+  (see frontend/21-seq-submit-optimistic).
+end note
+
+@enduml

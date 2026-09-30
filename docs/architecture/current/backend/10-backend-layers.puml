@@ -1,0 +1,67 @@
+@startuml 10-backend-layers
+!include ../../_style.iuml
+title nos-sr — Layers and modules (current state)
+
+component "app.py\ncreate_app() · db.create_all() · app.run" as entry
+component "app/~__init~__.py\nOpenAPI app factory · CORS · 422 handler" as factory
+
+package "routes/ (APIBlueprints)" {
+  component "websites_bp\n/websites · /website" as websitesBp
+  component "keywords_bp\n/keywords/" as keywordsBp
+  component "shorteners_bp\n/shorten · /nos/:code · /shorteners" as shortenerBp
+}
+
+package "services/" {
+  component "WebsiteService\n(pre_register, approve,\nget, delete, scrape helpers)" as websiteSvc
+  component "URLShortenerService\n(create_mapping, get_mapping,\ntrack_access)" as shortenerSvc
+}
+
+package "models/ (SQLAlchemy)" {
+  component "Website\nPreWebsite\nKeyword\nwebsite_keyword" as websiteModels
+  component "URLMapping\nURLAnalytics" as urlModels
+  component "database.py\ninit_db · create_all ·\nseed initial_websites.json" as database
+}
+
+package "schemas/ (Pydantic v1)" {
+  component "WebsiteSchema · PreWebsite*Schema\nKeywordSchema · URLMapping/Analytics\nErrorSchema{message} · MessageSchema\nAdminHeaderSchema" as schemas
+}
+
+package "lib/" {
+  component "base62" as base62
+  component "validate_admin_password" as adminPw
+  component "validate_URL" as validateUrl
+  component "validation_error_handler\n→ 422 {error}" as valErr
+}
+
+entry --> factory
+factory --> websitesBp
+factory --> keywordsBp
+factory --> shortenerBp
+factory --> database
+factory --> valErr
+
+websitesBp --> websiteSvc
+websitesBp --> adminPw : DELETE only
+websitesBp ..> schemas
+shortenerBp --> shortenerSvc
+shortenerBp ..> schemas
+websiteSvc --> shortenerSvc : approve → create_mapping
+websiteSvc --> websiteModels
+shortenerSvc --> urlModels
+shortenerSvc --> base62
+schemas --> validateUrl
+
+keywordsBp -[#C62828]-> websiteModels : <color:#C62828>Keyword.query.all()\n<color:#C62828>(bypasses services)
+
+note right of websitesBp
+  Two service singletons: websites_bp creates its own
+  URLShortenerService, and shorteners_bp creates another.
+  Module-level singletons, no dependency injection.
+end note
+
+note bottom of websiteSvc
+  approve_pre_registered_website() exists,
+  but PATCH /website never calls it (stub).
+end note
+
+@enduml

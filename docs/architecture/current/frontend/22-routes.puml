@@ -1,0 +1,34 @@
+@startuml 22-routes
+!include ../../_style.iuml
+title nos-client — Route map (current state)
+
+rectangle "WebsiteFormProvider" as formProv {
+  rectangle "/  (index)\nLandingPage\nGSAP bubbles from mocks.ts,\nlandingTheme palette" as landing <<mocked>>
+
+  rectangle "NosNoCaboLayout (pathless)\nAppLayout.Topbar: Logo · SearchFeed · TopbarActions" as layout {
+    rectangle "/websites\nFeed\ncategory aside · sort · grid/list · load more" as feed
+    rectangle "/website/:id\nWebsite\ninfo card · metrics · prev/next/random\nrecommended sites · books" as website
+  }
+
+  rectangle "*\nNotFound\nUnicorn Studio scene" as notFound
+
+  rectangle "WebsiteFormModal (global overlay)\n6-step wizard" as modal
+}
+
+landing --> feed : "Conferir sites"
+landing --> modal : "Adicionar meu site"
+layout --> modal : TopbarActions add-site button
+feed --> website : card click
+website --> website : prev / next / random
+notFound --> feed : link (text says "home page")
+
+note bottom of layout
+  URL state:
+  • ?categoria=<keyword name> via useSearchParams
+  • ?s=<search> via window.history.replaceState
+    (bypasses the router; replaces the whole query
+    string, which drops categoria; never removed when cleared)
+  • feed view (grid/list) kept in localStorage 'feed-view'
+end note
+
+@enduml

@@ -1,0 +1,50 @@
+@startuml 13-seq-submit-website
+!include ../../_style.iuml
+title Website submission: pre-register + approve (current state)
+
+participant "SPA\nWebsiteForm" as spa
+participant "websites_bp" as route
+participant "WebsiteService" as svc
+participant "URLShortenerService" as short
+participant "Member site" as site
+database "Postgres" as db
+
+== Step 1: pre-register (POST /website) ==
+spa -> route : POST /website {url}
+route -> svc : pre_register_website(url)
+svc -> site : GET url (timeout 10s)
+site --> svc : HTML
+opt IS_BETA == "false" (compose sets IS_BETA=1, so skipped)
+  svc -> svc : _validate_webring_link\n(<a href*=WEBRING_URL>)
+end
+svc -> db : Website where url = :url
+note right #FDECEA
+  Never matches once websites are approved:
+  website.url stores the short code.
+end note
+svc -> svc : extract title, description,\nfavicon (og:image first), color
+opt manifest link
+  svc -> site : GET manifest.json (theme_color)
+end
+svc -> db : upsert preWebsite by url
+route --> spa : PreWebsiteResponseSchema
+
+== Step 2: approve (PATCH /website) ==
+spa -> route : PATCH /website {…preWebsite, keywords: [names]}
+route --> spa : 200 {message: "Novo site adicionado…"}
+note over route, db #FDECEA
+  <b>STUB.</b> Nothing below this line runs today.
+  preWebsite stays pending and no website is created.
+end note
+
+group intended flow: approve_pre_registered_website() (not wired)
+  svc -> db : find preWebsite by url
+  svc -> svc : merge fields, Website.from_prewebsite()
+  svc -> short : create_mapping(original url)
+  short -> db : insert url_mappings, short_url = base62(id)
+  svc -> svc : website.url = short_url
+  svc -> db : link or create keywords by name
+  svc -> db : insert website, delete preWebsite, commit
+end
+
+@enduml

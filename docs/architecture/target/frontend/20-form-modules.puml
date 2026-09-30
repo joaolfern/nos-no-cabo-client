@@ -1,0 +1,72 @@
+@startuml 20-form-modules
+!include ../../_style.iuml
+skinparam linetype polyline
+left to right direction
+title nos-client — Submission and widget features (target)
+
+package "src/pages/SubmitWebsite/  (route /websites/novo)" as submit {
+  component "SubmitWebsite.tsx\npage: form → success screen" as page <<new>>
+  component "components/\nUrlField · WebsitePreviewCard\nDetailsFields · CategoryPicker\nTurnstileField · SubmitSuccess" as submitComponents <<new>>
+  component "hooks/\nuseWebsitePreview (query)\nuseSubmitWebsite (mutation)" as submitHooks <<new>>
+  component "utils/\nnormalizeUrl · toSubmission" as submitUtils <<new>>
+}
+
+package "src/pages/WidgetEditor/  (route /websites/:id/selo)" as widget {
+  component "WidgetEditor.tsx\nstyle options + live preview + copy code" as editor <<new>>
+  component "utils/buildWidgetSnippet\n(one template, data-nnc-widget=id,\nring links from NOS_NO_CABO_URL)" as snippet <<new>>
+}
+
+package "src/features/pendingSubmissions/  (shared domain)" as pending {
+  component "usePendingSubmissions\nlocalStorage 'nnc-pending-submissions'" as store <<new>>
+  component "usePendingStatusPolling\nGET /v1/websites/:id every 5 s\nwhile checking" as polling <<new>>
+  component "mergeDrafts(list, drafts)\ndrafts first" as merge <<new>>
+}
+
+package "src/pages/Feed/" as feed {
+  component "Feed list\n(server page, verified first)" as feedList
+  component "FeedCard / FeedTable\n+ variant 'draft' | 'rejected'\n+ VerifiedIcon" as card
+}
+
+package "src/pages/Website/" as website {
+  component "VerifyButton\nPOST /v1/websites/:id/verify" as verify <<new>>
+  component "link to /websites/:id/selo" as widgetLink <<new>>
+}
+
+package "global" {
+  component "@/hooks/useLocalStorageJson\n(generic JSON variant of\nuseLocalStorageState)" as lsJson <<new>>
+  component "@/components: Form, Input,\nInputColor, Button, Skeleton" as ui
+  component "@/api/api.ts" as api
+  component "@/interfaces/IWebsite\n(+ status, verifiedAt, categories)" as types
+}
+
+page --> submitComponents
+page --> submitHooks
+submitHooks --> api
+submitHooks --> store : add draft on 202
+submitComponents --> ui
+page --> editor : success CTA\n"Adicionar o selo"
+
+store --> lsJson
+polling --> store : update / drop
+polling --> api
+feedList --> merge
+merge --> store
+feedList --> card
+verify --> api
+widgetLink --> editor
+editor --> snippet
+
+note bottom of pending
+  Used by both SubmitWebsite and Feed, so it lives
+  outside any single page (src/features/ is new:
+  shared business domains that are not generic UI).
+end note
+
+note bottom of feed
+  Removed: src/pages/WebsiteForm/ (modal wizard,
+  6 steps, context, floating button),
+  usePreregisterWebsite/useRegisterWebsite and
+  ~__mocks~__/data/parseRegisterDataToWebsite.
+end note
+
+@enduml
