@@ -82,3 +82,9 @@ export type IPreregisterWebsite = Pick<
 export type IRegisterWebsite = IPreregisterWebsite & {
   keywords: string[]
 }
+
+export interface IWebsiteStatus {
+  id: string
+  status: WebsiteStatus
+  rejectionReason?: WebsiteRejectionReason
+}

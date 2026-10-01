@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 import { api } from '@/api/api'
+import { usePendingSubmissions } from '@/pages/SubmitWebsite/hooks/usePendingSubmissions'
 import type { IApiError } from '@/interfaces/IApiError'
 import type {
   ISubmittedWebsite,
@@ -14,6 +15,8 @@ type SubmitWebsiteInput = {
 }
 
 export function useSubmitWebsite() {
+  const { addDraft } = usePendingSubmissions()
+
   return useMutation<ISubmittedWebsite, IApiError, SubmitWebsiteInput>({
     mutationFn: ({ submission, turnstileToken }) =>
       api
@@ -23,5 +26,6 @@ export function useSubmitWebsite() {
             : undefined,
         })
         .then((res) => res.data),
+    onSuccess: addDraft,
   })
 }

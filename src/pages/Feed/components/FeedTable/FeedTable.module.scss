@@ -167,3 +167,27 @@ td.likes {
 .boneShort {
   width: 55%;
 }
+
+.table tbody tr.pendingRow {
+  border-bottom-style: dashed;
+}
+
+td.pendingStatus {
+  font-size: 0.75rem;
+  text-align: right;
+}
+
+.draft td.pendingStatus {
+  color: var(--color-text-muted);
+}
+
+.rejected {
+  .site,
+  .description {
+    opacity: 0.6;
+  }
+
+  td.pendingStatus {
+    color: var(--color-danger-700);
+  }
+}

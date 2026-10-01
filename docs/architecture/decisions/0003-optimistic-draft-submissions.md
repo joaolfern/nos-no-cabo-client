@@ -13,7 +13,7 @@ Other visitors must not see unchecked content.
 
 - `POST /v1/websites` returns **202** with the new website (`status: checking`) and its id.
 - The client stores a **draft** in `localStorage` under `nnc-pending-submissions`:
-  `{ id, url, name, description, color, faviconUrl, categories, status, rejectionReason?, submittedAt, notify }`.
+  `{ id, url, name, description, color, faviconUrl, categories, status, rejectionReason?, submittedAt }`.
 - The feed puts the drafts before the server list. Draft cards use a distinct style: dashed
   border, a loading indicator, and no link to the details page.
 - While drafts are `checking`, the client checks them all with one request,
@@ -24,8 +24,10 @@ Other visitors must not see unchecked content.
     the server list;
   - `rejected`: keep the draft as a rejected card showing the reason, with a "Dispensar" button;
   - still `checking` after 7 days: expire the draft.
-- The success screen offers an opt-in notification. While a tab is open, the client shows a
-  local notification when a check sees the final status. Reaching people who already left
+- Notifications are a one-time, browser-wide opt-in: while the permission is undecided, draft
+  cards show a bell that asks for it. Once granted, every submission notifies when a check sees
+  its final status (while a tab is open), and the bell no longer appears. There is no off switch
+  in the app; the browser's site settings control it. Reaching people who already left
   needs Web Push, a planned future step (`docs/plans/form-rework.md`, "Future steps").
 - Other visitors only ever see published sites, because the server lists nothing else.
 

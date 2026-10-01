@@ -1,14 +1,16 @@
+import { MOCK_KEYWORDS } from '@/__mocks__/data/keywords'
 import { MOCK_WEBSITES } from '@/__mocks__/data/websites'
 import type {
   IVerificationResult,
   IWebsite,
   IWebsitePreview,
+  IWebsiteStatus,
   IWebsiteSubmission,
   ISubmittedWebsite,
 } from '@/interfaces/IWebsite'
 import { normalizeUrl } from '@/utils/normalizeUrl/normalizeUrl'
 
-export const MOCK_REVIEW_DELAY_MS = 5000
+export const MOCK_REVIEW_DELAY_MS = 20_000
 export const REJECTED_URL_MARKER = 'rejeitado'
 export const UNREACHABLE_URL_MARKER = 'inacessivel'
 
@@ -147,4 +149,42 @@ export function mockVerification(
   return hasWidget
     ? { verified: true, verifiedAt: new Date(now).toISOString() }
     : { verified: false, verifiedAt: null, reason: 'widget_not_found' }
+}
+
+export function getMockStatuses(
+  ids: string[],
+  now = Date.now()
+): IWebsiteStatus[] {
+  return ids.flatMap((id) => {
+    const website = getMockSubmittedWebsite(id, now)
+    if (!website) return []
+
+    const { status, rejectionReason } = website
+    return [{ id, status, ...(rejectionReason && { rejectionReason }) }]
+  })
+}
+
+function toLegacyWebsite(website: ISubmittedWebsite): IWebsite {
+  return {
+    id: website.id,
+    name: website.name,
+    description: website.description,
+    url: website.url,
+    color: website.color ?? undefined,
+    faviconUrl: website.faviconUrl ?? '',
+    keywords: MOCK_KEYWORDS.filter((keyword) =>
+      website.categories.includes(keyword.name)
+    ),
+    createdAt: website.publishedAt ?? website.submittedAt,
+    updatedAt: website.publishedAt ?? website.submittedAt,
+    status: 'published',
+    verifiedAt: null,
+  }
+}
+
+export function getPublishedMockSubmissions(now = Date.now()): IWebsite[] {
+  return [...submissions.values()]
+    .map((submission) => resolveReview(submission, now))
+    .filter((website) => website.status === 'published')
+    .map(toLegacyWebsite)
 }

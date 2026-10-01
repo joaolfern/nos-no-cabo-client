@@ -2,7 +2,9 @@ import { MOCK_KEYWORDS } from '@/__mocks__/data/keywords'
 import {
   createMockSubmission,
   findExistingWebsiteId,
+  getMockStatuses,
   getMockSubmittedWebsite,
+  getPublishedMockSubmissions,
   mockPreview,
   mockVerification,
 } from '@/__mocks__/data/submissions'
@@ -82,6 +84,13 @@ const v1Handlers = [
 
     return HttpResponse.json(createMockSubmission(body), { status: 202 })
   }),
+  http.get(`${V1}/websites/status`, ({ request }) => {
+    const ids = (new URL(request.url).searchParams.get('ids') ?? '')
+      .split(',')
+      .filter(Boolean)
+
+    return HttpResponse.json(getMockStatuses(ids))
+  }),
   http.get(`${V1}/websites/:id`, ({ params }) => {
     const website = getMockSubmittedWebsite(String(params.id))
     if (!website) return errorResponse(404, 'not_found', 'Site não encontrado.')
@@ -100,7 +109,10 @@ const v1Handlers = [
 
 const legacyHandlers = [
   http.get(`${API_URL}/websites`, () => {
-    return HttpResponse.json(MOCK_WEBSITES)
+    return HttpResponse.json([
+      ...getPublishedMockSubmissions(),
+      ...MOCK_WEBSITES,
+    ])
   }),
   http.get(`${API_URL}/keywords`, () => {
     return HttpResponse.json(MOCK_KEYWORDS)
@@ -115,7 +127,9 @@ const legacyHandlers = [
     return HttpResponse.json()
   }),
   http.get(`${API_URL}/website/:id`, ({ params }) => {
-    const website = MOCK_WEBSITES.find((w) => w.id === params.id)
+    const website = [...getPublishedMockSubmissions(), ...MOCK_WEBSITES].find(
+      (w) => w.id === params.id
+    )
     if (website) {
       return HttpResponse.json(website)
     }

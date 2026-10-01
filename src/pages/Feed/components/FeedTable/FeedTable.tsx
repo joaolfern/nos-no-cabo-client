@@ -4,6 +4,7 @@ import { Image } from '@/components/Image/Image'
 import { Link } from '@/components/Link/Link'
 import type { IWebsite } from '@/interfaces/IWebsite'
 import type { FeedCardVariant } from '@/pages/Feed/components/FeedCard/FeedCard'
+import type { FeedPendingItem } from '@/pages/Feed/components/FeedCardList/FeedCardList'
 import { getPrimaryKeyword } from '@/pages/Feed/utils/getPrimaryKeyword'
 import { mockWebsiteLikes } from '@/pages/Website/utils/mockWebsiteMetrics/mockWebsiteMetrics'
 import { formatCompactNumber } from '@/utils/formatCompactNumber/formatCompactNumber'
@@ -12,6 +13,7 @@ import { getCategoryLabel } from '@/pages/Feed/constants/categories'
 
 type FeedTableProps = {
   data: IWebsite[]
+  pending: FeedPendingItem[]
   isLoading: boolean
   skeletonCount: number
   variant: FeedCardVariant
@@ -20,6 +22,7 @@ type FeedTableProps = {
 
 export function FeedTable({
   data,
+  pending,
   isLoading,
   skeletonCount,
   variant,
@@ -44,6 +47,33 @@ export function FeedTable({
           </tr>
         </thead>
         <tbody>
+          {pending.map(({ website, tone, status }) => (
+            <tr
+              key={website.id}
+              className={clsx(styles.pendingRow, styles[tone])}
+              data-testid='feed-card'
+            >
+              <td>
+                <span className={styles.site}>
+                  <Image
+                    className={styles.thumb}
+                    src={website.faviconUrl}
+                    alt=''
+                  />
+                  <span className={styles.name}>{website.name}</span>
+                </span>
+              </td>
+              <td className={clsx(styles.description, styles.optional)}>
+                {website.description}
+              </td>
+              <td className={clsx(styles.category, styles.optional)}>
+                {getCategoryLabel(website.keywords[0]?.name ?? '')}
+              </td>
+              <td className={styles.pendingStatus} colSpan={showLikes ? 2 : 1}>
+                {status}
+              </td>
+            </tr>
+          ))}
           {isLoading
             ? Array.from({ length: skeletonCount }, (_, index) => (
                 <SkeletonRow key={index} showLikes={showLikes} />

@@ -150,37 +150,62 @@ validation with focus, edits surviving a URL change, and the 3-category limit.
 Known and left alone: in dark mode the shared `Input` text colour (`--color-neutral-600`) is dim;
 that is the global component's style, worth fixing separately.
 
-## Drafts in the feed (phase 3)
+## Drafts in the feed (phase 3) — done
 
-- `useLocalStorageJson<T>(key, initial, isValid)`: a JSON sibling of
-  `src/hooks/useLocalStorageState.ts`, with the same guarded storage access.
-- `usePendingSubmissions` stores drafts as described in ADR 0003 and drops expired ones on read.
-- `useSubmitWebsite.onSuccess` adds the draft from the 202 body.
-- `usePendingStatusPolling`: one query for **all** `checking` drafts,
-  `GET /v1/websites/status?ids=a,b,c` (one request no matter how many drafts). Kept cheap on purpose:
-  - every 15 s while the tab is visible, for the first 2 minutes after the submission
-    (`refetchIntervalInBackground: false`);
-  - after that, no interval: check once when the page loads or the tab regains focus, at most once a minute;
-  - mounted once, in the feed page. On `published` it removes the draft and invalidates
-    `['websites']`; on `rejected` it updates the draft.
-- Add the batch status endpoint to the mocks (`{ id, status, rejectionReason? }[]`), and raise
-  `MOCK_REVIEW_DELAY_MS` from 5 s to 20 s so local runs show a realistic draft phase.
-- **Notification opt-in.** The success screen offers "Avise-me quando for publicado", which calls
-  `Notification.requestPermission()`. The choice is stored per draft (`notify: true`). When polling
-  sees a final status while a tab is open and permission is granted, it shows a local
-  `new Notification(...)`: "{name} foi publicado" or "{name} não foi aceito". This needs no server.
-  If the person has already left, nothing fires yet (see "Future steps").
-- `Feed.tsx`: `mergeDrafts(serverList, drafts)` puts the drafts first. They are not affected by
-  the category filter (they show while the submitter is filtering, so they are never "lost").
-- `FeedCard` / `FeedTable` get `variant?: 'draft' | 'rejected'`:
-  - draft: dashed border using a border token (add `--color-border-draft` to `ITheme.ts` and
-    both themes if no existing token fits), a small `Loading` with "Em análise", not clickable;
-  - rejected: muted card with the reason ("Conteúdo não permitido" / "Site inacessível") and "Dispensar".
+As built:
 
-Done when a submission shows first in the feed, survives a reload, turns into a normal card on the
-first check after the 20 s mock review, and a `rejeitado` URL ends as a dismissable rejected card. Unit tests cover
-`mergeDrafts`, expiry, and polling reconciliation (with fake timers). Check the draft card
-visually in the browser, per `visual-verification-playwright`.
+- **Storage.** `src/hooks/useLocalStorageJson.ts`: a JSON sibling of `useLocalStorageState`,
+  built on `useSyncExternalStore`, so every hook on the same key in a tab stays in sync, and other
+  tabs sync through the `storage` event. It falls back to memory only when storage throws.
+- **Draft model.** `SubmitWebsite/utils/pendingSubmissions.ts`: the `IPendingSubmission` type, a
+  validator for stored data, 7-day expiry, the active checking window, and `reconcileDrafts`
+  (a pure function, so the timing rules are unit-tested without timers).
+- **Store.** `usePendingSubmissions` (key `nnc-pending-submissions`). `useSubmitWebsite` adds the
+  draft on a 202.
+- **Status checks.** `usePendingStatusPolling`: one `GET /v1/websites/status?ids=…` for every
+  checking draft, every 15 s during the first 2 minutes, then only on page load or tab focus (at
+  most once a minute, via `staleTime`). It keeps checking in a background tab only when notification
+  permission is granted. Published drafts are dropped and `['websites']` is invalidated; rejected ones keep
+  their reason. It runs wherever the feed renders drafts.
+- **Feed.** Drafts are the first items of the feed itself: the first cards in the grid and the
+  first rows in list view. `FeedCardList` and `FeedTable` take a generic `pending` prop
+  (`{ website, tone, status }[]`), so the feed components know nothing about drafts.
+  `usePendingFeedItems` (SubmitWebsite) runs the status checks and builds those items, so the feed
+  adds a single hook call. Drafts ignore filters and pagination, so a submitter never loses them.
+- **Cards and rows.** `FeedCard` gained `tone` (`draft`: dashed primary border; `rejected`: danger
+  border and faded content) and an `aside` slot that replaces the like count. Draft table rows have
+  a dashed divider and the status in the likes and visit columns. `DraftStatus` shows
+  "Em análise" with the generic `@/components/LoadingDots` (three bouncing dots, static without
+  motion), or the reason plus "Dispensar".
+- **Notifications.** Opt-in from the draft card's bell (see the follow-up below). When a check sees a final
+  status, it shows a local `Notification` with `tag: nnc-submission-{id}`, so a second tab or a
+  repeated check replaces it instead of duplicating it.
+- **Mocks.** `GET /v1/websites/status`, a 20 s review, and published submissions added to the
+  legacy `/websites` and `/website/:id` responses, so a published draft becomes a real card.
+  The mock store is in memory, so a full page reload forgets submitted sites; drafts in
+  localStorage then fall back to the fixture data, which is expected in mock mode only.
+
+Tests: `useLocalStorageJson.test.ts`, `pendingSubmissions.test.ts`, `Feed/FeedPendingSubmissions.test.tsx`
+(first card in the real feed, expiry, published becomes the top card, rejected with dismiss, notification), plus draft persistence in
+`SubmitWebsite.test.tsx` and the batch status endpoint in the mock tests. Checked in the browser:
+publish → normal card at the top of the list, reject → rejected card, which survives a reload.
+
+### Follow-up: skip the success screen — done
+
+- Saving shows a toast through the existing `MessageProvider` ("Site publicado. Ele estará
+  visível para outros usuários em minutos.") and navigates straight to `/websites`, where the draft is already the
+  first card. `SubmitSuccess` and `NotifyOptIn` were removed.
+- Notifications are a one-time opt-in for all sites: a small bell next to "Em análise ···" on
+  draft cards, shown only while the browser permission is undecided. One click asks for
+  permission; once granted, every draft notifies and the bell disappears from all cards at once
+  (`@/hooks/useNotificationPermission`, shared through `useSyncExternalStore`). It can't be turned
+  off in the app, and drafts carry no per-site flag.
+- Phase 4's "Adicionar o selo" entry points: the website page, and the draft card once phase 4
+  lands (the success screen no longer exists).
+
+Tests: `SubmitWebsite.test.tsx` asserts the toast and the redirect (and no redirect on a
+duplicate); `FeedPendingSubmissions.test.tsx` covers the one-time permission request hiding every bell, and
+the bell's absence without notification support.
 
 ## Widget editor page (phase 4)
 

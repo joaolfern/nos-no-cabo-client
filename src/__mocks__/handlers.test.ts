@@ -72,6 +72,16 @@ describe('v1 mock handlers', () => {
     expect(data).toMatchObject({ id: created.data.id, status: 'checking' })
   })
 
+  it('returns the status of several submissions in one request', async () => {
+    const created = await api.post<ISubmittedWebsite>('v1/websites', submission)
+
+    const { data } = await api.get('v1/websites/status', {
+      params: { ids: `${created.data.id},nao-existe` },
+    })
+
+    expect(data).toEqual([{ id: created.data.id, status: 'checking' }])
+  })
+
   it('rejects invalid and duplicate submissions', async () => {
     await expect(
       rejection(api.post('v1/websites', { ...submission, categories: [] }))

@@ -3,14 +3,22 @@ import type { IWebsite } from '@/interfaces/IWebsite'
 import type { FeedView } from '@/interfaces/IFeedView'
 import {
   FeedCard,
+  type FeedCardTone,
   type FeedCardVariant,
 } from '@/pages/Feed/components/FeedCard/FeedCard'
 import { FeedCardSkeleton } from '@/pages/Feed/components/FeedCard/FeedCardSkeleton'
 import { FeedTable } from '@/pages/Feed/components/FeedTable/FeedTable'
 import styles from './FeedCardList.module.scss'
 
+export type FeedPendingItem = {
+  website: IWebsite
+  tone: FeedCardTone
+  status: ReactNode
+}
+
 type FeedCardListProps = {
   data: IWebsite[]
+  pending?: FeedPendingItem[]
   isLoading: boolean
   skeletonCount: number
   view?: FeedView
@@ -21,6 +29,7 @@ type FeedCardListProps = {
 
 export function FeedCardList({
   data,
+  pending = [],
   isLoading,
   skeletonCount,
   view = 'grid',
@@ -28,7 +37,7 @@ export function FeedCardList({
   highlightKeywordId,
   emptyAction,
 }: FeedCardListProps) {
-  if (!isLoading && data.length === 0) {
+  if (!isLoading && data.length === 0 && pending.length === 0) {
     return (
       <p className={styles.empty}>Nenhum projeto encontrado. {emptyAction}</p>
     )
@@ -38,6 +47,7 @@ export function FeedCardList({
     return (
       <FeedTable
         data={data}
+        pending={pending}
         isLoading={isLoading}
         skeletonCount={skeletonCount}
         variant={variant}
@@ -48,6 +58,16 @@ export function FeedCardList({
 
   return (
     <section className={styles.grid} aria-busy={isLoading}>
+      {pending.map(({ website, tone, status }) => (
+        <FeedCard
+          key={website.id}
+          website={website}
+          variant={variant}
+          readOnly
+          tone={tone}
+          aside={status}
+        />
+      ))}
       {isLoading
         ? Array.from({ length: skeletonCount }, (_, index) => (
             <FeedCardSkeleton key={index} variant={variant} />

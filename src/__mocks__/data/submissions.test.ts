@@ -2,7 +2,9 @@ import {
   MOCK_REVIEW_DELAY_MS,
   createMockSubmission,
   findExistingWebsiteId,
+  getMockStatuses,
   getMockSubmittedWebsite,
+  getPublishedMockSubmissions,
   mockVerification,
   resetMockSubmissions,
 } from './submissions'
@@ -67,6 +69,40 @@ describe('mock submission review', () => {
       categories: ['cidades'],
     })
     expect(getMockSubmittedWebsite('nao-existe')).toBeUndefined()
+  })
+})
+
+describe('batch status and published list', () => {
+  it('reports each known id and skips unknown ones', () => {
+    const checking = createMockSubmission(submission, SUBMITTED_AT)
+    const rejected = createMockSubmission(
+      { ...submission, url: 'https://rejeitado.org' },
+      SUBMITTED_AT
+    )
+    const later = SUBMITTED_AT + MOCK_REVIEW_DELAY_MS
+
+    expect(getMockStatuses([checking.id, 'nao-existe'], SUBMITTED_AT)).toEqual([
+      { id: checking.id, status: 'checking' },
+    ])
+    expect(getMockStatuses([checking.id, rejected.id], later)).toEqual([
+      { id: checking.id, status: 'published' },
+      { id: rejected.id, status: 'rejected', rejectionReason: 'unsafe' },
+    ])
+  })
+
+  it('adds submissions to the feed list only once published', () => {
+    const { id } = createMockSubmission(submission, SUBMITTED_AT)
+
+    expect(getPublishedMockSubmissions(SUBMITTED_AT)).toEqual([])
+    expect(
+      getPublishedMockSubmissions(SUBMITTED_AT + MOCK_REVIEW_DELAY_MS)
+    ).toEqual([
+      expect.objectContaining({
+        id,
+        name: 'Novo projeto',
+        keywords: [expect.objectContaining({ name: 'educacao' })],
+      }),
+    ])
   })
 })
 

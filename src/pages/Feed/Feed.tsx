@@ -2,6 +2,7 @@ import { FeedAside } from '@/pages/Feed/components/FeedAside/FeedAside'
 import { FeedCardList } from '@/pages/Feed/components/FeedCardList/FeedCardList'
 import { FeedLoadMore } from '@/pages/Feed/components/FeedLoadMore/FeedLoadMore'
 import { FeedTopbar } from '@/pages/Feed/components/FeedTopbar/FeedTopbar'
+import { usePendingFeedItems } from '@/pages/SubmitWebsite/hooks/usePendingFeedItems'
 import { useWebsites } from '@/pages/Feed/hooks/useWebsites'
 import { useFilters } from '@/pages/Feed/hooks/useFilters'
 import { useSort } from '@/pages/Feed/hooks/useSort'
@@ -21,6 +22,7 @@ export function Feed() {
     clearSearch,
   } = useFilters()
   const { selectedSort } = useSort()
+  const pendingItems = usePendingFeedItems()
   const [view, setView] = useLocalStorageState('feed-view', 'grid', isFeedView)
 
   const filteredWebsites = useMemo(
@@ -67,6 +69,7 @@ export function Feed() {
           isLoading={isLoading}
           skeletonCount={pageSize}
           data={visibleWebsites}
+          pending={pendingItems}
           view={view}
           highlightKeywordId={selectedKeywords[0]}
           emptyAction={

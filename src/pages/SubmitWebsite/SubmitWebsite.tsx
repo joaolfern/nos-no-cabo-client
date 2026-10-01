@@ -1,22 +1,22 @@
-import { useState } from 'react'
-import type { ISubmittedWebsite } from '@/interfaces/IWebsite'
+import { useNavigate } from 'react-router'
+import { useMessage } from '@/contexts/useMessage'
 import { SubmitForm } from '@/pages/SubmitWebsite/components/SubmitForm/SubmitForm'
-import { SubmitSuccess } from '@/pages/SubmitWebsite/components/SubmitSuccess/SubmitSuccess'
 import styles from './SubmitWebsite.module.scss'
 
 export function SubmitWebsite() {
-  const [submitted, setSubmitted] = useState<ISubmittedWebsite | null>(null)
+  const navigate = useNavigate()
+  const { showMessage } = useMessage()
+
+  function handleSubmitted() {
+    showMessage(
+      'Site publicado. Ele estará visível para outros usuários em minutos.'
+    )
+    navigate('/websites')
+  }
 
   return (
     <div className={styles.page}>
-      {submitted ? (
-        <SubmitSuccess
-          website={submitted}
-          onSubmitAnother={() => setSubmitted(null)}
-        />
-      ) : (
-        <SubmitForm onSubmitted={setSubmitted} />
-      )}
+      <SubmitForm onSubmitted={handleSubmitted} />
     </div>
   )
 }
