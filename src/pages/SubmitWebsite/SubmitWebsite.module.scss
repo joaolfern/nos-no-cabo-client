@@ -3,6 +3,9 @@
 
 // Same width and inline padding as the focused top bar, so their edges line up.
 .page {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
   width: 100%;
   max-width: $layout-focused-max-width;
   margin: 0 auto;

@@ -207,36 +207,108 @@ Tests: `SubmitWebsite.test.tsx` asserts the toast and the redirect (and no redir
 duplicate); `FeedPendingSubmissions.test.tsx` covers the one-time permission request hiding every bell, and
 the bell's absence without notification support.
 
-## Widget editor page (phase 4)
+## Widget editor and access from the feed (phase 4) — done
 
-- Move the editor out of `InitialStep.tsx` (396 lines) into `pages/WidgetEditor/`. Merge the three
-  near-duplicate banner components into one component driven by the style options.
-- `buildWidgetSnippet(websiteId, options)` emits
-  `<aside class="nnc-banner" data-nnc-widget="<id>">`. Every link is built from `NOS_NO_CABO_URL`:
-  logo, brand, `/ring/<id>/prev`, `/ring/<id>/next`, `/ring/<id>/random`. This removes the
-  hardcoded `www.nosnocabo.com` and the `href="#"` links.
-- Copy the code with the existing `Copyable`, or with the `CodeStep` behaviour.
-- The page shows the site name. For an unknown id it shows the 404 state.
-- Entry points: the success screen, and a link on `/website/:id`.
+Designed and approved in Claude Design ("Nós no Cabo — selo do webring", rounds 1 and 2c), then built:
 
-Done when the snapshot test for `buildWidgetSnippet` passes and the page renders the preview for
-a mock id.
+- **Presets as data** (`WidgetEditor/utils/widgetPresets.ts`): Faixa, Selo 88×31, Cartão, Texto.
+  Parameters come from fixed lists: tema (claro / escuro / automático), cor (5 accents with light
+  and dark shades), and Anterior/Próximo on or off. The Selo has no Anterior/Próximo; Texto has
+  no tema or cor.
+- **One implementation of the widget** (`buildWidgetSnippet.ts`): HTML with its own scoped
+  `<style>`, no JavaScript, the logo as inline SVG, and a `data-nnc-widget="<id>"` marker for
+  verification.
+  - **Links:** the webring home (`NOS_NO_CABO_URL`) and `${RING_BASE_URL}/ring/:id/{prev,next,random}`;
+    `VITE_RING_BASE_URL` defaults to `NOS_NO_CABO_URL`.
+  - **Scoping:** a reset at (0,1,0), rules at (0,2,0), and `!important` link colours. It was
+    checked against a hostile page (uppercase, serif, red `!important` links, bordered blocks):
+    only the Texto preset adopts host styles, by design.
+  - **Theme:** `data-tema="auto"` follows `prefers-color-scheme`. Each snippet only carries its
+    own accent rule, so two widgets on one page don't conflict.
+- **Preview equals output:** `WidgetRender` renders the generated HTML itself. The editor
+  preview, the model thumbnails and the modal preview all show exactly what gets copied.
+- **Editor page** `/websites/:id/selo` (focused layout): model cards with live thumbnails,
+  radio-chip parameters, a preview on a light or dark mock site, the code block with copy, and a
+  404 state. The site name comes from `GET /v1/websites/:id`.
+- **Access from the feed** (approved option 2c):
+  - `VerificationStatus` shows a muted "?" badge on every unverified feed card, list row and
+    website page, and a coloured check badge on verified ones.
+  - The badge opens `UnverifiedModal`. It explains the site is community-submitted and not yet
+    confirmed by its maintainers, shows the Faixa preview, lists the two benefits (ranking first;
+    "prestigiar este e muitos outros projetos de tecnologia brasileiros"), and has "Sou
+    responsável pelo {nome}" linking to the editor.
+  - On mobile the buttons stack full width.
+- **Real-font fixes found in the browser:** on Linux's wide default font the Selo name now uses
+  lowercase ("nós no cabo") and a 20px logo column so it fits 88×31, and the Cartão is 300px so
+  its links stay on one line.
+- **Shared `Modal`:** its surface is now opaque (`--color-surface`) instead of translucent glass,
+  to match the design. The only other user is the old wizard modal, removed in phase 6.
+- **Test setup:** `jest.setup.ts` now mocks `NOS_NO_CABO_URL` and `RING_BASE_URL`.
+- **Review round after the build:**
+  - The preview defaults to the dark mock site, and the light mock site's lines are darker.
+  - Model thumbnails are `inert`, so their sample links can't be clicked or focused.
+  - **Logo** parameter: "Na cor escolhida" (accent), "Gradiente" (the header logo, as inline SVG)
+    and "Original" (dark badge with the lilac mark). Used by Faixa, Selo and Cartão.
+    "Cor do logo" comes right after it and is only enabled for "Na cor escolhida". It only
+    colours the logo: the rest of the widget uses a fixed brand pink, and the Selo's border
+    follows the logo (the chosen colour, a gradient border, or the badge's dark purple).
+  - **Aleatório** can be hidden. When it is, the Selo's second line becomes a "webring" link.
+  - **Personalizado** model: a bare, unstyled snippet with every link, plus a guide listing what
+    must stay (the `data-nnc-widget` marker and the link to Nós no Cabo) and the optional ring
+    links. It has no preview.
+  - The original rule "random is always present" is relaxed: only the marker and the webring link
+    are mandatory, because they are what verification checks.
 
-## Verified badge and ordering (phase 5)
+Tests: `buildWidgetSnippet.test.ts` checks every preset × theme × colour × logo × nav × random
+combination (the marker and webring link are always present; random and prev/next only when
+enabled and supported, or always in Personalizado), plus escaping and theme and accent
+attributes. `WidgetEditor.test.tsx` covers the name, the parameters per preset, snippet updates,
+the dark default, hiding Aleatório, the Personalizado guide, copy and 404. `VerificationStatus.test.tsx` covers the verified mark, and the
+modal's copy and editor link.
 
-- A `VerifiedIcon` (colourful, with an accessible label "Site verificado") next to the name in
-  `FeedCard`, `FeedTable` and `WebsiteInfoCard`.
-- `sortWebsites` gains verified-first as the primary key for every sort option. This stays
-  client-side until the paginated `/v1/websites` exists.
-- `VerifyButton` on `/website/:id`, shown only when the site is unverified, calls
-  `POST /v1/websites/:id/verify`. On failure it shows the reason and a link to the widget editor.
+## Terms of use (phase 4 follow-up) — done
 
-Done when the tests for the sort order and the verify button states pass.
+- `src/pages/Terms/`: the terms text (`TermsContent`), the `/termos` page and `TermsModal`.
+  The terms follow Brazilian law (Marco Civil, LGPD, ECA, Lei 7.716/1989) and describe the
+  automatic curation (illegal content, NSFW, hate speech and prejudice). Contact:
+  joaolfern@proton.me, plus "Notificar problema".
+- The widget editor locks "Ver código" and "Copiar código" until the terms are accepted. A
+  "Remover links de navegação" shortcut turns off Anterior, Próximo and Aleatório.
+- Acceptance is stored per browser as `TERMS_VERSION`. Changing that version asks everyone again.
+- `SiteFooter` (Termos de uso, Contato) is on every page, including the landing page.
+- The text is a well-grounded draft, not legal advice: have a lawyer review it before launch.
 
-## Cleanup (phase 6)
+## Verified badge, ranking and verification (phase 5) — done
 
-Delete everything listed in "What is removed", run `npm run lint` and `npm run build`, and update
-the target diagrams if the implementation deviated from them.
+- **Verified badge:** done in phase 4 (`VerificationStatus` on feed cards, list rows and the
+  website page).
+- **"Melhores" ranking, computed by the backend** ([ADR 0004](../architecture/decisions/0004-ranking.md)):
+  - `score = 3·ln(1 + clicks_30d) + ln(1 + clicks_total) + (verified ? 2 : 0)`, ties to the
+    most recently published;
+  - computed hourly by the metrics service, stored as `websites.rank_score`, served by
+    `GET /v1/websites?sort=melhores` (the default).
+- **Client:**
+  - "Melhores" is the new default sort option and keeps the server's order (`sortWebsites`
+    returns it as is).
+  - The other options stay client-side until the paginated `/v1/websites` exists.
+  - The MSW legacy list returns sites ranked with the same formula (`__mocks__/data/ranking.ts`),
+    using the seeded click counts the website page shows.
+- **Exception:** while in review, the submitter's draft stays at the top of their feed, under
+  any sort. Once the check passes, the draft is dropped and the site takes its ranked place.
+- **Verificar:** `VerifyPanel` on the website page, shown only while unverified:
+  - links to the widget editor, and calls `POST /v1/websites/:id/verify`;
+  - success shows a toast and refreshes the site and the list;
+  - failures explain the reason (widget not found, site unreachable, rate limited).
+  - The mock remembers successful verifications, so the badge updates.
+
+## Cleanup (phase 6) — done
+
+- Deleted `src/pages/WebsiteForm/` (wizard, steps, context, modal, floating button) and its
+  wiring in `routes.tsx`.
+- Deleted the dead `FloatingButtons` chain (`useAnimationToggler`, `useThemeSwitcher`, the global
+  `FloatingButton`), `usePreregisterWebsite`, `useRegisterWebsite`, `IPreregisterWebsite`,
+  `IRegisterWebsite`, and the legacy POST/PATCH `/website` mocks with their data.
+- The target frontend diagrams (`20-form-modules`, `22-routes`) now describe what was built.
 
 ## Verification (every phase)
 
@@ -262,6 +334,49 @@ reach someone who closed the site:
 
 Cost: browser push services are free and it's one outbound request per submission, well inside
 the Workers free tier. No email address or account is needed.
+
+## Roadmap after the form rework
+
+The frontend for the new flow is done and runs on mocks. Everything left needs the server.
+Each phase ends with the SPA talking to the real service for that slice, behind the same `/v1`
+contract the mocks implement.
+
+**Launch blocker, independent of the phases:** the client sends `ADMIN_PASSWORD` with every
+request (it ships in the JS bundle), and "Notificar problema" calls the admin-only
+`DELETE /website/:id`. On the current backend, anyone who reports a site deletes it. Fix it
+before any public release: turn the button into a report (phase 8) or a `mailto:` until then,
+and remove the password from the client.
+
+0. **Decide the platform.** Accept ADR 0002 (Cloudflare Workers) or pick the GCP fallback.
+   Decide where the shared zod `contract` package lives (it is needed by both repos).
+7. **Server foundation and catalog.** This is the biggest phase.
+   - Workers project in `nos-sr`: gateway and catalog Workers, D1 schema and migrations,
+     `contract` package, CI deploying a staging environment.
+   - Catalog endpoints, in the order the client already uses them:
+     - `GET /v1/websites/preview` (port the Python scraping to `HTMLRewriter`);
+     - `POST /v1/websites` (Turnstile, URL normalization, 409 on duplicates, 202 `checking`);
+     - `GET /v1/websites/:id` and `GET /v1/websites/status?ids=`;
+     - `GET /v1/websites` with cursor pagination, `categoria`, `q` and `sort`;
+     - `GET /v1/categories`.
+   - Client: point `/v1` at staging (mocks stay for tests), replace `src/interfaces` with the
+     contract types.
+8. **Moderation.** Queue consumer with Workers AI llama-guard, `setStatus` on the catalog's
+   internal API, short code on publish, rejection reasons. Community reports
+   (`POST /v1/websites/:id/reports`) replace the delete call.
+9. **Verification and the router.**
+   - `POST /v1/websites/:id/verify` (fetch the site, find `data-nnc-widget` and the link),
+     rate limited, and a daily recheck cron (two misses remove the badge).
+   - Router Worker: `/ring/:id/{prev,next,random}` and `/r/:code`, ring order in KV.
+     `VITE_RING_BASE_URL` points at it.
+10. **Metrics and ranking.** Click and view events with `visitor_hash` dedupe, `daily_stats`
+    rollups, hourly `rank_score` (ADR 0004), likes. Client: real numbers on the website page
+    replace `mockWebsiteMetrics`.
+11. **Cutover.**
+    - Feed on server pagination (`useInfiniteQuery`), sort and filters as query params. Delete
+      `sortWebsites`, the client filters and the legacy list.
+    - One-off Postgres → D1 export (URLs restored from `url_mappings`), DNS, retire Flask.
+12. **After launch:** Web Push for people who left (see "Future steps"), screenshot moderation
+    if text-only checks prove weak, a time-limited boost for new sites in "Melhores".
 
 ## Not in scope
 

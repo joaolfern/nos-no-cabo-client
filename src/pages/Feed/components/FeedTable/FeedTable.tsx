@@ -8,6 +8,7 @@ import type { FeedPendingItem } from '@/pages/Feed/components/FeedCardList/FeedC
 import { getPrimaryKeyword } from '@/pages/Feed/utils/getPrimaryKeyword'
 import { mockWebsiteLikes } from '@/pages/Website/utils/mockWebsiteMetrics/mockWebsiteMetrics'
 import { formatCompactNumber } from '@/utils/formatCompactNumber/formatCompactNumber'
+import { VerificationStatus } from '@/pages/WidgetEditor/components/VerificationStatus/VerificationStatus'
 import styles from './FeedTable.module.scss'
 import { getCategoryLabel } from '@/pages/Feed/constants/categories'
 
@@ -81,14 +82,24 @@ export function FeedTable({
             : data.map((website) => (
                 <tr key={website.id} data-testid='feed-card'>
                   <td>
-                    <Link className={styles.site} to={`/website/${website.id}`}>
-                      <Image
-                        className={styles.thumb}
-                        src={website.faviconUrl}
-                        alt=''
+                    <span className={styles.siteCell}>
+                      <Link
+                        className={styles.site}
+                        to={`/website/${website.id}`}
+                      >
+                        <Image
+                          className={styles.thumb}
+                          src={website.faviconUrl}
+                          alt=''
+                        />
+                        <span className={styles.name}>{website.name}</span>
+                      </Link>
+                      <VerificationStatus
+                        websiteId={website.id}
+                        websiteName={website.name}
+                        verifiedAt={website.verifiedAt}
                       />
-                      <span className={styles.name}>{website.name}</span>
-                    </Link>
+                    </span>
                   </td>
                   <td className={clsx(styles.description, styles.optional)}>
                     {website.description}

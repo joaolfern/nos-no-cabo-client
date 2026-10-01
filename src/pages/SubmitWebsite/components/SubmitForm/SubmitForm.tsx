@@ -100,12 +100,12 @@ export function SubmitForm({ onSubmitted }: SubmitFormProps) {
   return (
     <div className={styles.layout}>
       <header className={styles.header}>
-        <Typography as='h1' variant='titleMd'>
+        <Typography as='h1' variant='titleSm'>
           Adicionar um site
         </Typography>
         <Typography as='p' variant='bodyMd' color='muted'>
-          Qualquer pessoa pode indicar um projeto. Ele entra no feed depois de
-          uma verificação automática de conteúdo.
+          Mais um nó na rede. Adicione um projeto brasileiro de tecnologia e
+          ajude mais gente a chegar até ele.
         </Typography>
       </header>
 

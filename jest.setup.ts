@@ -22,6 +22,8 @@ if (typeof window !== 'undefined' && !window.matchMedia) {
 jest.mock('@/config/env', () => {
   return {
     API_URL: 'https://localhost:3000',
+    NOS_NO_CABO_URL: 'https://nosnocabo.pages.dev',
+    RING_BASE_URL: 'https://nosnocabo.pages.dev',
   }
 })
 

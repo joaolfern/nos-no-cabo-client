@@ -21,6 +21,7 @@ package "catalog D1" {
     published_at : integer
     verified_at : integer (null = unverified)
     last_verification_check_at : integer
+    rank_score : real (hourly, from metrics; ADR 0004)
     * submitter_ip_hash : text
   }
 

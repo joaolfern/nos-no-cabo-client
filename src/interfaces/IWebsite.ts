@@ -74,15 +74,6 @@ export interface IKeyword {
   name: string
 }
 
-export type IPreregisterWebsite = Pick<
-  IWebsite,
-  'id' | 'url' | 'description' | 'name' | 'faviconUrl' | 'color' | 'repo'
->
-
-export type IRegisterWebsite = IPreregisterWebsite & {
-  keywords: string[]
-}
-
 export interface IWebsiteStatus {
   id: string
   status: WebsiteStatus

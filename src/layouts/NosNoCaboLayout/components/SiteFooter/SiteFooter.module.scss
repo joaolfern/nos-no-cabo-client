@@ -1,0 +1,36 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/breakpoints.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+
+.footer {
+  margin-top: auto;
+  border-top: $border-base;
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-xxs;
+  width: 100%;
+  max-width: $layout-focused-max-width;
+  margin: 0 auto;
+  padding: $spacing-md $spacing-sm;
+
+  @media (min-width: $breakpoint-sm) {
+    padding: $spacing-md $spacing-xl;
+  }
+
+  a {
+    color: inherit;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--color-text-base);
+      text-decoration: underline;
+    }
+  }
+}

@@ -2,11 +2,11 @@
 !include ../../_style.iuml
 skinparam linetype polyline
 left to right direction
-title nos-client — Submission and widget features (target)
+title nos-client — Submission, widget and terms features (as built)
 
 package "src/pages/SubmitWebsite/  (route /websites/novo)" as submit {
-  component "SubmitWebsite.tsx\npage: form → success screen" as page <<new>>
-  component "components/\nUrlField · WebsitePreviewCard\nDetailsFields · CategoryPicker\nTurnstileField · SubmitSuccess" as submitComponents <<new>>
+  component "SubmitWebsite.tsx\nform → toast → /websites" as page <<new>>
+  component "components/\nSubmitForm · Field · UrlField\nWebsitePreviewCard · CategoryPicker\nTurnstileField · DraftStatus" as submitComponents <<new>>
   component "hooks/\nuseWebsitePreview (query)\nuseSubmitWebsite (mutation)" as submitHooks <<new>>
   component "hooks/usePendingFeedItems\ndrafts → feed items (first)" as submitUtils <<new>>
   component "hooks/usePendingSubmissions\nlocalStorage 'nnc-pending-submissions'" as store <<new>>
@@ -14,27 +14,31 @@ package "src/pages/SubmitWebsite/  (route /websites/novo)" as submit {
 }
 
 package "src/pages/WidgetEditor/  (route /websites/:id/selo)" as widget {
-  component "WidgetEditor.tsx\nstyle options + live preview + copy code" as editor <<new>>
-  component "utils/buildWidgetSnippet\n(one template, data-nnc-widget=id,\nring links from NOS_NO_CABO_URL)" as snippet <<new>>
+  component "WidgetEditor.tsx\npresets + options, live preview,\nterms consent, code" as editor <<new>>
+  component "utils/buildWidgetSnippet\n(scoped HTML, data-nnc-widget=id,\nring links from RING_BASE_URL)" as snippet <<new>>
+  component "VerificationStatus + UnverifiedModal\n(✓ or ? badge, used by Feed and Website)" as status <<new>>
+  component "VerifyPanel\nPOST /v1/websites/:id/verify\n(used by Website)" as verify <<new>>
 }
 
+package "src/pages/Terms/  (route /termos)" as terms {
+  component "TermsContent · TermsModal\nuseTermsAcceptance (versioned)" as termsContent <<new>>
+}
 
 package "src/pages/Feed/" as feed {
-  component "Feed list\n(server page, verified first)" as feedList
-  component "FeedCardList / FeedCard / FeedTable\n+ pending prop (first items)\n+ tone 'draft' | 'rejected', VerifiedIcon" as card
+  component "Feed list\n(default 'Melhores' = server order)" as feedList
+  component "FeedCardList / FeedCard / FeedTable\n+ pending prop (first items)\n+ tone 'draft' | 'rejected'" as card
 }
 
 package "src/pages/Website/" as website {
-  component "VerifyButton\nPOST /v1/websites/:id/verify" as verify <<new>>
-  component "link to /websites/:id/selo" as widgetLink <<new>>
+  component "WebsiteInfoCard" as infoCard
 }
 
 package "global" {
-  component "@/utils/normalizeUrl\ntoAbsoluteUrl · normalizeUrl" as normalize <<new>>
-  component "@/hooks/useLocalStorageJson\n(generic JSON variant of\nuseLocalStorageState)" as lsJson <<new>>
-  component "@/components: Form, Input,\nInputColor, Button, Skeleton" as ui
+  component "@/components: PageTrail, Modal,\nButton, Input, Textarea, LoadingDots" as ui
+  component "@/hooks/useLocalStorageJson" as lsJson <<new>>
+  component "@/utils/normalizeUrl" as normalize <<new>>
   component "@/api/api.ts" as api
-  component "@/interfaces/IWebsite\n(+ status, verifiedAt, categories)" as types
+  component "SiteFooter (layout)\nTermos de uso · Contato" as siteFooter <<new>>
 }
 
 page --> submitComponents
@@ -43,7 +47,6 @@ submitHooks --> api
 submitHooks --> store : add draft on 202
 submitComponents --> ui
 submitComponents --> normalize
-page --> editor : success CTA\n"Adicionar o selo"
 
 store --> lsJson
 polling --> store : update / drop
@@ -52,22 +55,27 @@ feedList -[#C62828]-> submitUtils : pending items
 submitUtils --> polling
 submitUtils --> store
 feedList --> card
+card -[#C62828]-> status
+infoCard -[#C62828]-> status
+infoCard -[#C62828]-> verify
+status --> editor : "Sou responsável"
 verify --> api
-widgetLink --> editor
 editor --> snippet
+editor -[#C62828]-> termsContent : consent + modal
+termsContent --> lsJson
+siteFooter --> termsContent : /termos
 
 note top of feed
-  The one deliberate cross-feature import (red):
-  the feed shows drafts but SubmitWebsite owns them.
-  No new root folders; generic helpers go in
-  @/utils and @/hooks.
+  Cross-feature imports (red) are deliberate:
+  SubmitWebsite owns drafts, WidgetEditor owns
+  verification, Terms owns the terms text.
 end note
 
 note bottom of feed
-  Removed: src/pages/WebsiteForm/ (modal wizard,
-  6 steps, context, floating button),
-  usePreregisterWebsite/useRegisterWebsite and
-  ~__mocks~__/data/parseRegisterDataToWebsite.
+  Removed (phase 6): src/pages/WebsiteForm/ (modal wizard,
+  6 steps, context, floating button), FloatingButtons,
+  usePreregisterWebsite/useRegisterWebsite and the legacy
+  POST/PATCH /website mocks.
 end note
 
 @enduml

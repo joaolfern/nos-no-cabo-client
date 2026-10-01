@@ -1,0 +1,29 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/breakpoints.scss' as *;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+  width: 100%;
+  max-width: $layout-focused-max-width;
+  margin: 0 auto;
+  padding: $spacing-lg $spacing-sm $spacing-xxxl;
+
+  @media (min-width: $breakpoint-sm) {
+    padding: $spacing-xl $spacing-xl $spacing-xxxl;
+  }
+}
+
+.article {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+  max-width: 46rem;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xxxs;
+}

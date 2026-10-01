@@ -25,3 +25,5 @@ const TURNSTILE_TEST_SITE_KEY = '1x00000000000000000000AA'
 export const TURNSTILE_SITE_KEY: string | undefined =
   import.meta.env.VITE_TURNSTILE_SITE_KEY ||
   (ENABLE_MOCKS ? TURNSTILE_TEST_SITE_KEY : undefined)
+export const RING_BASE_URL: string =
+  fixURL(import.meta.env.VITE_RING_BASE_URL) || NOS_NO_CABO_URL

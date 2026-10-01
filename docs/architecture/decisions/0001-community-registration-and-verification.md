@@ -21,7 +21,9 @@ Requiring the badge up front also blocked submissions.
      consecutive misses, so one failed fetch does not remove it.
 4. The widget carries the website id (`data-nnc-widget="<id>"`), so a snippet copied from
    another site does not verify.
-5. **Verified sites rank first** in every list and ring order, and show a colourful icon.
+5. **Verified sites rank higher** and show a colourful icon. Verification is one signal of the
+   "Melhores" ranking, next to clicks ([0004](0004-ranking.md)). The ring order still puts
+   verified sites first.
 
 ### Anti-abuse
 

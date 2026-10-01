@@ -1,4 +1,5 @@
 export type _sortType =
+  | 'best'
   | 'date_asc'
   | 'date_desc'
   | 'title_asc'

@@ -27,8 +27,8 @@ note right of moderationStatus
 end note
 
 note right of verification
-  List order: verified first,
-  then most recently published.
+  Default list order ("Melhores"): rank_score from
+  recent clicks, total clicks and verification (ADR 0004).
   Verified cards show the colourful icon.
 end note
 

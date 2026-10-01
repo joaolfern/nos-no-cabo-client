@@ -44,6 +44,13 @@
   gap: $spacing-xxxs;
 }
 
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xxxs;
+  min-width: 0;
+}
+
 .titleRow {
   display: flex;
   align-items: flex-start;

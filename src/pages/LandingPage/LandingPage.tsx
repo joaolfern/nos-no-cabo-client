@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import { MdAdd, MdHome } from 'react-icons/md'
+import { SiteFooter } from '@/layouts/NosNoCaboLayout/components/SiteFooter/SiteFooter'
 import styles from './LandingPage.module.scss'
 import { Typography } from '@/components/Typography/Typography'
 import { BubblyContainer } from './components/BubblyContainer/BubblyContainer'
@@ -48,6 +49,7 @@ export function LandingPage() {
           </div>
         </div>
       </div>
+      <SiteFooter className={styles.footer} />
     </div>
   )
 }

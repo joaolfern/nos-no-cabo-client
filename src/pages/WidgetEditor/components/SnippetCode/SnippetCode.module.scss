@@ -1,0 +1,66 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+@use '@/styles/tokens/animations.scss' as *;
+
+.code {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: $border-base;
+  border-radius: $radius-md-lg;
+  background: var(--color-raised);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-xs;
+  padding: $spacing-xxs $spacing-xxs $spacing-xxs $spacing-sm;
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: $spacing-xxs;
+}
+
+.action {
+  padding: $spacing-xxxs $spacing-xs;
+  font-size: 0.8125rem;
+  box-shadow: none;
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  svg {
+    width: 0.875rem;
+    height: 0.875rem;
+
+    @include has-motion {
+      transition: transform 0.2s;
+    }
+  }
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.pre {
+  margin: 0;
+  border-top: $border-base;
+  padding: $spacing-sm;
+  max-height: 14rem;
+  overflow: auto;
+  color: var(--color-text-base);
+  font: 0.75rem/1.65 monospace;
+  white-space: pre-wrap;
+  word-break: break-all;
+}

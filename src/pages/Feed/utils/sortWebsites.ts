@@ -8,6 +8,8 @@ export function sortWebsites(
 ): IWebsite[] {
   const websitesCopy = [...websites]
   switch (sortType) {
+    case 'best':
+      return websitesCopy
     case 'date_asc':
       return websitesCopy.sort(
         (a, b) =>

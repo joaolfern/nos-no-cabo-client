@@ -1,7 +1,4 @@
-import { LuArrowLeft } from 'react-icons/lu'
-import { Typography } from '@/components/Typography/Typography'
-import { Button } from '@/components/Button/Button'
-import { Link } from '@/components/Link/Link'
+import { PageTrail } from '@/components/PageTrail/PageTrail'
 import { useWebsiteDetails } from '@/pages/Website/hooks/useWebsiteDetails'
 import { WebsiteLoader } from '@/pages/Website/components/WebsiteLoader/WebsiteLoader'
 import { WebsiteInfoCard } from '@/pages/Website/components/WebsiteInfoCard/WebsiteInfoCard'
@@ -22,29 +19,13 @@ export function WebsiteContent() {
   return (
     <WebsiteLoader isLoading={isLoading}>
       <section className={styles.container}>
-        <div className={styles.topRow}>
-          <Button
-            asChild={true}
-            variant='outline'
-            small={true}
-            className={styles.back}
-          >
-            <Link to='/websites'>
-              <LuArrowLeft size='1rem' />
-              Voltar
-            </Link>
-          </Button>
-          <Typography
-            as='nav'
-            variant='bodySm'
-            color='muted'
-            className={styles.breadcrumb}
-          >
-            <Link to='/websites'>Projetos</Link>
-            <span>/</span>
-            <span className={styles.current}>{website.name}</span>
-          </Typography>
-        </div>
+        <PageTrail
+          backTo='/websites'
+          crumbs={[
+            { label: 'Projetos', to: '/websites' },
+            { label: website.name },
+          ]}
+        />
 
         <div className={styles.layout}>
           <div className={styles.infoColumn}>

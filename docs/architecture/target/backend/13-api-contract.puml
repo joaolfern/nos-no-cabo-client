@@ -27,9 +27,10 @@ package "catalog" {
     {field} one request for all of a submitter's drafts
   }
   class "GET /v1/websites" as list <<new>> {
-    {field} ?categoria=slug &q= &sort=relevance|recent|likes
+    {field} ?categoria=slug &q= &sort=melhores|recentes|curtidos|az
     {field} &cursor= &limit=24
-    {field} → Page<Website> (published only, verified first)
+    {field} → Page<Website> (published only, sorted server-side;
+    {field}   melhores = rank_score, see ADR 0004)
   }
   class "GET /v1/categories" as categories <<new>> {
     {field} → {slug, count}[]

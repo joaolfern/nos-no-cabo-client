@@ -80,17 +80,17 @@ describe('Feed with pending submissions', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('turns the draft into a published card at the top', async () => {
+  it('turns the draft into a regular card in its ranked place', async () => {
     storeDrafts([draftFor({}, Date.now() - MOCK_REVIEW_DELAY_MS)])
 
     await render(<Feed />)
 
     await waitFor(() => expect(storedDrafts()).toEqual([]))
-    await waitFor(async () => {
-      const card = await firstCard()
-      expect(within(card).getByText('Meu rascunho')).toBeInTheDocument()
-      expect(within(card).queryByText('Em análise')).not.toBeInTheDocument()
-    })
+    const loadMore = screen.queryByRole('button', { name: /Carregar mais/ })
+    if (loadMore) await userEvent.click(loadMore)
+    const name = await screen.findByText('Meu rascunho')
+    const card = name.closest('[data-testid="feed-card"]') as HTMLElement
+    expect(within(card).queryByText('Em análise')).not.toBeInTheDocument()
   })
 
   it('keeps a rejected draft with its reason until dismissed', async () => {

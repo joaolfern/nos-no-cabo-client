@@ -1,0 +1,12 @@
+// Stand-ins for a member's site, deliberately independent of the app theme.
+@mixin host-claro {
+  --host-bg: #ffffff;
+  --host-fg: #222222;
+  --host-line: #d4d4dc;
+}
+
+@mixin host-escuro {
+  --host-bg: #0e0e10;
+  --host-fg: #ededf0;
+  --host-line: #26262c;
+}

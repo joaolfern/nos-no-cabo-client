@@ -1,15 +1,9 @@
 import { api, openLibraryApi } from '@/api/api'
 import type { IAuthor } from '@/interfaces/IAuthor'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
-import type {
-  IRegisterWebsite,
-  IKeyword,
-  IPreregisterWebsite,
-  IWebsite,
-} from '@/interfaces/IWebsite'
+import type { IKeyword, IWebsite } from '@/interfaces/IWebsite'
 import type { IOpenLibraryResponse } from '@/interfaces/IBook'
 import { ENABLE_OPEN_LIBRARY_API } from '@/config/env'
-import { parseRegisterDataToWebsite } from '@/__mocks__/data/parseRegisterDataToWebsite'
 
 export function useWebsiteDetailsData(id: string) {
   return useQuery({
@@ -66,65 +60,6 @@ export function useRecommendedBooks(subject: string | undefined) {
           `subjects/${subject}.json?limit=${RECOMMENDED_BOOKS_LIMIT}`
         )
         .then((res) => res.data ?? []),
-  })
-}
-
-export function usePreregisterWebsite() {
-  return useMutation({
-    mutationFn: (data: { url: string }) =>
-      api
-        .post<IPreregisterWebsite>('website', {
-          url: `https://${data.url.replace(/^https?:\/\//, '')}`,
-        })
-        .then((res) => res.data),
-  })
-}
-
-export function useRegisterWebsite() {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: (data: IRegisterWebsite) =>
-      api.patch(`website`, data).then((res) => res.data),
-    mutationKey: ['websites'],
-    onMutate: async (newWebsite: IRegisterWebsite) => {
-      await Promise.resolve()
-      const previousWebsites = queryClient.getQueryData<IWebsite[]>([
-        'websites',
-      ])
-
-      const newWebsiteComplete: IWebsite =
-        parseRegisterDataToWebsite(newWebsite)
-
-      queryClient.setQueryData<IWebsite[]>(['websites'], (old = []) => [
-        ...old,
-        newWebsiteComplete,
-      ])
-
-      const previousKeywords = queryClient.getQueryData<IKeyword[]>([
-        'keywords',
-      ])
-
-      queryClient.setQueryData<IKeyword[]>(['keywords'], (old = []) => [
-        ...old,
-        ...newWebsiteComplete.keywords.filter(
-          (kw) => !old.find((o) => o.id === kw.id)
-        ),
-      ])
-
-      return { previousWebsites, previousKeywords }
-    },
-    onError: (_err, _newWebsite, context) => {
-      if (context?.previousWebsites) {
-        queryClient.setQueryData(['websites'], context.previousWebsites)
-      }
-      if (context?.previousKeywords) {
-        queryClient.setQueryData(['keywords'], context.previousKeywords)
-      }
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['websites'] })
-      queryClient.invalidateQueries({ queryKey: ['keywords'] })
-    },
   })
 }
 
