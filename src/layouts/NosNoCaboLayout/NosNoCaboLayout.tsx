@@ -1,5 +1,6 @@
 import { AppLayout } from '@/layouts/AppLayout/AppLayout'
 import { useRef } from 'react'
+import { SiteFooter } from '@/layouts/NosNoCaboLayout/components/SiteFooter/SiteFooter'
 import { SearchFeed } from '@/layouts/NosNoCaboLayout/components/SearchFeed/SearchFeed'
 import { TopbarActions } from '@/layouts/NosNoCaboLayout/components/TopbarActions/TopbarActions'
 import type { NosNoCaboLayoutProps } from '@/layouts/NosNoCaboLayout/NosNoCaboLayoutInterfaces'
@@ -25,6 +26,7 @@ export function NosNoCaboLayout({
       </AppLayout.Topbar>
       <AppLayout.Content>
         <Outlet />
+        <SiteFooter />
       </AppLayout.Content>
     </AppLayout>
   )

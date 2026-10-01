@@ -1,33 +1,37 @@
 @startuml 22-routes
 !include ../../_style.iuml
-title nos-client — Route map (target)
+title nos-client — Route map (as built)
 
-rectangle "/  (index)\nLandingPage" as landing
+rectangle "/  (index)\nLandingPage + SiteFooter" as landing
 
-rectangle "NosNoCaboLayout (pathless)\nTopbar: Logo · SearchFeed · 'Adicionar site' link" as layout {
-  rectangle "/websites\nFeed\ndrafts first, then verified first" as feed
-  rectangle "/websites/novo\nSubmitWebsite\none-screen form → success" as submit <<new>>
-  rectangle "/website/:id\nWebsite\n+ VerifiedIcon · VerifyButton" as website
-  rectangle "/websites/:id/selo\nWidgetEditor\noptional, any time" as widget <<new>>
+rectangle "NosNoCaboLayout (wide)\nTopbar: Logo · SearchFeed · 'Adicionar um site' · SiteFooter" as layout {
+  rectangle "/websites\nFeed\ndrafts first, then 'Melhores'" as feed
+  rectangle "/website/:id\nWebsite\n+ ✓/? badge · VerifyPanel" as website
+}
+
+rectangle "NosNoCaboLayout (focused)\nnon-sticky topbar · PageTrail · SiteFooter" as focused {
+  rectangle "/websites/novo\nSubmitWebsite" as submit <<new>>
+  rectangle "/websites/:id/selo\nWidgetEditor" as widget <<new>>
+  rectangle "/termos\nTerms" as terms <<new>>
 }
 
 rectangle "*\nNotFound" as notFound
 
-landing --> submit : "Adicionar meu site"
+landing --> submit : "Adicionar um site"
 landing --> feed : "Conferir sites"
 layout --> submit : topbar link
-submit --> feed : "Ver no feed"
-submit --> widget : "Adicionar o selo"
+submit --> feed : on save (toast)
 feed --> website : card click (published only)
+feed --> widget : "?" badge → modal\n"Sou responsável"
 website --> widget : "Adicionar o selo"
+widget --> terms : consent (modal)
+layout --> terms : footer
 notFound --> landing
 
-note bottom of layout
+note bottom of focused
   Removed: WebsiteFormProvider and the global WebsiteFormModal.
-  The form is a normal page, so it can be linked, refreshed
-  and navigated back from.
-  URL state (?categoria, ?q) goes only through the router's
-  useSearchParams.
+  Every form is a normal page: linkable, refreshable,
+  and "Voltar" goes back to /websites.
 end note
 
 @enduml

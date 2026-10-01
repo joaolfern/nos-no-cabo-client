@@ -30,7 +30,7 @@ package "router (owns KV)" {
 
 package "metrics (owns metrics D1)" {
   component "events\nview · click · like" as events <<new>>
-  component "daily rollups\n(Cron)" as rollups <<new>>
+  component "daily rollups\n+ hourly rank_score\n(Cron)" as rollups <<new>>
 }
 
 queue "moderation-jobs" as q <<new>>
@@ -54,6 +54,7 @@ cron --> detector
 detector --> internal : set / clear verified_at
 
 ring --> internal : ring order\n(published, verified first)
+rollups --> internal : rank_score\n(ADR 0004)
 internal --> short : createCode(websiteId)\non publish
 short ..> events : click
 ring ..> events : click

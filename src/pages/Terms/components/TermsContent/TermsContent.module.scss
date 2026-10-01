@@ -1,0 +1,46 @@
+@use '@/styles/tokens/spacing.scss' as *;
+
+.terms {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+  color: var(--color-text-base);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+
+  section {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xxs;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: inherit;
+    font-weight: 700;
+  }
+
+  p,
+  ul {
+    margin: 0;
+  }
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xxxs;
+    padding-left: $spacing-lg;
+    list-style: disc;
+  }
+
+  a {
+    color: var(--color-primary-400);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  code {
+    font-family: monospace;
+    font-size: 0.875em;
+  }
+}

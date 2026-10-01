@@ -108,3 +108,18 @@ a.visit {
   padding: 0 $spacing-xs;
   font-weight: 500;
 }
+
+.titleRow {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-xxs;
+
+  > :first-child {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+
+  > :last-child {
+    margin-top: 0.25rem;
+  }
+}

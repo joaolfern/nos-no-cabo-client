@@ -1,4 +1,5 @@
 import { MOCK_KEYWORDS } from '@/__mocks__/data/keywords'
+import { rankWebsites } from '@/__mocks__/data/ranking'
 import {
   createMockSubmission,
   findExistingWebsiteId,
@@ -8,15 +9,29 @@ import {
   mockPreview,
   mockVerification,
 } from '@/__mocks__/data/submissions'
-import { WEBSITE_METADATA } from '@/__mocks__/data/websiteMetadata'
 import { MOCK_WEBSITES } from '@/__mocks__/data/websites'
 import { API_URL } from '@/config/env'
 import type { ApiErrorCode, IApiErrorResponse } from '@/interfaces/IApiError'
-import type { IWebsiteSubmission } from '@/interfaces/IWebsite'
+import type { IWebsite, IWebsiteSubmission } from '@/interfaces/IWebsite'
 import { toAbsoluteUrl } from '@/utils/normalizeUrl/normalizeUrl'
 import { http, HttpResponse } from 'msw'
 
 const V1 = `${API_URL}/v1`
+
+const verifiedAtById = new Map<string, string>()
+
+function withVerification<T extends Pick<IWebsite, 'id' | 'verifiedAt'>>(
+  website: T
+): T {
+  const verifiedAt = verifiedAtById.get(website.id)
+  return verifiedAt ? { ...website, verifiedAt } : website
+}
+
+function listedWebsites() {
+  return [...getPublishedMockSubmissions(), ...MOCK_WEBSITES].map(
+    withVerification
+  )
+}
 
 function errorResponse(
   status: number,
@@ -95,7 +110,7 @@ const v1Handlers = [
     const website = getMockSubmittedWebsite(String(params.id))
     if (!website) return errorResponse(404, 'not_found', 'Site não encontrado.')
 
-    return HttpResponse.json(website)
+    return HttpResponse.json(withVerification(website))
   }),
   http.post(`${V1}/websites/:id/verify`, ({ params }) => {
     const id = String(params.id)
@@ -103,33 +118,25 @@ const v1Handlers = [
       return errorResponse(404, 'not_found', 'Site não encontrado.')
     }
 
-    return HttpResponse.json(mockVerification(id))
+    const result = mockVerification(id)
+    if (result.verifiedAt) verifiedAtById.set(id, result.verifiedAt)
+
+    return HttpResponse.json(result)
   }),
 ]
 
 const legacyHandlers = [
   http.get(`${API_URL}/websites`, () => {
-    return HttpResponse.json([
-      ...getPublishedMockSubmissions(),
-      ...MOCK_WEBSITES,
-    ])
+    return HttpResponse.json(rankWebsites(listedWebsites()))
   }),
   http.get(`${API_URL}/keywords`, () => {
     return HttpResponse.json(MOCK_KEYWORDS)
-  }),
-  http.post(`${API_URL}/website`, () => {
-    return HttpResponse.json(WEBSITE_METADATA)
-  }),
-  http.patch(`${API_URL}/website`, () => {
-    return HttpResponse.json()
   }),
   http.delete(`${API_URL}/website/:id`, () => {
     return HttpResponse.json()
   }),
   http.get(`${API_URL}/website/:id`, ({ params }) => {
-    const website = [...getPublishedMockSubmissions(), ...MOCK_WEBSITES].find(
-      (w) => w.id === params.id
-    )
+    const website = listedWebsites().find((w) => w.id === params.id)
     if (website) {
       return HttpResponse.json(website)
     }

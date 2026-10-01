@@ -10,6 +10,8 @@ import { WebsiteAuthorAndDate } from '@/pages/Webring/components/WebsiteAuthorAn
 import { WebsiteVotes } from '@/pages/Website/components/WebsiteVotes/WebsiteVotes'
 import type { IWebsite } from '@/interfaces/IWebsite'
 import { mockWebsiteLikes } from '@/pages/Website/utils/mockWebsiteMetrics/mockWebsiteMetrics'
+import { VerificationStatus } from '@/pages/WidgetEditor/components/VerificationStatus/VerificationStatus'
+import { VerifyPanel } from '@/pages/WidgetEditor/components/VerifyPanel/VerifyPanel'
 import styles from './WebsiteInfoCard.module.scss'
 import { getCategoryLabel } from '@/pages/Feed/constants/categories'
 
@@ -32,14 +34,21 @@ export function WebsiteInfoCard({ website }: WebsiteInfoCardProps) {
       </div>
 
       <div className={styles.body}>
-        <Typography
-          as='h1'
-          variant='titleMd'
-          lines={2}
-          className={styles.title}
-        >
-          {website.name}
-        </Typography>
+        <div className={styles.titleRow}>
+          <Typography
+            as='h1'
+            variant='titleMd'
+            lines={2}
+            className={styles.title}
+          >
+            {website.name}
+          </Typography>
+          <VerificationStatus
+            websiteId={website.id}
+            websiteName={website.name}
+            verifiedAt={website.verifiedAt}
+          />
+        </div>
 
         {(website.author || website.repo) && (
           <div className={styles.meta}>
@@ -83,6 +92,10 @@ export function WebsiteInfoCard({ website }: WebsiteInfoCardProps) {
           </Button>
           <WebsiteVotes initialLikes={mockWebsiteLikes(website.id)} />
         </div>
+
+        {!website.verifiedAt && (
+          <VerifyPanel websiteId={website.id} websiteName={website.name} />
+        )}
       </div>
     </aside>
   )

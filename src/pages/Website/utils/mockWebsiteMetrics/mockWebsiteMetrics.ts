@@ -25,6 +25,13 @@ export function mockWebsiteLikes(websiteId: string) {
   return seededInt(websiteId, 4, 0, 150)
 }
 
+export function mockWebsiteClicks(websiteId: string) {
+  return {
+    total: seededInt(websiteId, 1, 800, 12000),
+    recent: seededInt(websiteId, 2, 40, 900),
+  }
+}
+
 // Placeholder metrics shell: no analytics backend exists yet, so these are
 // mocked from the website id. Real subsections can replace/extend this list
 // once that data exists, without touching how WebsiteMetrics renders it.
@@ -32,13 +39,13 @@ export function buildMockWebsiteMetrics(website: IWebsite): IWebsiteMetric[] {
   return [
     {
       id: 'visits',
-      value: seededInt(website.id, 1, 800, 12000),
+      value: mockWebsiteClicks(website.id).total,
       description: 'visitas desde a entrada na aliança',
       display: 'counter',
     },
     {
       id: 'last-month',
-      value: seededInt(website.id, 2, 40, 900),
+      value: mockWebsiteClicks(website.id).recent,
       description: 'visitas no último mês',
       display: 'number',
     },

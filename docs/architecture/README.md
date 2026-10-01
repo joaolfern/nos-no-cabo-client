@@ -79,6 +79,7 @@ All diagrams include [`_style.iuml`](_style.iuml).
 - [0001: Community registration and widget verification](decisions/0001-community-registration-and-verification.md)
 - [0002: Move the backend to Cloudflare Workers](decisions/0002-cloudflare-platform.md) (proposed)
 - [0003: Optimistic draft submissions](decisions/0003-optimistic-draft-submissions.md)
+- [0004: "Melhores" ranking, computed by the backend](decisions/0004-ranking.md)
 
 ## Rendering
 

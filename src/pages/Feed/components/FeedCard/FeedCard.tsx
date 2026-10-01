@@ -9,6 +9,7 @@ import type { IWebsite } from '@/interfaces/IWebsite'
 import { mockWebsiteLikes } from '@/pages/Website/utils/mockWebsiteMetrics/mockWebsiteMetrics'
 import { getPrimaryKeyword } from '@/pages/Feed/utils/getPrimaryKeyword'
 import { formatCompactNumber } from '@/utils/formatCompactNumber/formatCompactNumber'
+import { VerificationStatus } from '@/pages/WidgetEditor/components/VerificationStatus/VerificationStatus'
 import styles from './FeedCard.module.scss'
 import { getCategoryLabel } from '@/pages/Feed/constants/categories'
 
@@ -47,14 +48,23 @@ function FeedCardInner({
       />
       <div className={styles.content}>
         <div className={styles.titleRow}>
-          <Typography
-            as='h3'
-            variant='bodyMd'
-            lines={1}
-            className={styles.title}
-          >
-            {website.name}
-          </Typography>
+          <span className={styles.nameRow}>
+            <Typography
+              as='h3'
+              variant='bodyMd'
+              lines={1}
+              className={styles.title}
+            >
+              {website.name}
+            </Typography>
+            {!readOnly && (
+              <VerificationStatus
+                websiteId={website.id}
+                websiteName={website.name}
+                verifiedAt={website.verifiedAt}
+              />
+            )}
+          </span>
           <a
             className={styles.externalLink}
             href={website.url}

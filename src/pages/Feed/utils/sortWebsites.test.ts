@@ -5,6 +5,12 @@ import { sortWebsites } from './sortWebsites'
 const mockedWebsites = [MOCK_WEBSITES[0], MOCK_WEBSITES[1], MOCK_WEBSITES[2]]
 
 describe('sortWebsites', () => {
+  it('keeps the server order for Melhores, ranked by the backend', () => {
+    const sorted = sortWebsites(mockedWebsites, 'best')
+    expect(sorted.map((p) => p.id)).toEqual(['1', '2', '4'])
+    expect(sorted).not.toBe(mockedWebsites)
+  })
+
   it('sorts by date ascending', () => {
     const sorted = sortWebsites(mockedWebsites, 'date_asc')
     expect(sorted.map((p) => p.id)).toEqual(['4', '2', '1'])

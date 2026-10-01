@@ -1,0 +1,66 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+
+.guide {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  padding: $spacing-md;
+  border: $border-base;
+  border-radius: $radius-md-lg;
+  background: var(--color-surface);
+  color: var(--color-text-base);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.text {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.required {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xxs;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: $spacing-xxs;
+  }
+
+  svg {
+    flex: none;
+    width: 1rem;
+    height: 1rem;
+    margin-top: 0.1875rem;
+    color: var(--color-primary-400);
+  }
+}
+
+.links {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: $spacing-xxxs $spacing-xs;
+  margin: 0;
+
+  dt {
+    color: var(--color-text-muted);
+  }
+
+  dd {
+    margin: 0;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+}
+
+.guide code {
+  font-family: monospace;
+  font-size: 0.8125rem;
+  overflow-wrap: anywhere;
+}

@@ -1,0 +1,93 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+@use '@/styles/tokens/animations.scss' as *;
+
+// Visually hidden but still focusable and announced.
+.input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.chip,
+.swatch,
+.card {
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+
+  @include has-motion {
+    transition:
+      background 0.15s,
+      border-color 0.15s,
+      box-shadow 0.15s;
+  }
+
+  &:has(.input:focus-visible) {
+    box-shadow: 0 0 0 2px var(--color-primary-400);
+  }
+
+  &:has(.input:disabled) {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  height: 2.25rem;
+  padding: 0 0.875rem;
+  border: $border-base;
+  border-radius: $radius-full;
+  background: var(--color-surface);
+  color: var(--color-text-base);
+  font-size: 0.875rem;
+
+  &:hover {
+    background: var(--color-raised);
+  }
+
+  &.checked {
+    border-color: var(--color-primary-400);
+    background: var(--color-primary-100);
+    color: var(--color-primary-400);
+  }
+}
+
+.swatch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 2px solid transparent;
+  border-radius: $radius-full;
+
+  &.checked {
+    border-color: var(--color-text-base);
+  }
+}
+
+.card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 5.5rem;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-xxs $spacing-sm $spacing-xxs $spacing-xxs;
+  border: $border-base;
+  border-radius: $radius-md-lg;
+  background: var(--color-surface);
+  color: var(--color-text-base);
+  font-size: 0.875rem;
+  font-weight: 500;
+
+  &.checked {
+    border-color: var(--color-primary-400);
+    box-shadow: 0 0 0 1px var(--color-primary-400);
+  }
+}

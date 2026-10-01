@@ -1,0 +1,74 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+@use './host' as *;
+
+.stage {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: $border-base;
+  border-radius: $radius-md-lg;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-xs;
+  padding: $spacing-xxs $spacing-sm;
+  border-bottom: $border-base;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+}
+
+.segment {
+  display: flex;
+  overflow: hidden;
+  border: $border-base;
+  border-radius: $radius-full;
+}
+
+.segmentButton {
+  height: 1.875rem;
+  padding: 0 $spacing-xs;
+  color: var(--color-text-muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.active {
+  background: var(--color-primary-100);
+  color: var(--color-primary-400);
+}
+
+.host {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  padding: $spacing-xl;
+  background: var(--host-bg);
+  color: var(--host-fg);
+}
+
+.claro {
+  @include host-claro;
+}
+
+.escuro {
+  @include host-escuro;
+}
+
+.line {
+  display: block;
+  height: 0.625rem;
+  border-radius: $radius-sm;
+  background: var(--host-line);
+}
+
+.footer {
+  display: flex;
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1px solid var(--host-line);
+}

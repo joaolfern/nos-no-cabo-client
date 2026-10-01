@@ -1,0 +1,87 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+
+.consent {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  padding: $spacing-sm;
+  border: $border-base;
+  border-radius: $radius-md-lg;
+  background: var(--color-surface);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.text {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.textButton {
+  padding: 0;
+  color: var(--color-primary-400);
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+
+  &:focus-visible {
+    border-radius: $radius-sm;
+    outline: 2px solid var(--color-primary-400);
+    outline-offset: 2px;
+  }
+}
+
+.agreement {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 0.3em;
+  color: var(--color-text-base);
+}
+
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-xxs;
+  cursor: pointer;
+}
+
+// Visually hidden but still focusable and announced.
+.input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.125rem;
+  height: 1.125rem;
+  flex: none;
+  border: 1.5px solid var(--color-border-400);
+  border-radius: $radius-sm;
+  color: transparent;
+
+  svg {
+    width: 0.8125rem;
+    height: 0.8125rem;
+  }
+
+  .input:checked + & {
+    border-color: var(--color-primary-400);
+    background: var(--color-primary-400);
+    color: var(--color-primary-foreground-400);
+  }
+
+  .input:focus-visible + & {
+    outline: 2px solid var(--color-primary-400);
+    outline-offset: 2px;
+  }
+}

@@ -2,6 +2,7 @@ import type { DropdownOption } from '@/components/Dropdown/DropdownInterfaces'
 import type { _sortType } from '@/interfaces/ISort'
 
 export const WEBSITES_SORT_OPTIONS: DropdownOption<_sortType>[] = [
+  { label: 'Melhores', value: 'best' },
   { label: 'Mais novos', value: 'date_desc' },
   { label: 'Mais curtidos', value: 'likes_desc' },
   { label: 'A–Z', value: 'title_asc' },

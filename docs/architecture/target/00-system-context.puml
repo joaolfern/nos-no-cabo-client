@@ -33,7 +33,8 @@ note right of services
   <b>Community-driven</b>: submissions need no account.
   A site is public only after the SFW check passes.
   <b>Verified</b> = the widget is found on the site;
-  verified sites rank first in every list.
+  verification, recent clicks and total clicks
+  rank sites in the default list (ADR 0004).
 end note
 
 @enduml

@@ -1,0 +1,35 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+@use '@/styles/tokens/mixins.scss' as *;
+
+.dialog {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  gap: $spacing-md;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xxxs;
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: $spacing-xxs;
+
+  @include scrollbar();
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: $spacing-xs;
+  padding-top: $spacing-md;
+  border-top: $border-base;
+}

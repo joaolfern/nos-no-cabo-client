@@ -1,0 +1,46 @@
+@use '@/styles/tokens/spacing.scss' as *;
+
+.trail {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  flex-wrap: wrap;
+}
+
+// Element + class selectors so these win over the shared Button's pink
+// outline variant and Typography's size rules.
+a.back {
+  height: 2.125rem;
+  padding: 0 0.875rem 0 0.625rem;
+  border-color: var(--color-border-400);
+  color: var(--color-text-base);
+  font-size: 0.8125rem;
+  font-weight: 500;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--color-primary-400);
+    color: var(--color-primary-400);
+    background: transparent;
+  }
+}
+
+nav.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xxs;
+  min-width: 0;
+  font-size: 0.8125rem;
+
+  a {
+    color: inherit;
+  }
+}
+
+.current {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-text-base);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

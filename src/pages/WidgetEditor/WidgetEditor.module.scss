@@ -1,0 +1,136 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+@use '@/styles/tokens/breakpoints.scss' as *;
+@use './components/PreviewStage/host' as *;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xl;
+  width: 100%;
+  max-width: $layout-focused-max-width;
+  margin: 0 auto;
+  padding: $spacing-lg $spacing-sm $spacing-xxxl;
+
+  @media (min-width: $breakpoint-sm) {
+    padding: $spacing-xl $spacing-xl $spacing-xxxl;
+  }
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xxs;
+  max-width: 40rem;
+}
+
+.back {
+  color: var(--color-primary-400);
+}
+
+.layout {
+  display: grid;
+  gap: $spacing-xl;
+  align-items: start;
+
+  @media (min-width: $breakpoint-md) {
+    grid-template-columns: minmax(0, 24rem) minmax(0, 1fr);
+    column-gap: $spacing-xxl;
+  }
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+}
+
+.group {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.legend {
+  padding: 0 0 $spacing-xxs;
+  color: var(--color-text-base);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-xxs;
+}
+
+.models {
+  display: grid;
+  gap: $spacing-xxs;
+}
+
+.thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 5.25rem;
+  overflow: hidden;
+  border-radius: $radius-md;
+  background: var(--host-bg);
+  color: var(--host-fg);
+  pointer-events: none;
+}
+
+.thumbClaro {
+  @include host-claro;
+}
+
+.thumbEscuro {
+  @include host-escuro;
+}
+
+.customIcon {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.thumbScale {
+  flex: none;
+  width: max-content;
+}
+
+.thumbText {
+  width: 360px;
+}
+
+.dot {
+  width: 1.625rem;
+  height: 1.625rem;
+  border-radius: $radius-full;
+}
+
+.note {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+  text-wrap: pretty;
+}
+
+.output {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  min-width: 0;
+
+  @media (min-width: $breakpoint-md) {
+    position: sticky;
+    top: $spacing-lg;
+  }
+}
+
+.hint {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+}

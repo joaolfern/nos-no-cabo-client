@@ -81,6 +81,12 @@ th.likesColumn {
   }
 }
 
+.siteCell {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xxxs;
+}
+
 .site {
   display: flex;
   align-items: center;
