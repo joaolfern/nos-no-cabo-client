@@ -27,10 +27,9 @@ page -> submit : mutate(submission)
 submit -> api : POST /websites
 api --> submit : 202 Website {id, status: checking}
 submit -> store : add draft {id, …, status: checking, submittedAt}
-page --> Submitter : success screen\n"Em análise" · "Ver no feed" · "Adicionar o selo"
-opt "Avise-me quando for publicado"
-  page -> Submitter : Notification.requestPermission()
-  page -> store : draft.notify = true
+page --> Submitter : toast "Site publicado. Ele estará visível\npara outros usuários em minutos." + navigate to /websites
+opt bell on a draft card (only while permission is undecided)
+  feed -> Submitter : Notification.requestPermission() (once, for all sites)
 end
 
 == Later, including after a page refresh ==
@@ -43,7 +42,7 @@ alt published
   poll -> store : drop draft
   poll -> feed : invalidate ['websites']
   feed --> Submitter : card now comes from the server list
-  opt opted in to notifications and a tab is open
+  opt notification permission granted and a tab is open
     poll -> Submitter : local Notification "{name} foi publicado"
   end
 else rejected

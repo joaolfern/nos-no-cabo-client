@@ -8,7 +8,7 @@ package "src/pages/SubmitWebsite/  (route /websites/novo)" as submit {
   component "SubmitWebsite.tsx\npage: form → success screen" as page <<new>>
   component "components/\nUrlField · WebsitePreviewCard\nDetailsFields · CategoryPicker\nTurnstileField · SubmitSuccess" as submitComponents <<new>>
   component "hooks/\nuseWebsitePreview (query)\nuseSubmitWebsite (mutation)" as submitHooks <<new>>
-  component "utils/\ntoSubmission · mergeDrafts\n(drafts first)" as submitUtils <<new>>
+  component "hooks/usePendingFeedItems\ndrafts → feed items (first)" as submitUtils <<new>>
   component "hooks/usePendingSubmissions\nlocalStorage 'nnc-pending-submissions'" as store <<new>>
   component "hooks/usePendingStatusPolling\nGET /v1/websites/status?ids=…\n15 s for 2 min, then on load/focus" as polling <<new>>
 }
@@ -21,7 +21,7 @@ package "src/pages/WidgetEditor/  (route /websites/:id/selo)" as widget {
 
 package "src/pages/Feed/" as feed {
   component "Feed list\n(server page, verified first)" as feedList
-  component "FeedCard / FeedTable\n+ variant 'draft' | 'rejected'\n+ VerifiedIcon" as card
+  component "FeedCardList / FeedCard / FeedTable\n+ pending prop (first items)\n+ tone 'draft' | 'rejected', VerifiedIcon" as card
 }
 
 package "src/pages/Website/" as website {
@@ -48,8 +48,9 @@ page --> editor : success CTA\n"Adicionar o selo"
 store --> lsJson
 polling --> store : update / drop
 polling --> api
-feedList -[#C62828]-> submitUtils : mergeDrafts
-feedList -[#C62828]-> polling
+feedList -[#C62828]-> submitUtils : pending items
+submitUtils --> polling
+submitUtils --> store
 feedList --> card
 verify --> api
 widgetLink --> editor

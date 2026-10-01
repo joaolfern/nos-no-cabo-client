@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, type ReactNode } from 'react'
 import clsx from 'clsx'
 import { LuArrowUpRight, LuThumbsUp } from 'react-icons/lu'
 import { Image } from '@/components/Image/Image'
@@ -13,12 +13,15 @@ import styles from './FeedCard.module.scss'
 import { getCategoryLabel } from '@/pages/Feed/constants/categories'
 
 export type FeedCardVariant = 'compact' | 'detailed'
+export type FeedCardTone = 'draft' | 'rejected'
 
 type FeedCardProps = {
   website: IWebsite
   variant?: FeedCardVariant
   highlightKeywordId?: string
   readOnly?: boolean
+  tone?: FeedCardTone
+  aside?: ReactNode
 }
 
 function FeedCardInner({
@@ -26,13 +29,15 @@ function FeedCardInner({
   variant = 'detailed',
   highlightKeywordId,
   readOnly = false,
+  tone,
+  aside,
 }: FeedCardProps) {
   const primaryKeyword = getPrimaryKeyword(website, highlightKeywordId)
   const otherKeywordsCount = website.keywords.length - 1
 
   return (
     <article
-      className={clsx(styles.card, styles[variant])}
+      className={clsx(styles.card, styles[variant], tone && styles[tone])}
       data-testid='feed-card'
     >
       <Image
@@ -78,7 +83,8 @@ function FeedCardInner({
           {otherKeywordsCount > 0 && (
             <Tag className={styles.tag}>+{otherKeywordsCount}</Tag>
           )}
-          {variant === 'detailed' && !readOnly && (
+          {aside && <div className={styles.aside}>{aside}</div>}
+          {!aside && variant === 'detailed' && !readOnly && (
             <span className={styles.likes} title='Curtidas'>
               <LuThumbsUp aria-hidden={true} />
               {formatCompactNumber(mockWebsiteLikes(website.id))}

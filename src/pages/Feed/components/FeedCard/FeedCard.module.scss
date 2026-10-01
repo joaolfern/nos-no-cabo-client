@@ -160,3 +160,31 @@ span.skeletonTag {
   width: 5.5rem;
   color: transparent;
 }
+
+.aside {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xxs;
+  margin-left: auto;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+
+.draft {
+  border-style: dashed;
+  border-color: var(--color-primary-300);
+}
+
+.rejected {
+  border-color: var(--color-danger-700);
+
+  .thumb,
+  .title,
+  .description {
+    opacity: 0.6;
+  }
+
+  .aside {
+    color: var(--color-danger-700);
+  }
+}

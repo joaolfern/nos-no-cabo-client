@@ -1,0 +1,34 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+
+.status {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: $spacing-xxs;
+}
+
+.textButton {
+  color: var(--color-text-base);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.bell {
+  display: inline-flex;
+  padding: $spacing-xxxs;
+  border-radius: $radius-full;
+  color: var(--color-text-muted);
+  cursor: pointer;
+
+  svg {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  &:hover {
+    color: var(--color-text-base);
+  }
+}

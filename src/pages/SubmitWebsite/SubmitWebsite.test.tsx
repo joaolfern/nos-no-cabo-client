@@ -12,10 +12,14 @@ async function typeUrl(url: string) {
   await userEvent.type(urlInput(), url)
 }
 
-beforeEach(resetMockSubmissions)
+beforeEach(() => {
+  localStorage.clear()
+  resetMockSubmissions()
+  window.history.pushState({}, '', '/websites/novo')
+})
 
 describe('SubmitWebsite', () => {
-  it('prefills from the preview and submits in one screen', async () => {
+  it('prefills from the preview, submits and goes straight to the feed', async () => {
     await render(<SubmitWebsite />)
 
     await typeUrl('meu-projeto.dev')
@@ -28,12 +32,14 @@ describe('SubmitWebsite', () => {
     await userEvent.click(submitButton())
 
     expect(
-      await screen.findByRole('heading', { name: 'Recebemos Meu-projeto!' })
+      await screen.findByText(/Site publicado. Ele estará visível/)
     ).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Ver no feed' })).toHaveAttribute(
-      'href',
-      '/websites'
-    )
+    expect(window.location.pathname).toBe('/websites')
+    expect(
+      JSON.parse(localStorage.getItem('nnc-pending-submissions') ?? '[]')
+    ).toEqual([
+      expect.objectContaining({ name: 'Meu-projeto', status: 'checking' }),
+    ])
   })
 
   it('links to the existing page and blocks a duplicate', async () => {
@@ -51,9 +57,8 @@ describe('SubmitWebsite', () => {
     await userEvent.click(screen.getByRole('checkbox', { name: 'Cidades' }))
     await userEvent.click(submitButton())
 
-    expect(
-      screen.queryByRole('heading', { name: /Recebemos/ })
-    ).not.toBeInTheDocument()
+    expect(screen.queryByText(/Site publicado/)).not.toBeInTheDocument()
+    expect(window.location.pathname).toBe('/websites/novo')
   })
 
   it('lets an unreachable site be filled in by hand', async () => {
@@ -69,8 +74,9 @@ describe('SubmitWebsite', () => {
     await userEvent.click(submitButton())
 
     expect(
-      await screen.findByRole('heading', { name: 'Recebemos Site manual!' })
+      await screen.findByText(/Site publicado. Ele estará visível/)
     ).toBeInTheDocument()
+    expect(window.location.pathname).toBe('/websites')
   })
 
   it('shows every validation error and focuses the first one', async () => {
