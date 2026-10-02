@@ -1,12 +1,17 @@
 import React from 'react'
-import type { IWebsite, IWebsitesContext } from '@/interfaces/IWebsite'
+import { FEED_PAGE_SIZE } from '@/constants/post'
+import type { IWebsitesContext } from '@/interfaces/IWebsite'
 
 const INITIAL_STATE: IWebsitesContext = {
   websites: [],
-  getWebsiteById: () => ({}) as IWebsite,
+  total: undefined,
   isLoading: false,
   error: null,
-  websitesRaw: undefined,
+  hasMore: false,
+  isLoadingMore: false,
+  loadMore: () => {},
+  pageSize: FEED_PAGE_SIZE,
+  getWebsiteById: () => undefined,
 }
 
 export const WebsitesContext =

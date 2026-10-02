@@ -1,15 +1,9 @@
-import type { IWebsite } from '@/interfaces/IWebsite'
+import type { CategoryList } from '@nosnocabo/contract'
 
-export function countWebsitesByKeyword(websites: IWebsite[] = []) {
-  const counts = new Map<string, number>()
-
-  websites.forEach((website) => {
-    const keywordIds = new Set(website.keywords.map((keyword) => keyword.id))
-
-    keywordIds.forEach((id) => counts.set(id, (counts.get(id) ?? 0) + 1))
-  })
-
-  return counts
+export function countsBySlug(categories: CategoryList | undefined) {
+  return new Map<string, number>(
+    categories?.items.map(({ slug, count }) => [slug, count])
+  )
 }
 
 export function sortByCountDesc<T extends { value: string }>(

@@ -1,23 +1,16 @@
 import axios from 'axios'
-import { ADMIN_PASSWORD, API_URL, isAdminMode } from '@/config/env'
+import { V1_API_URL } from '@/config/env'
 import { toApiError } from '@/api/toApiError'
 
-export const api = axios.create({
-  baseURL: `${new URL(API_URL).href}/`,
+// The /v1 API (Cloudflare Workers). No credentials: it has no admin operations.
+export const v1Api = axios.create({
+  baseURL: `${new URL(V1_API_URL).href}/`,
   headers: {
     'Content-Type': 'application/json',
   },
 })
 
-api.interceptors.request.use((config) => {
-  if (isAdminMode) {
-    config.headers['x-admin-password'] = ADMIN_PASSWORD
-  }
-
-  return config
-})
-
-api.interceptors.response.use(
+v1Api.interceptors.response.use(
   (response) => response,
   (error) => Promise.reject(toApiError(error))
 )

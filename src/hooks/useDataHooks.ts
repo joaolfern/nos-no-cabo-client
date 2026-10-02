@@ -1,47 +1,55 @@
-import { api, openLibraryApi } from '@/api/api'
-import type { IAuthor } from '@/interfaces/IAuthor'
-import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
-import type { IKeyword, IWebsite } from '@/interfaces/IWebsite'
+import type {
+  CategoryList,
+  Page,
+  Website,
+  WebsiteNeighbours,
+} from '@nosnocabo/contract'
+import { useQuery } from '@tanstack/react-query'
+import { openLibraryApi, v1Api } from '@/api/api'
 import type { IOpenLibraryResponse } from '@/interfaces/IBook'
 import { ENABLE_OPEN_LIBRARY_API } from '@/config/env'
+import { fromApiWebsite } from '@/pages/Feed/utils/fromApiWebsite'
 
+// Every query about published sites starts with 'websites', so one invalidation refreshes them all.
 export function useWebsiteDetailsData(id: string) {
   return useQuery({
-    queryKey: [{ type: 'websiteDetails', id }],
+    queryKey: ['websites', 'details', id],
     queryFn: () =>
-      api.get<IWebsite[]>(`website/${id}`).then((res) => res.data ?? []),
+      v1Api
+        .get<Website>(`websites/${id}`)
+        .then((res) => fromApiWebsite(res.data)),
   })
 }
 
-export function useWebsitesData() {
+export function useCategoriesData() {
   return useQuery({
-    queryKey: ['websites'],
+    queryKey: ['websites', 'categories'],
     queryFn: () =>
-      api.get<IWebsite[]>('websites').then((res) => res.data ?? []),
+      v1Api.get<CategoryList>('categories').then((res) => res.data),
   })
 }
 
-export function useKeywordsData() {
+export function useNeighboursData(id: string) {
   return useQuery({
-    queryKey: ['keywords'],
+    queryKey: ['websites', 'neighbours', id],
     queryFn: () =>
-      api.get<IKeyword[]>('keywords').then((res) => res.data ?? []),
+      v1Api
+        .get<WebsiteNeighbours>(`websites/${id}/neighbours`)
+        .then(({ data }) => ({
+          previous: data.previous && fromApiWebsite(data.previous),
+          next: data.next && fromApiWebsite(data.next),
+          random: data.random && fromApiWebsite(data.random),
+        })),
   })
 }
 
-export function useAuthorData(id: string) {
+export function useTopWebsitesData(limit: number) {
   return useQuery({
-    queryKey: ['author', id],
-    queryFn: () => api.get<IAuthor>(`authors/${id}`).then((res) => res.data),
-    enabled: !!id,
-  })
-}
-
-export function useKeywordData(id: string) {
-  return useQuery({
-    queryKey: ['keyword', id],
-    queryFn: () => api.get<IKeyword>(`keywords/${id}`).then((res) => res.data),
-    enabled: !!id,
+    queryKey: ['websites', 'top', limit],
+    queryFn: () =>
+      v1Api
+        .get<Page<Website>>('websites', { params: { sort: 'melhores', limit } })
+        .then((res) => res.data.items.map(fromApiWebsite)),
   })
 }
 
@@ -59,39 +67,6 @@ export function useRecommendedBooks(subject: string | undefined) {
         .get<IOpenLibraryResponse>(
           `subjects/${subject}.json?limit=${RECOMMENDED_BOOKS_LIMIT}`
         )
-        .then((res) => res.data ?? []),
-  })
-}
-
-export function useReportWebsite() {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: (data: { id: string }) => api.delete(`website/${data.id}`),
-    mutationKey: ['websites'],
-    onMutate: async (data: { id: string }) => {
-      await Promise.resolve()
-      const previousWebsites = queryClient.getQueryData<IWebsite[]>([
-        'websites',
-      ])
-
-      queryClient.setQueryData<IWebsite[]>(['websites'], (old = []) =>
-        old.filter((website) => website.id !== data.id)
-      )
-
-      return { previousWebsites }
-    },
-    onError: (_err, _data, context) => {
-      if (context?.previousWebsites) {
-        queryClient.setQueryData(['websites'], context.previousWebsites)
-      }
-    },
-    onSuccess: (_, data) => {
-      queryClient.invalidateQueries({ queryKey: ['websites'] })
-      queryClient.invalidateQueries({
-        queryKey: [{ type: 'websiteDetails', id: data.id }],
-      })
-      queryClient.invalidateQueries({ queryKey: ['keywords'] })
-    },
+        .then((res) => res.data),
   })
 }

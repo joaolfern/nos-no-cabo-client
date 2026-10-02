@@ -65,7 +65,7 @@ describe('Dropdown', () => {
   })
 
   it('calls onChange when option is clicked', async () => {
-    const handleChange = jest.fn()
+    const handleChange = vi.fn()
     render(
       <TestDropdown options={options} onChange={handleChange}>
         <span>Trigger</span>

@@ -1,0 +1,81 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "typescript",
+    "react"
+  ],
+  "categories": {
+    "correctness": "error"
+  },
+  "ignorePatterns": [
+    "build",
+    "node_modules",
+    "dist",
+    "android",
+    "ios",
+    ".expo",
+    "scripts",
+    ".react-router"
+  ],
+  "rules": {
+    "no-console": [
+      "warn",
+      {
+        "allow": [
+          "warn",
+          "error",
+          "info"
+        ]
+      }
+    ],
+    "no-inline-comments": "warn",
+    "no-unused-vars": [
+      "warn",
+      {
+        "args": "none"
+      }
+    ],
+    "react/rules-of-hooks": "error",
+    "react/exhaustive-deps": "error",
+    "react/set-state-in-effect": "off",
+    "react/refs": "off",
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "zod",
+            "message": "Please use the 'validation' singleton instead of importing 'zod' directly."
+          }
+        ]
+      }
+    ],
+    "react/only-export-components": "error",
+    "no-warning-comments": [
+      "warn",
+      {
+        "terms": [
+          "add",
+          "fix",
+          "todo",
+          "do",
+          "const"
+        ],
+        "location": "anywhere"
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": [
+        "src/lib/validation.ts"
+      ],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    }
+  ],
+  "env": {
+    "builtin": true
+  }
+}

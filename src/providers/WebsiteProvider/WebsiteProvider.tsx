@@ -17,20 +17,10 @@ export function WebsiteDetailsProvider({ children, id }: WebsiteProviderProps) {
   } = useWebsiteDetailsData(id)
   const { getWebsiteById } = useWebsites()
 
-  const feedData = useMemo(() => {
-    return getWebsiteById(id)
-  }, [getWebsiteById, id])
-
+  // A site already loaded in the feed renders at once; the server copy replaces it.
+  const feedData = useMemo(() => getWebsiteById(id), [getWebsiteById, id])
+  const website = websiteRaw ?? feedData ?? null
   const isLoading = isLoadingRaw && !feedData
-
-  const website = useMemo<IWebsiteDetailsContext['website']>(
-    () => ({
-      ...feedData,
-      id,
-      ...websiteRaw,
-    }),
-    [websiteRaw, feedData, id]
-  )
 
   const value = useMemo<IWebsiteDetailsContext>(
     () => ({

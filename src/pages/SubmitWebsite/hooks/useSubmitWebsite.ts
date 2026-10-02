@@ -1,5 +1,5 @@
-import { useMutation } from '@tanstack/react-query'
-import { api } from '@/api/api'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { v1Api } from '@/api/api'
 import { usePendingSubmissions } from '@/pages/SubmitWebsite/hooks/usePendingSubmissions'
 import type { IApiError } from '@/interfaces/IApiError'
 import type {
@@ -16,16 +16,20 @@ type SubmitWebsiteInput = {
 
 export function useSubmitWebsite() {
   const { addDraft } = usePendingSubmissions()
+  const queryClient = useQueryClient()
 
   return useMutation<ISubmittedWebsite, IApiError, SubmitWebsiteInput>({
     mutationFn: ({ submission, turnstileToken }) =>
-      api
-        .post<ISubmittedWebsite>('v1/websites', submission, {
+      v1Api
+        .post<ISubmittedWebsite>('websites', submission, {
           headers: turnstileToken
             ? { [TURNSTILE_HEADER]: turnstileToken }
             : undefined,
         })
         .then((res) => res.data),
-    onSuccess: addDraft,
+    onSuccess: (website) => {
+      if (website.status === 'checking') return addDraft(website)
+      queryClient.invalidateQueries({ queryKey: ['websites'] })
+    },
   })
 }

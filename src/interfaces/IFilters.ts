@@ -1,4 +1,4 @@
-import type { IKeyword, IWebsite } from '@/interfaces/IWebsite'
+import type { IKeyword } from '@/interfaces/IWebsite'
 
 export interface IFiltersContext {
   selectedKeywords: string[]
@@ -6,13 +6,8 @@ export interface IFiltersContext {
   updateKeywords: (id: string) => void
   getKeywordById: (id: string) => IKeyword | undefined
   keywordIsLoading: boolean
-  filterByKeyword: (
-    websites: IWebsite[],
-    selectedKeywords: string[]
-  ) => IWebsite[]
   search: string
   updateSearch: (search: string) => void
-  filterBySearch: (websites: IWebsite[], search: string) => IWebsite[]
   clearSearch: () => void
   hasFilters: boolean
   clearKeywords: () => void

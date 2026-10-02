@@ -15,24 +15,24 @@ You are encouraged to test your changes, but you must do so efficiently to save 
 4. **Ignore Harmless Console Noise:** When using the browser MCP, strictly ignore network warnings, font preload race conditions, third-party script errors (e.g. Unicorn Studio), or hydration warnings unrelated to your specific code changes. Do not investigate them.
 5. **No Orphaned Processes:** Do not string together massive bash commands to clean up browser ports (e.g., `pgrep | kill`). Ensure your MCP or test runner tears down its own environment cleanly.
 6. **EXCEPTION FOR VISUALS, REDESIGNS & CLS:** JSDOM is blind to aesthetics. If the task involves fixing an "ugly" component, doing a redesign, debugging CSS/flexbox/grid, fixing Cumulative Layout Shift (CLS), or if I simply ask you to figure out what looks wrong ("idk"), you **must** use the Chrome DevTools MCP to capture screenshots and inspect the real rendered UI. Use the browser to see what a human sees.
-7. **Targeted Tests ONLY:** NEVER run the entire test suite. Only execute tests for the specific file you just modified (e.g., `npx jest --config jest.config.cjs FeedTopbar`).
-8. **Prefer JSDOM/Node environments:** For pure logic, state, and standard DOM interactions, use Jest with React Testing Library. These run in milliseconds.
+7. **Targeted Tests ONLY:** NEVER run the entire test suite. Only execute tests for the specific file you just modified (e.g., `pnpm exec vitest run FeedTopbar`).
+8. **Prefer JSDOM/Node environments:** For pure logic, state, and standard DOM interactions, use Vitest with React Testing Library. These run in milliseconds.
 9. **Restrict Headless Browsers:** If you MUST run an automated end-to-end test, only run the specific spec related to the change. Never run a global E2E or visual regression command locally — leave full suites to CI.
-10. **No Pre-builds:** Do NOT run `npm run build` before testing. Rely on the test runner to compile files on the fly (ts-jest).
+10. **No Pre-builds:** Do NOT run `pnpm build` before testing. Vitest compiles files on the fly.
 11. **Fail-Fast:** If a test command hangs for more than 15 seconds, kill the process immediately and assume it failed. Do not let test runners idle.
 
 ## Commands
 
-- **Package manager:** `npm` (there is a `package-lock.json`). Never use `pnpm` or `yarn`.
-- **Dev:** `npm run dev` (Vite).
-- **Build:** `npm run build` (`tsc -b && vite build`) is the type-check step; there's no separate `typecheck` script.
-- **Lint:** `npm run lint` (ESLint with `--fix` and `--max-warnings 0`).
-- **Format:** `npm run format` (Prettier over `src/`: no semicolons, single quotes, 80 columns).
-- **Tests:** Jest (`jest.config.cjs`). `npm test` runs the whole suite, so per the testing rules above run `npx jest --config jest.config.cjs <name>` for the file you changed.
+- **Package manager:** `pnpm` (there is a `pnpm-lock.yaml`). Never use `npm` or `yarn` to install. Dependency build scripts must be allowed in `pnpm-workspace.yaml` (`allowBuilds`).
+- **Dev:** `pnpm dev` (Vite).
+- **Build:** `pnpm build` (`tsc -b && vite build`) is the type-check step, with TypeScript 7 (the native Go compiler); it also type-checks the tests. There's no separate `typecheck` script.
+- **Lint:** `pnpm lint` (oxlint, configured in `.oxlintrc.json`, with `--fix` and `--deny-warnings`).
+- **Format:** `pnpm format` (Prettier over `src/`: no semicolons, single quotes, 80 columns).
+- **Tests:** Vitest (the `test` section of `vite.config.ts`, setup in `vitest.setup.ts`). `pnpm test` runs the whole suite, so per the testing rules above run `pnpm exec vitest run <name>` for the file you changed.
 
 ### Pre-delivery checklist
 
-Before considering a change done, run `npm run lint` and `npm run build`.
+Before considering a change done, run `pnpm lint` and `pnpm build`.
 
 ## Architecture: feature-based colocation
 
@@ -67,7 +67,7 @@ Components must consume tokens, never hardcode arbitrary hex/pixel values. Prefe
 
 ## Code clarity over comments
 
-Prefer applying clean code concepts instead of comments: express intent through well-named variables, functions and components, small extracted helpers, and early returns. Code a beginner can read in a few lines beats a paragraph explaining it, and every comment costs tokens for AI agents too. ESLint already flags inline comments and `todo`/`fix`-style warning comments.
+Prefer applying clean code concepts instead of comments: express intent through well-named variables, functions and components, small extracted helpers, and early returns. Code a beginner can read in a few lines beats a paragraph explaining it, and every comment costs tokens for AI agents too. oxlint already flags inline comments and `todo`/`fix`-style warning comments.
 
 - Don't narrate what the code does, restate the obvious, or tell the story of a bug.
 - Keep a comment only for a non-obvious *why* the code can't express (a browser/library quirk, a workaround). Keep it to one short line.
@@ -80,7 +80,7 @@ Prefer applying clean code concepts instead of comments: express intent through 
 
 ## Git safety
 
-Do **not** run `git commit` or `git push` automatically — save/format files and leave commit execution to the user. Husky runs `lint-staged` (ESLint + Prettier) on commit.
+Do **not** run `git commit` or `git push` automatically — save/format files and leave commit execution to the user. Husky runs `lint-staged` (oxlint + Prettier) on commit.
 
 # UI & Form Styling Constraints
 - **No Form-Level Vertical Spacing:** NEVER add `gap`/`row-gap` or vertical margins to the `<Form>` component or to input wrapper containers.

@@ -1,3 +1,4 @@
+import { CATEGORY_SLUGS, type CategorySlug } from '@nosnocabo/contract'
 import type { IconType } from 'react-icons'
 import {
   LuAccessibility,
@@ -132,4 +133,10 @@ export function sortByCategoryOrder<T extends { name: string }>(
   }
 
   return [...options].sort((a, b) => orderOf(a.name) - orderOf(b.name))
+}
+
+const KNOWN_SLUGS = new Set<string>(CATEGORY_SLUGS)
+
+export function isCategorySlug(value: string): value is CategorySlug {
+  return KNOWN_SLUGS.has(value)
 }

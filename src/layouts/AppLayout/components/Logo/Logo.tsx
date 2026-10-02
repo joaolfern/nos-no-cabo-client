@@ -1,7 +1,6 @@
 import { Image } from '@/components/Image/Image'
 import { Typography } from '@/components/Typography/Typography'
 import styles from './Logo.module.scss'
-import { isAdminMode } from '@/config/env'
 import { Link } from '@/components/Link/Link'
 
 export function Logo() {
@@ -15,7 +14,7 @@ export function Logo() {
         />
         <span>
           <Typography className={styles.subtitle} variant='titleSm'>
-            {isAdminMode ? 'Sysadmin.' : 'Nós no cabo'}
+            Nós no cabo
           </Typography>
         </span>
       </div>

@@ -1,10 +1,7 @@
-export type _sortType =
-  | 'best'
-  | 'date_asc'
-  | 'date_desc'
-  | 'title_asc'
-  | 'title_desc'
-  | 'likes_desc'
+import type { WEBSITE_SORTS } from '@nosnocabo/contract'
+
+// The server sorts; these are the API's own values.
+export type _sortType = (typeof WEBSITE_SORTS)[number]
 
 export interface ISort {
   label: string

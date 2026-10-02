@@ -13,7 +13,7 @@ const counts = new Map([
 ])
 
 function setup(props: Partial<React.ComponentProps<typeof CategoryList>> = {}) {
-  const onSelect = jest.fn()
+  const onSelect = vi.fn()
 
   render(
     <CategoryList

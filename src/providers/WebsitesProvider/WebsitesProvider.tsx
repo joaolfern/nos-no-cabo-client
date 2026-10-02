@@ -1,46 +1,81 @@
+import type { Page, Website } from '@nosnocabo/contract'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { useCallback, useMemo, type ReactNode } from 'react'
-import type { IWebsite, IWebsitesContext } from '@/interfaces/IWebsite'
-import { useWebsitesData } from '@/hooks/useDataHooks'
+import { v1Api } from '@/api/api'
 import { WebsitesContext } from '@/contexts/WebsitesContext'
-import { sortWebsites } from '@/pages/Feed/utils/sortWebsites'
-import { useSort } from '@/pages/Feed/hooks/useSort'
+import type { IWebsitesContext } from '@/interfaces/IWebsite'
+import { useFeedPageSize } from '@/pages/Feed/hooks/useFeedPageSize'
 import { useFilters } from '@/pages/Feed/hooks/useFilters'
+import { useSort } from '@/pages/Feed/hooks/useSort'
+import { fromApiWebsite } from '@/pages/Feed/utils/fromApiWebsite'
 
 type WebsitesProviderProps = {
   children: ReactNode
 }
 
+// The feed: one server page at a time, filtered and sorted by the API.
 export function WebsitesProvider({ children }: WebsitesProviderProps) {
-  const { data: websitesRaw, isLoading, error } = useWebsitesData()
   const { selectedSort } = useSort()
-  const { filterByKeyword, selectedKeywords } = useFilters()
+  const { selectedKeywords, search } = useFilters()
+  const pageSize = useFeedPageSize()
+  const params = {
+    sort: selectedSort,
+    categoria: selectedKeywords[0],
+    q: search.trim() || undefined,
+    limit: pageSize,
+  }
 
-  const websites = useMemo(() => {
-    const filtered = filterByKeyword(websitesRaw ?? [], selectedKeywords)
+  const query = useInfiniteQuery({
+    queryKey: ['websites', 'list', params],
+    queryFn: ({ pageParam }) =>
+      v1Api
+        .get<Page<Website>>('websites', {
+          params: { ...params, cursor: pageParam },
+        })
+        .then((res) => res.data),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (last) => last.nextCursor ?? undefined,
+  })
 
-    return sortWebsites(filtered, selectedSort)
-  }, [websitesRaw, selectedKeywords, selectedSort, filterByKeyword])
-
-  const websitesIdMap = useMemo(() => {
-    const map = new Map<string, IWebsite>()
-    websitesRaw?.forEach((website) => map.set(website.id, website))
-    return map
-  }, [websitesRaw])
-
-  const getWebsiteById = useCallback(
-    (id: string): IWebsite => websitesIdMap.get(id) as IWebsite,
-    [websitesIdMap]
+  const websites = useMemo(
+    () =>
+      query.data?.pages.flatMap((page) => page.items.map(fromApiWebsite)) ?? [],
+    [query.data]
   )
 
+  const getWebsiteById = useCallback(
+    (id: string) => websites.find((website) => website.id === id),
+    [websites]
+  )
+
+  const { fetchNextPage } = query
+  const loadMore = useCallback(() => {
+    fetchNextPage()
+  }, [fetchNextPage])
+
   const value = useMemo<IWebsitesContext>(
-    (): IWebsitesContext => ({
+    () => ({
       websites,
-      isLoading,
-      error,
+      total: query.data?.pages[0]?.total,
+      isLoading: query.isLoading,
+      error: query.error,
+      hasMore: query.hasNextPage,
+      isLoadingMore: query.isFetchingNextPage,
+      loadMore,
+      pageSize,
       getWebsiteById,
-      websitesRaw,
     }),
-    [websites, isLoading, getWebsiteById, error, websitesRaw]
+    [
+      websites,
+      query.data,
+      query.isLoading,
+      query.error,
+      query.hasNextPage,
+      query.isFetchingNextPage,
+      loadMore,
+      pageSize,
+      getWebsiteById,
+    ]
   )
 
   return (

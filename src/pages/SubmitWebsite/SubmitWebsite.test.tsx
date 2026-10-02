@@ -1,6 +1,9 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { http, HttpResponse } from 'msw'
 import { render } from '@/__tests__/utils.test'
+import { server } from '@/__mocks__/node'
+import { V1_API_URL } from '@/config/env'
 import { resetMockSubmissions } from '@/__mocks__/data/submissions'
 import { SubmitWebsite } from '@/pages/SubmitWebsite/SubmitWebsite'
 
@@ -40,6 +43,40 @@ describe('SubmitWebsite', () => {
     ).toEqual([
       expect.objectContaining({ name: 'Meu-projeto', status: 'checking' }),
     ])
+  })
+
+  it('keeps no draft when the server publishes right away', async () => {
+    server.use(
+      http.post(`${V1_API_URL}/websites`, async ({ request }) => {
+        const body = (await request.json()) as { url: string; name: string }
+        return HttpResponse.json(
+          {
+            id: 'ja-publicado',
+            url: body.url,
+            shortCode: null,
+            name: body.name,
+            description: '',
+            color: null,
+            faviconUrl: null,
+            categories: ['educacao'],
+            status: 'published',
+            verifiedAt: null,
+            submittedAt: new Date().toISOString(),
+            publishedAt: new Date().toISOString(),
+          },
+          { status: 202 }
+        )
+      })
+    )
+    await render(<SubmitWebsite />)
+
+    await typeUrl('meu-projeto.dev')
+    await waitFor(() => expect(nameInput()).toHaveValue('Meu-projeto'))
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Educação' }))
+    await userEvent.click(submitButton())
+
+    await waitFor(() => expect(window.location.pathname).toBe('/websites'))
+    expect(localStorage.getItem('nnc-pending-submissions')).toBeNull()
   })
 
   it('links to the existing page and blocks a duplicate', async () => {

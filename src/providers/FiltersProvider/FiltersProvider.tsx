@@ -15,11 +15,10 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     updateKeywords,
     getKeywordById,
     keywordIsLoading,
-    filterByKeyword,
     clearKeywords,
   } = useKeywordFilter()
 
-  const { search, updateSearch, filterBySearch, clearSearch } = useSearch()
+  const { search, updateSearch, clearSearch } = useSearch()
 
   const hasFilters = useMemo(
     () => selectedKeywords.length > 0,
@@ -33,10 +32,8 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       updateKeywords,
       getKeywordById,
       keywordIsLoading,
-      filterByKeyword,
       search,
       updateSearch,
-      filterBySearch,
       clearSearch,
       hasFilters,
       clearKeywords,
@@ -47,10 +44,8 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       updateKeywords,
       getKeywordById,
       keywordIsLoading,
-      filterByKeyword,
       search,
       updateSearch,
-      filterBySearch,
       clearSearch,
       hasFilters,
       clearKeywords,

@@ -1,8 +1,23 @@
 import type { IAuthor } from '@/interfaces/IAuthor'
 
-export type WebsiteStatus = 'checking' | 'published' | 'rejected'
+import type {
+  RejectionReason,
+  VerificationResult,
+  Website,
+  WebsitePreview,
+  WebsiteStatus as ContractWebsiteStatus,
+  WebsiteStatusEntry,
+  WebsiteSubmission,
+} from '@nosnocabo/contract'
 
-export type WebsiteRejectionReason = 'unsafe' | 'unreachable' | 'error'
+// The /v1 shapes come from @nosnocabo/contract, published by nos-sr.
+export type WebsiteStatus = ContractWebsiteStatus
+export type WebsiteRejectionReason = RejectionReason
+export type IWebsitePreview = WebsitePreview
+export type IWebsiteSubmission = WebsiteSubmission
+export type ISubmittedWebsite = Website
+export type IVerificationResult = VerificationResult
+export type IWebsiteStatus = WebsiteStatusEntry
 
 export interface IWebsite {
   id: string
@@ -20,62 +35,19 @@ export interface IWebsite {
   verifiedAt?: string | null
 }
 
-export interface IWebsitePreview {
-  url: string
-  name: string | null
-  description: string | null
-  color: string | null
-  faviconUrl: string | null
-}
-
-export interface IWebsiteSubmission {
-  url: string
-  name: string
-  description: string
-  color?: string
-  faviconUrl?: string
-  repo?: string
-  categories: string[]
-}
-
-export interface ISubmittedWebsite {
-  id: string
-  url: string
-  shortCode: string | null
-  name: string
-  description: string
-  color: string | null
-  faviconUrl: string | null
-  repo?: string
-  categories: string[]
-  status: WebsiteStatus
-  rejectionReason?: WebsiteRejectionReason
-  verifiedAt: string | null
-  submittedAt: string
-  publishedAt: string | null
-}
-
-export interface IVerificationResult {
-  verified: boolean
-  verifiedAt: string | null
-  reason?: 'widget_not_found' | 'unreachable'
-}
-
 export interface IWebsitesContext {
   websites: IWebsite[]
+  total: number | undefined
   isLoading: boolean
   error: Error | null
-  getWebsiteById: (id: string) => IWebsite
-  websitesRaw: IWebsite[] | undefined
+  hasMore: boolean
+  isLoadingMore: boolean
+  loadMore: () => void
+  pageSize: number
+  getWebsiteById: (id: string) => IWebsite | undefined
 }
 
 export interface IKeyword {
   id: string
   name: string
-}
-
-export interface IWebsiteStatus {
-  id: string
-  status: WebsiteStatus
-  rejectionReason?: WebsiteRejectionReason
 }

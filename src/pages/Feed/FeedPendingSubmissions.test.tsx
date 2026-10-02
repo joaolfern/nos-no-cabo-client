@@ -120,7 +120,7 @@ describe('Feed with pending submissions', () => {
   it('asks for notification permission once, then hides the bell on every draft', async () => {
     const notification = {
       permission: 'default',
-      requestPermission: jest.fn(async () => {
+      requestPermission: vi.fn(async () => {
         notification.permission = 'granted'
         return 'granted'
       }),
@@ -158,7 +158,7 @@ describe('Feed with pending submissions', () => {
   })
 
   it('notifies when the review finishes once permission is granted', async () => {
-    const notificationSpy = jest.fn()
+    const notificationSpy = vi.fn()
     Object.defineProperty(window, 'Notification', {
       configurable: true,
       value: Object.assign(notificationSpy, { permission: 'granted' }),

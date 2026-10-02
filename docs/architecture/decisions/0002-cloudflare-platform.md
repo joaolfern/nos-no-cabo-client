@@ -1,6 +1,6 @@
 # 0002. Move the backend to Cloudflare Workers
 
-- Status: proposed
+- Status: accepted (2026-10-01)
 - Date: 2026-09-30
 
 ## Context
@@ -28,6 +28,10 @@ Rebuild the backend as TypeScript Cloudflare Workers, one per service, behind a 
 **Shared contract.** A small `contract` package with zod schemas for `/v1` is used by the Workers
 for validation and by the SPA for types and MSW fixtures. This replaces the hand-copied
 `src/interfaces/IWebsite.ts`, which currently disagrees with the backend (id types, `url`).
+
+The repos stay separate (decided 2026-10-01). The contract lives in `nos-sr` as
+`packages/contract` and is published as a versioned npm package that nos-client installs. A
+contract change ships in two steps: publish from `nos-sr`, then bump and adapt in nos-client.
 
 **Data ownership.** Only the catalog Worker writes the catalog database. Moderation and
 verification call its internal API over service bindings, so each service can be deployed and

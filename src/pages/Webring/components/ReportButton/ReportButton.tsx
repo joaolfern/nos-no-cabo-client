@@ -1,89 +1,24 @@
-import { LuFlag } from 'react-icons/lu'
-import styles from './ReportButton.module.scss'
 import { clsx } from 'clsx'
-import { isAdminMode } from '@/config/env'
-import { useReportWebsite } from '@/hooks/useDataHooks'
-import { Dialog } from '@/components/Dialog/Dialog'
-import { useState } from 'react'
-import { Typography } from '@/components/Typography/Typography'
-import { useNavigate } from 'react-router'
-import { useMessage } from '@/contexts/useMessage'
+import { LuFlag } from 'react-icons/lu'
+import { TERMS_CONTACT_EMAIL } from '@/pages/Terms/utils/terms'
+import styles from './ReportButton.module.scss'
 
-type ReportButtonProps = React.JSX.IntrinsicElements['button'] & {
+type ReportButtonProps = {
   id: string
   name: string
+  className?: string
 }
 
-export function ReportButton({
-  children,
-  className,
-  id,
-  name,
-  ...props
-}: ReportButtonProps) {
-  const { mutate } = useReportWebsite()
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const navigate = useNavigate()
-  const { showMessage } = useMessage()
-
-  const textContent = isAdminMode ? TEXT_CONTENT.admin : TEXT_CONTENT.default
-
-  function onSuccess() {
-    navigate('/websites')
-    showMessage(`"${name}" foi ${textContent.action}!`)
-  }
-
-  function handleClick() {
-    setIsDialogOpen(true)
-  }
-
-  function handleReport() {
-    mutate(
-      { id },
-      {
-        onSuccess,
-      }
-    )
-  }
-
-  function handleCloseDialog() {
-    setIsDialogOpen(false)
-  }
+// Until community reports exist on the server, a report is an e-mail to the maintainer.
+export function ReportButton({ id, name, className }: ReportButtonProps) {
+  const subject = `Problema com ${name}`
+  const body = `Site: ${name}\nPágina: ${window.location.origin}/website/${id}\n\nO que está errado:\n`
+  const href = `mailto:${TERMS_CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
 
   return (
-    <>
-      <button
-        className={clsx(styles.reportButton, className)}
-        onClick={handleClick}
-        {...props}
-      >
-        <LuFlag />
-        {textContent.button}
-      </button>
-      <Dialog
-        isOpen={isDialogOpen}
-        onClose={handleCloseDialog}
-        title={textContent.title}
-        onCancel={handleCloseDialog}
-        onConfirm={handleReport}
-      >
-        <Typography variant='bodyMd'>{textContent.message}</Typography>
-      </Dialog>
-    </>
+    <a className={clsx(styles.reportButton, className)} href={href}>
+      <LuFlag aria-hidden={true} />
+      Notificar problema
+    </a>
   )
-}
-
-const TEXT_CONTENT = {
-  admin: {
-    title: 'Remover website',
-    message: 'Tem certeza que deseja remover este website?',
-    button: 'Remover',
-    action: 'removido',
-  },
-  default: {
-    title: 'Notificar problema',
-    message: 'Tem certeza que deseja notificar um problema neste site?',
-    button: 'Notificar problema',
-    action: 'reportado',
-  },
 }

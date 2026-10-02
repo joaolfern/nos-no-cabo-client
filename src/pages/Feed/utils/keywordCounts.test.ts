@@ -1,36 +1,22 @@
-import type { IKeyword, IWebsite } from '@/interfaces/IWebsite'
-import { countWebsitesByKeyword, sortByCountDesc } from './keywordCounts'
+import { countsBySlug, sortByCountDesc } from './keywordCounts'
 
-const web: IKeyword = { id: 'web', name: 'web' }
-const code: IKeyword = { id: 'code', name: 'code' }
-const docs: IKeyword = { id: 'docs', name: 'docs' }
+describe('countsBySlug', () => {
+  it('maps each category slug to its count from the server', () => {
+    const counts = countsBySlug({
+      total: 3,
+      items: [
+        { slug: 'educacao', count: 2 },
+        { slug: 'saude', count: 1 },
+      ],
+    })
 
-function website(id: string, keywords: IKeyword[]) {
-  return { id, keywords } as IWebsite
-}
-
-describe('countWebsitesByKeyword', () => {
-  it('counts how many websites use each keyword', () => {
-    const counts = countWebsitesByKeyword([
-      website('1', [web, code]),
-      website('2', [web]),
-      website('3', [docs]),
-    ])
-
-    expect(counts.get('web')).toBe(2)
-    expect(counts.get('code')).toBe(1)
-    expect(counts.get('docs')).toBe(1)
+    expect(counts.get('educacao')).toBe(2)
+    expect(counts.get('saude')).toBe(1)
+    expect(counts.get('cidades')).toBeUndefined()
   })
 
-  it('counts a keyword once per website even if it is repeated', () => {
-    const counts = countWebsitesByKeyword([website('1', [web, web])])
-
-    expect(counts.get('web')).toBe(1)
-  })
-
-  it('handles missing data', () => {
-    expect(countWebsitesByKeyword(undefined).size).toBe(0)
-    expect(countWebsitesByKeyword([]).size).toBe(0)
+  it('is empty while the categories load', () => {
+    expect(countsBySlug(undefined).size).toBe(0)
   })
 })
 

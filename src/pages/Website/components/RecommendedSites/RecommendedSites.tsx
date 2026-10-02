@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
+import { useTopWebsitesData } from '@/hooks/useDataHooks'
 import { Typography } from '@/components/Typography/Typography'
 import { Link } from '@/components/Link/Link'
 import { ViewToggle } from '@/pages/Feed/components/ViewToggle/ViewToggle'
-import { useWebsites } from '@/pages/Feed/hooks/useWebsites'
 import { FeedCardList } from '@/pages/Feed/components/FeedCardList/FeedCardList'
 import type { IWebsite } from '@/interfaces/IWebsite'
 import type { FeedView } from '@/interfaces/IFeedView'
@@ -15,11 +15,14 @@ interface RecommendedSitesProps {
 }
 
 export function RecommendedSites({ websiteId }: RecommendedSitesProps) {
-  const { websites: websitesRaw, isLoading } = useWebsites()
+  // One extra, in case the current site is among the best.
+  const { data: top = [], isLoading } = useTopWebsitesData(
+    RECOMMENDED_SITES_LIMIT + 1
+  )
   const [view, setView] = useState<FeedView>('grid')
   const websites = useMemo(
-    () => getRecommendedWebsites(websitesRaw, websiteId),
-    [websitesRaw, websiteId]
+    () => getRecommendedWebsites(top, websiteId),
+    [top, websiteId]
   )
 
   return (
@@ -47,13 +50,11 @@ export function RecommendedSites({ websiteId }: RecommendedSitesProps) {
 }
 
 function getRecommendedWebsites(
-  websitesRaw: IWebsite[],
+  websites: IWebsite[],
   currentWebsiteId: string
 ): IWebsite[] {
-  if (!websitesRaw) return []
-
   const result: IWebsite[] = []
-  for (const website of websitesRaw) {
+  for (const website of websites) {
     if (website.id !== currentWebsiteId) {
       result.push(website)
       if (result.length === RECOMMENDED_SITES_LIMIT) break
