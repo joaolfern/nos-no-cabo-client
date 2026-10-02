@@ -136,9 +136,9 @@ function tileLogo(logo: WidgetLogo) {
 
 function textMarkup(links: Links, nav: boolean, random: boolean) {
   const parts = [
-    nav && `<a href="${links.prev}">← Anterior</a>`,
-    random && `<a href="${links.random}">Aleatório</a>`,
-    nav && `<a href="${links.next}">Próximo →</a>`,
+    nav && `<a href="${links.prev}" rel="nofollow">← Anterior</a>`,
+    random && `<a href="${links.random}" rel="nofollow">Aleatório</a>`,
+    nav && `<a href="${links.next}" rel="nofollow">Próximo →</a>`,
   ].filter(Boolean)
   const navigation = parts.length > 0 ? ` ${parts.join(' · ')}` : ''
 
@@ -149,9 +149,9 @@ function customMarkup(links: Links) {
   return [
     `<!-- Mantenha o atributo data-nnc-widget e o link para o ${NAME}: é assim que verificamos o seu site. -->`,
     `  <a href="${links.home}">${NAME}</a>`,
-    `  <a href="${links.prev}">← Anterior</a>`,
-    `  <a href="${links.random}">Aleatório</a>`,
-    `  <a href="${links.next}">Próximo →</a>`,
+    `  <a href="${links.prev}" rel="nofollow">← Anterior</a>`,
+    `  <a href="${links.random}" rel="nofollow">Aleatório</a>`,
+    `  <a href="${links.next}" rel="nofollow">Próximo →</a>`,
   ].join('\n')
 }
 
@@ -161,20 +161,20 @@ function styledMarkup(
   { logo, nav, random }: { logo: WidgetLogo; nav: boolean; random: boolean }
 ) {
   const randomLink = random
-    ? `<a class="nnc-rand" href="${links.random}">${SHUFFLE_SVG}Aleatório</a>`
+    ? `<a class="nnc-rand" href="${links.random}" rel="nofollow">${SHUFFLE_SVG}Aleatório</a>`
     : ''
   const prev = nav
-    ? `<a class="nnc-step" href="${links.prev}">← Anterior</a>`
+    ? `<a class="nnc-step" href="${links.prev}" rel="nofollow">← Anterior</a>`
     : ''
   const next = nav
-    ? `<a class="nnc-step" href="${links.next}">Próximo →</a>`
+    ? `<a class="nnc-step" href="${links.next}" rel="nofollow">Próximo →</a>`
     : ''
   const navLinks = `${prev}${randomLink}${next}`
   const variant = logo === 'cor' ? '' : ` nnc-v-${logo}`
 
   if (preset === 'selo') {
     const secondLine = random
-      ? `<a class="nnc-selo-rand" href="${links.random}">${SHUFFLE_SVG}aleatório</a>`
+      ? `<a class="nnc-selo-rand" href="${links.random}" rel="nofollow">${SHUFFLE_SVG}aleatório</a>`
       : `<a class="nnc-selo-sub" href="${links.home}">webring</a>`
 
     return `<div class="nnc-selo${variant}"><a class="nnc-selo-mark${variant}" href="${links.home}" title="${NAME}">${tileLogo(logo)}</a><span class="nnc-selo-text"><a class="nnc-selo-name" href="${links.home}">${NAME.toLowerCase()}</a>${secondLine}</span></div>`

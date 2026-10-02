@@ -21,9 +21,9 @@ export function normalizeUrl(input: string): string | null {
   const absolute = toAbsoluteUrl(input)
   if (!absolute) return null
 
-  const { hostname, pathname, search } = new URL(absolute)
+  const { hostname, pathname } = new URL(absolute)
   const host = hostname.toLowerCase().replace(/^www\./, '')
   const path = pathname.replace(/\/+$/, '')
 
-  return `${host}${path}${search}`
+  return `${host}${path}`
 }

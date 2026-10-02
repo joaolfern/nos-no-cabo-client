@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSearchParams } from 'react-router'
 import { Button } from '@/components/Button/Button'
 import { Input } from '@/components/Input/Input'
 import { Link } from '@/components/Link/Link'
@@ -8,9 +9,9 @@ import { TURNSTILE_SITE_KEY } from '@/config/env'
 import type { IApiError } from '@/interfaces/IApiError'
 import type { ISubmittedWebsite } from '@/interfaces/IWebsite'
 import { CategoryPicker } from '@/pages/SubmitWebsite/components/CategoryPicker/CategoryPicker'
-import { Field } from '@/pages/SubmitWebsite/components/Field/Field'
-import { fieldMessageId } from '@/pages/SubmitWebsite/components/Field/fieldMessageId'
-import { TurnstileField } from '@/pages/SubmitWebsite/components/TurnstileField/TurnstileField'
+import { Field } from '@/components/Field/Field'
+import { fieldMessageId } from '@/components/Field/fieldMessageId'
+import { TurnstileField } from '@/components/TurnstileField/TurnstileField'
 import { UrlField } from '@/pages/SubmitWebsite/components/UrlField/UrlField'
 import { WebsitePreviewCard } from '@/pages/SubmitWebsite/components/WebsitePreviewCard/WebsitePreviewCard'
 import { useSubmissionFields } from '@/pages/SubmitWebsite/hooks/useSubmissionFields'
@@ -52,7 +53,8 @@ function focusFirstError(errors: SubmissionFormErrors) {
 }
 
 export function SubmitForm({ onSubmitted }: SubmitFormProps) {
-  const [url, setUrl] = useState('')
+  const [searchParams] = useSearchParams()
+  const [url, setUrl] = useState(() => searchParams.get('url') ?? '')
   const [hasTriedSubmit, setHasTriedSubmit] = useState(false)
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
 

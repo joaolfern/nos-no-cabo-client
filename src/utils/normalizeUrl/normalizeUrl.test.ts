@@ -32,10 +32,11 @@ describe('normalizeUrl', () => {
     )
   })
 
-  it('keeps path and query, drops the hash', () => {
+  it('keeps the path, drops the query and the hash', () => {
     expect(normalizeUrl('https://exemplo.com/projeto/?id=2#topo')).toBe(
-      'exemplo.com/projeto?id=2'
+      'exemplo.com/projeto'
     )
+    expect(normalizeUrl('fit.com/a')).not.toBe(normalizeUrl('fit.com/b'))
   })
 
   it('returns null for invalid input', () => {

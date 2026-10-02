@@ -5,6 +5,7 @@ import {
   mockNeighbours,
   withMockVerification,
 } from '@/__mocks__/data/catalog'
+import { addMockReport } from '@/__mocks__/data/reports'
 import {
   createMockSubmission,
   findExistingWebsiteId,
@@ -17,7 +18,7 @@ import { V1_API_URL } from '@/config/env'
 import type { ApiErrorCode, IApiErrorResponse } from '@/interfaces/IApiError'
 import type { IWebsiteSubmission } from '@/interfaces/IWebsite'
 import { toAbsoluteUrl } from '@/utils/normalizeUrl/normalizeUrl'
-import { WebsiteListQuery } from '@nosnocabo/contract'
+import { ReportSubmission, WebsiteListQuery } from '@nosnocabo/contract'
 import { http, HttpResponse } from 'msw'
 
 const V1 = V1_API_URL
@@ -112,6 +113,20 @@ export const handlers = [
       .filter(Boolean)
 
     return HttpResponse.json(getMockStatuses(ids))
+  }),
+  http.post(`${V1}/websites/:id/reports`, async ({ params, request }) => {
+    const id = String(params.id)
+    if (getMockSubmittedWebsite(id)?.status !== 'published') {
+      return errorResponse(404, 'not_found', 'Site não encontrado.')
+    }
+
+    const report = ReportSubmission.safeParse(await request.json())
+    if (!report.success) {
+      return errorResponse(422, 'invalid', 'Escolha um motivo para a denúncia.')
+    }
+
+    addMockReport(id, report.data)
+    return new HttpResponse(null, { status: 202 })
   }),
   http.get(`${V1}/websites/:id`, ({ params }) => {
     const website = getMockSubmittedWebsite(String(params.id))

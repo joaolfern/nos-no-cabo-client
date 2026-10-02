@@ -17,6 +17,10 @@ package "catalog D1" {
     repo : text
     short_code : text <<unique>> (set on publish)
     * status : text  checking | published | rejected
+    rejection_reason : text  unsafe | unreachable | error
+    category_slugs : text (json, derived)
+    ring_group : integer (generated: verified_at IS NULL)
+    review_flag : text  model_error | unreachable | reported\n(null = no manual review needed)
     * submitted_at : integer (epoch ms)
     published_at : integer
     verified_at : integer (null = unverified)
@@ -29,6 +33,20 @@ package "catalog D1" {
     * slug : text <<PK>>
     --
     * position : integer
+    published_count : integer (derived)
+  }
+
+  entity "counters" as counters <<new>> {
+    * name : text <<PK>>  published_websites | ring_version
+    --
+    * value : integer
+  }
+
+  entity "websites_fts" as fts <<new>> {
+    website_id (unindexed)
+    name
+    description
+    FTS5, unicode61 remove_diacritics 2
   }
 
   entity "website_categories" as wc <<new>> {
@@ -45,14 +63,22 @@ package "catalog D1" {
     * model : text
     * checked_at : integer
   }
+
+  entity "reports" as reports <<new>> {
+    * id : integer <<PK>>
+    --
+    * website_id : text <<FK>>
+    * reason : text  inappropriate | spam | broken |\nimpersonation | other
+    comment : text
+    * reporter_ip_hash : text
+    * created_at : integer
+    <<unique>> (website_id, reporter_ip_hash)
+  }
 }
 
 package "router KV" {
   entity "short:{code}" as short <<new>> {
     website_id
-  }
-  entity "ring:order" as ring <<new>> {
-    [website_id…] (published,\nverified first, then published_at)
   }
 }
 
@@ -78,9 +104,18 @@ package "metrics D1" {
 websites ||--o{ wc
 categories ||--o{ wc
 websites ||--o{ moderation
+websites ||--o{ reports
+websites ||--|| fts : kept by triggers
 websites .. short : by id (cross-service,\nno FK)
 websites .. events : by id (cross-service,\nno FK)
 events .. daily : rolled up by cron
+
+note right of counters
+  Derived values (ADR 0005) are kept by triggers and
+  recomputed by sql/rebuild-derived.sql. The ring order is
+  read from the websites_by_ring index; the router caches
+  it and refetches when ring_version changes.
+end note
 
 note right of websites
   • url_normalized (lowercase host, no scheme/www/trailing slash)

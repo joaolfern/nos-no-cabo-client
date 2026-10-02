@@ -20,6 +20,9 @@ interface WebsiteInfoCardProps {
 }
 
 export function WebsiteInfoCard({ website }: WebsiteInfoCardProps) {
+  const isInReview =
+    website.status !== undefined && website.status !== 'published'
+
   return (
     <aside className={styles.container}>
       <div className={styles.hero}>
@@ -28,12 +31,19 @@ export function WebsiteInfoCard({ website }: WebsiteInfoCardProps) {
           src={website.faviconUrl}
           alt={website.name}
         />
-        <div className={styles.reportButtonSlot}>
-          <ReportButton id={website.id} name={website.name} />
-        </div>
+        {!isInReview && (
+          <div className={styles.reportButtonSlot}>
+            <ReportButton id={website.id} name={website.name} />
+          </div>
+        )}
       </div>
 
       <div className={styles.body}>
+        {isInReview && (
+          <p className={styles.reviewNotice} role='status'>
+            Este site está em análise e não aparece nas listas por enquanto.
+          </p>
+        )}
         <div className={styles.titleRow}>
           <Typography
             as='h1'

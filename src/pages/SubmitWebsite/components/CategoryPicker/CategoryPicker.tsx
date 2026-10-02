@@ -3,7 +3,7 @@ import {
   CATEGORY_NAMES,
   getCategoryMeta,
 } from '@/pages/Feed/constants/categories'
-import { fieldMessageId } from '@/pages/SubmitWebsite/components/Field/fieldMessageId'
+import { fieldMessageId } from '@/components/Field/fieldMessageId'
 import {
   FIELD_IDS,
   MAX_CATEGORIES,

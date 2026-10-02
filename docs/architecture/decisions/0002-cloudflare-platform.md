@@ -44,8 +44,11 @@ Checked on 2026-09-30; confirm again before launch.
 - **Queues:** 10,000 operations per day, 24 h retention (free since February 2026).
 - **D1:** 5 M rows read and 100 k rows written per day, 5 GB storage.
 - **Workers AI:** 10,000 neurons per day. llama-guard-3-8b costs about 44 k neurons per million
-  input tokens, so roughly 100 checks a day at ~2 k tokens each. That is enough for the expected
-  volume of submissions. Excess jobs wait in the queue instead of failing.
+  input tokens. A check sends at most ~700 tokens (~31 neurons), so roughly 320 checks a day
+  fit. The moderation Worker caps itself at 250 checks per UTC day (`AI_DAILY_CHECKS`); sites
+  over the cap wait in `moderation_backlog` and a 00:05 UTC cron re-queues them, oldest first.
+  Without the cap, AI errors once the allocation runs out, and on the Paid plan the excess is
+  billed.
 - **Browser Rendering:** 10 browser-minutes per day. Screenshot moderation therefore stays
   optional; text plus `og:image` covers the default case.
 

@@ -56,6 +56,16 @@ p.description {
   right: $spacing-sm;
 }
 
+.reviewNotice {
+  margin: 0;
+  padding: $spacing-xxs $spacing-xs;
+  border-radius: $radius-md;
+  background: var(--color-raised);
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
 .body {
   display: flex;
   flex-direction: column;

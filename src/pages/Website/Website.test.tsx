@@ -1,6 +1,8 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
 import { render } from '@/__tests__/utils.test'
+import { v1Api } from '@/api/api'
+import type { ISubmittedWebsite } from '@/interfaces/IWebsite'
 import { mockNeighbours } from '@/__mocks__/data/catalog'
 import { Website } from '@/pages/Website/Website'
 
@@ -48,6 +50,23 @@ describe('Website page', () => {
       within(section).queryByText(
         'Conjuntura do mercado de trabalho brasileiro'
       )
+    ).not.toBeInTheDocument()
+  })
+
+  it('marks a site under review and hides the report button', async () => {
+    const { data } = await v1Api.post<ISubmittedWebsite>('websites', {
+      url: 'https://em-analise.dev',
+      name: 'Em análise',
+      categories: ['outros'],
+    })
+
+    await renderWebsite(data.id)
+
+    expect(
+      await screen.findByText(/Este site está em análise/)
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Notificar problema' })
     ).not.toBeInTheDocument()
   })
 })

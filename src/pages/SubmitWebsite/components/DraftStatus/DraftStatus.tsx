@@ -1,4 +1,5 @@
 import { LuBell } from 'react-icons/lu'
+import { Link } from '@/components/Link/Link'
 import { LoadingDots } from '@/components/LoadingDots/LoadingDots'
 import { useNotificationPermission } from '@/hooks/useNotificationPermission'
 import {
@@ -19,6 +20,13 @@ export function DraftStatus({ draft, onDismiss }: DraftStatusProps) {
     return (
       <span className={styles.status}>
         {rejectionMessage(draft.rejectionReason)}
+        <Link
+          className={styles.textButton}
+          to={`/websites/novo?url=${encodeURIComponent(draft.url)}`}
+          onClick={onDismiss}
+        >
+          Enviar de novo
+        </Link>
         <button type='button' className={styles.textButton} onClick={onDismiss}>
           Dispensar
         </button>

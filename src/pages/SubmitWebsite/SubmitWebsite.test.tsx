@@ -35,7 +35,7 @@ describe('SubmitWebsite', () => {
     await userEvent.click(submitButton())
 
     expect(
-      await screen.findByText(/Site publicado. Ele estará visível/)
+      await screen.findByText(/Site enviado. Ele aparece para todo mundo/)
     ).toBeInTheDocument()
     expect(window.location.pathname).toBe('/websites')
     expect(
@@ -75,8 +75,17 @@ describe('SubmitWebsite', () => {
     await userEvent.click(screen.getByRole('checkbox', { name: 'Educação' }))
     await userEvent.click(submitButton())
 
-    await waitFor(() => expect(window.location.pathname).toBe('/websites'))
+    expect(await screen.findByText('Site publicado.')).toBeInTheDocument()
+    expect(window.location.pathname).toBe('/websites')
     expect(localStorage.getItem('nnc-pending-submissions')).toBeNull()
+  })
+
+  it('starts from the url in the address, as when resending a rejected site', async () => {
+    window.history.pushState({}, '', '/websites/novo?url=meu-projeto.dev')
+    await render(<SubmitWebsite />)
+
+    expect(urlInput()).toHaveValue('meu-projeto.dev')
+    await waitFor(() => expect(nameInput()).toHaveValue('Meu-projeto'))
   })
 
   it('links to the existing page and blocks a duplicate', async () => {
@@ -94,7 +103,7 @@ describe('SubmitWebsite', () => {
     await userEvent.click(screen.getByRole('checkbox', { name: 'Cidades' }))
     await userEvent.click(submitButton())
 
-    expect(screen.queryByText(/Site publicado/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Site enviado/)).not.toBeInTheDocument()
     expect(window.location.pathname).toBe('/websites/novo')
   })
 
@@ -111,7 +120,7 @@ describe('SubmitWebsite', () => {
     await userEvent.click(submitButton())
 
     expect(
-      await screen.findByText(/Site publicado. Ele estará visível/)
+      await screen.findByText(/Site enviado. Ele aparece para todo mundo/)
     ).toBeInTheDocument()
     expect(window.location.pathname).toBe('/websites')
   })

@@ -117,6 +117,24 @@ describe('Feed with pending submissions', () => {
     expect(storedDrafts()).toEqual([])
   })
 
+  it('offers to resend a rejected draft through the form', async () => {
+    storeDrafts([
+      draftFor(
+        { url: 'https://site-rejeitado.dev' },
+        Date.now() - MOCK_REVIEW_DELAY_MS
+      ),
+    ])
+
+    await render(<Feed />)
+
+    expect(
+      await screen.findByRole('link', { name: 'Enviar de novo' })
+    ).toHaveAttribute(
+      'href',
+      `/websites/novo?url=${encodeURIComponent('https://site-rejeitado.dev')}`
+    )
+  })
+
   it('asks for notification permission once, then hides the bell on every draft', async () => {
     const notification = {
       permission: 'default',
