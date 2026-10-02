@@ -8,33 +8,31 @@ participant "gateway" as gw
 participant "verification" as ver
 participant "Member site" as site
 participant "catalog" as catalog
-participant "Cron Trigger\n(daily)" as cron
+participant "Cron Trigger\n(hourly)" as cron
 
 == On request ==
 owner -> site : paste widget snippet\n(from /websites/:id/selo)
 owner -> spa : "Verificar"
 spa -> gw : POST /v1/websites/:id/verify
-gw -> ver : verify(id) (1/min per site)
-ver -> catalog : get(id) (internal)
+gw -> ver : POST /v1/websites/:id/verify\n(VERIFICATION service binding)
+ver -> catalog : getVerificationTarget(id)
+ver -> catalog : claimVerificationCheck(id)\n(atomic, 1 per site per minute; else 429)
 ver -> site : GET website.url
 ver -> ver : detect <aside data-nnc-widget="<id>">\ncontaining a link to NOS_NO_CABO_URL or /ring/<id>/
 alt widget found
-  ver -> catalog : setVerified(id, now)
+  ver -> catalog : recordVerification(id, found, manual)
   ver --> spa : {verified: true, verifiedAt}
-else not found
-  ver --> spa : {verified: false, reason: widget_not_found}
+else not found / unreachable
+  ver --> spa : {verified: false, reason}\n(badge unchanged: a manual check only grants)
 end
 
 == Periodic recheck ==
 cron -> ver : scheduled()
-ver -> catalog : verified sites, oldest\nlast_verification_check_at first (batch of 50)
+ver -> catalog : dueForRecheck(20): verified sites not\nchecked in 20 h, oldest first
 loop each site
   ver -> site : GET url
-  alt widget present
-    ver -> catalog : touch last_verification_check_at
-  else missing twice in a row
-    ver -> catalog : setVerified(id, null)
-  end
+  ver -> catalog : recordVerification(id, found, recheck)
+  note right: found: misses = 0\nmissed: misses + 1; at 2, verified_at = NULL
 end
 
 note right of ver

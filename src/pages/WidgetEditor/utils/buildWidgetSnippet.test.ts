@@ -77,6 +77,21 @@ describe('buildWidgetSnippet', () => {
     }
   )
 
+  it.each(everyCombination)(
+    'keeps crawlers off the ring links, not the home link (%o)',
+    (options) => {
+      const html = build(options)
+      const ringLinks =
+        html.match(/<a [^>]*href="[^"]*\/ring\/[^"]*"[^>]*>/g) ?? []
+      const homeLinks =
+        html.match(/<a [^>]*href="https:\/\/nosnocabo\.pages\.dev\/"[^>]*>/g) ??
+        []
+
+      for (const link of ringLinks) expect(link).toContain('rel="nofollow"')
+      for (const link of homeLinks) expect(link).not.toContain('nofollow')
+    }
+  )
+
   it('ships scoped styles only for styled presets', () => {
     expect(build({ preset: 'faixa' })).toMatch(/<style>\.nnc-w\{all:initial/)
     expect(build({ preset: 'texto' })).not.toContain('<style>')

@@ -1,13 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { v1Api } from '@/api/api'
+import { turnstileHeaders } from '@/api/turnstile'
 import { usePendingSubmissions } from '@/pages/SubmitWebsite/hooks/usePendingSubmissions'
 import type { IApiError } from '@/interfaces/IApiError'
 import type {
   ISubmittedWebsite,
   IWebsiteSubmission,
 } from '@/interfaces/IWebsite'
-
-export const TURNSTILE_HEADER = 'cf-turnstile-response'
 
 type SubmitWebsiteInput = {
   submission: IWebsiteSubmission
@@ -22,9 +21,7 @@ export function useSubmitWebsite() {
     mutationFn: ({ submission, turnstileToken }) =>
       v1Api
         .post<ISubmittedWebsite>('websites', submission, {
-          headers: turnstileToken
-            ? { [TURNSTILE_HEADER]: turnstileToken }
-            : undefined,
+          headers: turnstileHeaders(turnstileToken),
         })
         .then((res) => res.data),
     onSuccess: (website) => {

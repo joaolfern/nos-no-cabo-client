@@ -42,6 +42,10 @@ export function CustomWidgetGuide({ websiteId }: { websiteId: string }) {
           <code>{links.next}</code>
         </dd>
       </dl>
+      <p className={styles.text}>
+        Use <code>rel="nofollow"</code> nesses links, para que buscadores não
+        sigam o anel.
+      </p>
     </section>
   )
 }

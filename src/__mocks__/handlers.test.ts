@@ -1,4 +1,5 @@
 import { v1Api } from '@/api/api'
+import { getMockReports, resetMockReports } from '@/__mocks__/data/reports'
 import { resetMockSubmissions } from '@/__mocks__/data/submissions'
 import type { IApiError } from '@/interfaces/IApiError'
 import type {
@@ -23,7 +24,10 @@ function rejection(promise: Promise<unknown>) {
   )
 }
 
-beforeEach(resetMockSubmissions)
+beforeEach(() => {
+  resetMockSubmissions()
+  resetMockReports()
+})
 
 describe('v1 mock handlers', () => {
   it('previews a new url', async () => {
@@ -99,6 +103,31 @@ describe('v1 mock handlers', () => {
 
     await expect(
       rejection(v1Api.post('websites/nao-existe/verify'))
+    ).resolves.toMatchObject({ code: 'not_found', status: 404 })
+  })
+
+  it('accepts a report on a published site and refuses others', async () => {
+    const { status } = await v1Api.post('websites/1/reports', {
+      reason: 'spam',
+      comment: ' propaganda ',
+    })
+    expect(status).toBe(202)
+    expect(getMockReports('1')).toEqual([
+      { reason: 'spam', comment: 'propaganda' },
+    ])
+
+    await expect(
+      rejection(v1Api.post('websites/1/reports', { reason: 'chato' }))
+    ).resolves.toMatchObject({ code: 'invalid', status: 422 })
+
+    const { data: checking } = await v1Api.post<ISubmittedWebsite>(
+      'websites',
+      submission
+    )
+    await expect(
+      rejection(
+        v1Api.post(`websites/${checking.id}/reports`, { reason: 'spam' })
+      )
     ).resolves.toMatchObject({ code: 'not_found', status: 404 })
   })
 })

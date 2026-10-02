@@ -112,10 +112,10 @@ export function TermsContent() {
         <h2>8. Denúncias</h2>
         <p>
           Para denunciar um site, use o botão “Notificar problema” na página
-          dele ou escreva para {CONTACT_LINK}. Analisamos as denúncias e
-          removemos o que violar estes termos. Conteúdo envolvendo crianças ou
-          adolescentes (Lei nº 8.069/1990, ECA) é removido imediatamente e
-          comunicado às autoridades.
+          dele e escolha o motivo, ou escreva para {CONTACT_LINK}. Analisamos
+          cada denúncia e removemos o que violar estes termos. Conteúdo
+          envolvendo crianças ou adolescentes (Lei nº 8.069/1990, ECA) é
+          removido imediatamente e comunicado às autoridades.
         </p>
       </section>
 

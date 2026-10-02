@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router'
 import { PageTrail } from '@/components/PageTrail/PageTrail'
 import { useMessage } from '@/contexts/useMessage'
+import type { ISubmittedWebsite } from '@/interfaces/IWebsite'
 import { SubmitForm } from '@/pages/SubmitWebsite/components/SubmitForm/SubmitForm'
 import styles from './SubmitWebsite.module.scss'
 
@@ -8,9 +9,11 @@ export function SubmitWebsite() {
   const navigate = useNavigate()
   const { showMessage } = useMessage()
 
-  function handleSubmitted() {
+  function handleSubmitted(website: ISubmittedWebsite) {
     showMessage(
-      'Site publicado. Ele estará visível para outros usuários em minutos.'
+      website.status === 'published'
+        ? 'Site publicado.'
+        : 'Site enviado. Ele aparece para todo mundo assim que for aprovado.'
     )
     navigate('/websites')
   }
