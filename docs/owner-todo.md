@@ -7,18 +7,14 @@ it's done. Context for each step: "Current status and next steps" in
 
 ## Now
 
-- [ ] **Commit both repos.** Nothing since phase 8 is committed.
-  - nos-sr (branch `moderation`): contract 0.3.0, `packages/ip`, catalog migrations
-    0003–0010, the router and verification Workers, the gateway changes, CI.
-  - nos-client (branch `rework-appearance-internal`): report dialog, shared components,
-    review notice, `nofollow`, the URL key change, `.env.example`, docs.
-  - Then delete `nos-client/.superpowers/sdd/2026-10-02-catalog-derived-data/` (an executor
-    ledger, gitignored).
-- [ ] **Create the private moderation repo** on GitHub.
-  1. Push `nos-sr/services/moderation` (already its own `git init`) to it.
-  2. In nos-sr, remove the `services/moderation/` line from `.gitignore`.
-  3. Run `git submodule add <url> services/moderation`.
-- [ ] **Publish `@nosnocabo/contract` 0.3.0** (from `nos-sr/packages/contract`).
+- [x] Commit both repos (history rewritten to one identity and one-line messages, 2026-10-02).
+- [ ] Delete `nos-client/.superpowers/sdd/2026-10-02-catalog-derived-data/` (an executor
+      ledger, gitignored).
+- [x] Create the private moderation repo (`joaolfern/-nos-no-cabo-moderation`), push it and
+      mount it as the `services/moderation` submodule.
+- [ ] Once you're happy with the rewritten history, delete the backups in
+      `~/dev/joao/git-backups-2026-10-02/`.
+- [x] **Publish `@nosnocabo/contract` 0.3.0** (from `nos-sr/packages/contract`).
   - Then run `pnpm add @nosnocabo/contract@0.3.0` in nos-client.
   - Until then, `pnpm install` in nos-client breaks the build: it replaces a hand-copied
     local build.
