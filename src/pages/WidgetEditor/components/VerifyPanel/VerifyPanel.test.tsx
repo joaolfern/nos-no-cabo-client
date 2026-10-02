@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { render } from '@/__tests__/utils.test'
 import { server } from '@/__mocks__/node'
-import { API_URL } from '@/config/env'
+import { V1_API_URL } from '@/config/env'
 import { VerifyPanel } from '@/pages/WidgetEditor/components/VerifyPanel/VerifyPanel'
 
 const verifyButton = () => screen.getByRole('button', { name: 'Verificar' })
@@ -39,7 +39,7 @@ describe('VerifyPanel', () => {
 
   it('asks to wait when rate limited', async () => {
     server.use(
-      http.post(`${API_URL}/v1/websites/:id/verify`, () =>
+      http.post(`${V1_API_URL}/websites/:id/verify`, () =>
         HttpResponse.json(
           { error: { code: 'rate_limited', message: 'Calma' } },
           { status: 429 }

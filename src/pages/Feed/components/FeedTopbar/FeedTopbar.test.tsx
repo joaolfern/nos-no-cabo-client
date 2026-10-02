@@ -41,7 +41,7 @@ describe('FeedTopBar', () => {
     })
 
     it('reports the chosen view', async () => {
-      const onViewChange = jest.fn()
+      const onViewChange = vi.fn()
       render(<FeedTopbar view='grid' onViewChange={onViewChange} />)
 
       await userEvent.click(

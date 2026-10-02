@@ -1,19 +1,19 @@
 import { render } from '@/__tests__/utils.test'
 import { Feed } from '@/pages/Feed/Feed'
-import { useFilters } from '@/pages/Feed/hooks/useFilters'
+import { useSort } from '@/pages/Feed/hooks/useSort'
 import { FEED_PAGE_SIZE } from '@/constants/post'
 import { MOCK_WEBSITES } from '@/__mocks__/data/websites'
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-// The search box lives in the layout, so the test drives the same state.
-function SearchControl() {
-  const { updateSearch } = useFilters()
+// The sort button lives in the top bar; the test drives the same state.
+function SortControl() {
+  const { updateSort } = useSort()
 
   return (
     <>
-      <button onClick={() => updateSearch(' ')}>trigger search</button>
-      <button onClick={() => updateSearch('')}>clear search</button>
+      <button onClick={() => updateSort('az')}>sort az</button>
+      <button onClick={() => updateSort('melhores')}>sort melhores</button>
     </>
   )
 }
@@ -57,47 +57,41 @@ describe('Feed load more', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('goes back to the first batch when the filters change', async () => {
+  it('starts again from the first page when the sort changes', async () => {
     await render(
       <>
-        <SearchControl />
+        <SortControl />
         <Feed />
       </>
     )
     await screen.findAllByTestId('feed-card')
     await loadMore()
 
-    // A blank-looking search still matches everything, so the full list would
-    // stay valid; only the change of filters can send it back to one batch.
-    await userEvent.click(screen.getByText('trigger search'))
+    await userEvent.click(screen.getByText('sort az'))
 
     await waitFor(() =>
       expect(screen.getAllByTestId('feed-card')).toHaveLength(FEED_PAGE_SIZE)
     )
   })
 
-  it('resets even when a filter change round-trips to a key seen before', async () => {
+  it('keeps what was already loaded when going back to a previous sort', async () => {
     await render(
       <>
-        <SearchControl />
+        <SortControl />
         <Feed />
       </>
     )
     await screen.findAllByTestId('feed-card')
     await loadMore()
 
-    // Applying a filter and undoing it lands back on the exact filter state
-    // the full list was loaded under (empty search), which must still send
-    // the list back to one batch rather than silently keeping everything.
-    await userEvent.click(screen.getByText('trigger search'))
+    await userEvent.click(screen.getByText('sort az'))
     await waitFor(() =>
       expect(screen.getAllByTestId('feed-card')).toHaveLength(FEED_PAGE_SIZE)
     )
-    await loadMore()
-    await userEvent.click(screen.getByText('clear search'))
+    await userEvent.click(screen.getByText('sort melhores'))
 
     await waitFor(() =>
-      expect(screen.getAllByTestId('feed-card')).toHaveLength(FEED_PAGE_SIZE)
+      expect(screen.getAllByTestId('feed-card')).toHaveLength(TOTAL)
     )
   })
 })

@@ -1,3 +1,4 @@
+import { isCategorySlug } from '@/pages/Feed/constants/categories'
 import { MOCK_KEYWORDS } from '@/__mocks__/data/keywords'
 import { MOCK_WEBSITES } from '@/__mocks__/data/websites'
 import type {
@@ -27,7 +28,7 @@ export function resetMockSubmissions() {
   submissionCount = 0
 }
 
-function fromPublishedWebsite(website: IWebsite): ISubmittedWebsite {
+export function fromPublishedWebsite(website: IWebsite): ISubmittedWebsite {
   return {
     id: website.id,
     url: website.url,
@@ -37,7 +38,9 @@ function fromPublishedWebsite(website: IWebsite): ISubmittedWebsite {
     color: website.color ?? null,
     faviconUrl: website.faviconUrl || null,
     repo: website.repo,
-    categories: website.keywords.map((keyword) => keyword.name),
+    categories: website.keywords
+      .map((keyword) => keyword.name)
+      .filter(isCategorySlug),
     status: 'published',
     verifiedAt: website.verifiedAt ?? null,
     submittedAt: website.createdAt,
@@ -101,7 +104,7 @@ export function createMockSubmission(
     id: `sub-${now.toString(36)}-${submissionCount}`,
     url: submission.url,
     name: submission.name,
-    description: submission.description,
+    description: submission.description ?? '',
     color: submission.color ?? null,
     faviconUrl: submission.faviconUrl ?? null,
     repo: submission.repo,
@@ -172,8 +175,10 @@ function toLegacyWebsite(website: ISubmittedWebsite): IWebsite {
     url: website.url,
     color: website.color ?? undefined,
     faviconUrl: website.faviconUrl ?? '',
-    keywords: MOCK_KEYWORDS.filter((keyword) =>
-      website.categories.includes(keyword.name)
+    keywords: MOCK_KEYWORDS.filter(
+      (keyword) =>
+        isCategorySlug(keyword.name) &&
+        website.categories.includes(keyword.name)
     ),
     createdAt: website.publishedAt ?? website.submittedAt,
     updatedAt: website.publishedAt ?? website.submittedAt,

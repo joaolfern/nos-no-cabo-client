@@ -12,7 +12,7 @@ describe('AsChild usage in Button', () => {
   }
 
   it('renders a link instead of a button and passes props', () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
     render(
       <Button asChild onClick={handleClick}>
         <AuxLink href='/test' />
@@ -25,7 +25,7 @@ describe('AsChild usage in Button', () => {
   })
 
   it('calls onClick when link is clicked', () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
     render(
       <Button asChild onClick={handleClick}>
         <AuxLink href='/test' />

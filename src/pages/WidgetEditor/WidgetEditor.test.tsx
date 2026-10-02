@@ -128,7 +128,7 @@ describe('WidgetEditor', () => {
   })
 
   it('copies the snippet', async () => {
-    const writeText = jest.fn().mockResolvedValue(undefined)
+    const writeText = vi.fn().mockResolvedValue(undefined)
     Object.defineProperty(navigator, 'clipboard', {
       configurable: true,
       value: { writeText },

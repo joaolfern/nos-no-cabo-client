@@ -4,7 +4,7 @@ import { ViewToggle } from './ViewToggle'
 
 describe('ViewToggle', () => {
   it('shows which view is active', () => {
-    render(<ViewToggle value='list' onChange={jest.fn()} />)
+    render(<ViewToggle value='list' onChange={vi.fn()} />)
 
     expect(
       screen.getByRole('button', { name: 'Ver em lista' })
@@ -15,7 +15,7 @@ describe('ViewToggle', () => {
   })
 
   it('reports the chosen view', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     render(<ViewToggle value='grid' onChange={onChange} />)
 
     await userEvent.click(screen.getByRole('button', { name: 'Ver em lista' }))

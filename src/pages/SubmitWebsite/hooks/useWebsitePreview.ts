@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { api } from '@/api/api'
+import { v1Api } from '@/api/api'
 import { useDebounce } from '@/hooks/useDebounce'
 import type { IApiError } from '@/interfaces/IApiError'
 import type { IWebsitePreview } from '@/interfaces/IWebsite'
@@ -14,8 +14,8 @@ export function useWebsitePreview(url: string) {
   return useQuery<IWebsitePreview, IApiError>({
     queryKey: ['websitePreview', absoluteUrl && normalizeUrl(absoluteUrl)],
     queryFn: () =>
-      api
-        .get<IWebsitePreview>('v1/websites/preview', {
+      v1Api
+        .get<IWebsitePreview>('websites/preview', {
           params: { url: absoluteUrl },
         })
         .then((res) => res.data),

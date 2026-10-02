@@ -7,11 +7,8 @@ import { FeedPromo } from '@/pages/Feed/components/FeedPromo/FeedPromo'
 import { SocialLinks } from '@/pages/Feed/components/SocialLinks/SocialLinks'
 import { useFilters } from '@/pages/Feed/hooks/useFilters'
 import { useFittingRowCount } from '@/pages/Feed/hooks/useFittingRowCount'
-import { useWebsites } from '@/pages/Feed/hooks/useWebsites'
-import {
-  countWebsitesByKeyword,
-  sortByCountDesc,
-} from '@/pages/Feed/utils/keywordCounts'
+import { useCategoriesData } from '@/hooks/useDataHooks'
+import { countsBySlug, sortByCountDesc } from '@/pages/Feed/utils/keywordCounts'
 import { getCategoryMeta } from '@/pages/Feed/constants/categories'
 import { MIN_VISIBLE_CATEGORIES } from '@/pages/Feed/utils/splitVisibleCategories'
 import { standardizeString } from '@/utils/standardize'
@@ -38,7 +35,7 @@ FeedFilters.Panel = function FeedFiltersPanel() {
     clearKeywords,
     getKeywordById,
   } = useFilters()
-  const { websitesRaw } = useWebsites()
+  const { data: categories } = useCategoriesData()
   const [keywordQuery, setKeywordQuery] = useState('')
   const selected = selectedKeywords[0] ?? null
   const categoriesRef = useRef<HTMLDivElement>(null)
@@ -46,10 +43,7 @@ FeedFilters.Panel = function FeedFiltersPanel() {
 
   // Counts ignore the active filters on purpose, so they stay stable while
   // the user switches categories.
-  const counts = useMemo(
-    () => countWebsitesByKeyword(websitesRaw),
-    [websitesRaw]
-  )
+  const counts = useMemo(() => countsBySlug(categories), [categories])
 
   const categoryOptions = useMemo(() => {
     const query = standardizeString(keywordQuery).trim()
@@ -119,7 +113,7 @@ FeedFilters.Panel = function FeedFiltersPanel() {
           <CategoryList
             options={categoryOptions}
             counts={counts}
-            total={websitesRaw?.length ?? 0}
+            total={categories?.total ?? 0}
             selected={selected}
             loading={keywordIsLoading}
             onSelect={handleSelect}
@@ -140,12 +134,12 @@ function KeywordFilter() {
   const { keywordOptions, selectedKeywords, updateKeywords, keywordIsLoading } =
     useFilters()
   const selected = selectedKeywords[0] ?? ''
-  const { websitesRaw } = useWebsites()
+  const { data: categories } = useCategoriesData()
   const selectedLabel =
     keywordOptions.find((option) => option.value === selected)?.label ?? ''
   const optionsByCount = useMemo(
-    () => sortByCountDesc(keywordOptions, countWebsitesByKeyword(websitesRaw)),
-    [keywordOptions, websitesRaw]
+    () => sortByCountDesc(keywordOptions, countsBySlug(categories)),
+    [keywordOptions, categories]
   )
 
   return (

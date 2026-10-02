@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { api } from '@/api/api'
+import { v1Api } from '@/api/api'
 import type { IApiError } from '@/interfaces/IApiError'
 import type { IVerificationResult } from '@/interfaces/IWebsite'
 
@@ -8,15 +8,12 @@ export function useVerifyWebsite(websiteId: string) {
 
   return useMutation<IVerificationResult, IApiError>({
     mutationFn: () =>
-      api
-        .post<IVerificationResult>(`v1/websites/${websiteId}/verify`)
+      v1Api
+        .post<IVerificationResult>(`websites/${websiteId}/verify`)
         .then((res) => res.data),
     onSuccess: ({ verified }) => {
       if (!verified) return
       queryClient.invalidateQueries({ queryKey: ['websites'] })
-      queryClient.invalidateQueries({
-        queryKey: [{ type: 'websiteDetails', id: websiteId }],
-      })
     },
   })
 }

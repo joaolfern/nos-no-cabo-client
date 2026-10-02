@@ -43,14 +43,14 @@ Lembre-se de utilizar a mesma senha da env do back-end (`VITE_ADMIN_PASSWORD`).
 
 2. **Instale as dependências:**
 	```bash
-	npm install
+	pnpm install
 	# ou
 	yarn install
 	```
 
 3. **Inicie o ambiente de desenvolvimento:**
 	```bash
-	npm run dev
+	pnpm dev
 	# ou
 	yarn dev
 	```

@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useLocalStorageJson } from '@/hooks/useLocalStorageJson'
 import type { ISubmittedWebsite } from '@/interfaces/IWebsite'
 import {
@@ -17,9 +17,10 @@ export function usePendingSubmissions() {
     isPendingSubmissionList
   )
 
+  const [openedAt] = useState(Date.now)
   const drafts = useMemo(
-    () => stored.filter((draft) => !isExpired(draft, Date.now())),
-    [stored]
+    () => stored.filter((draft) => !isExpired(draft, openedAt)),
+    [stored, openedAt]
   )
 
   const addDraft = useCallback(

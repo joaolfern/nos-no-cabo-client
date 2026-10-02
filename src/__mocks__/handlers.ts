@@ -1,37 +1,26 @@
-import { MOCK_KEYWORDS } from '@/__mocks__/data/keywords'
-import { rankWebsites } from '@/__mocks__/data/ranking'
+import {
+  listMockWebsites,
+  markMockVerified,
+  mockCategories,
+  mockNeighbours,
+  withMockVerification,
+} from '@/__mocks__/data/catalog'
 import {
   createMockSubmission,
   findExistingWebsiteId,
   getMockStatuses,
   getMockSubmittedWebsite,
-  getPublishedMockSubmissions,
   mockPreview,
   mockVerification,
 } from '@/__mocks__/data/submissions'
-import { MOCK_WEBSITES } from '@/__mocks__/data/websites'
-import { API_URL } from '@/config/env'
+import { V1_API_URL } from '@/config/env'
 import type { ApiErrorCode, IApiErrorResponse } from '@/interfaces/IApiError'
-import type { IWebsite, IWebsiteSubmission } from '@/interfaces/IWebsite'
+import type { IWebsiteSubmission } from '@/interfaces/IWebsite'
 import { toAbsoluteUrl } from '@/utils/normalizeUrl/normalizeUrl'
+import { WebsiteListQuery } from '@nosnocabo/contract'
 import { http, HttpResponse } from 'msw'
 
-const V1 = `${API_URL}/v1`
-
-const verifiedAtById = new Map<string, string>()
-
-function withVerification<T extends Pick<IWebsite, 'id' | 'verifiedAt'>>(
-  website: T
-): T {
-  const verifiedAt = verifiedAtById.get(website.id)
-  return verifiedAt ? { ...website, verifiedAt } : website
-}
-
-function listedWebsites() {
-  return [...getPublishedMockSubmissions(), ...MOCK_WEBSITES].map(
-    withVerification
-  )
-}
+const V1 = V1_API_URL
 
 function errorResponse(
   status: number,
@@ -68,7 +57,25 @@ function isValidSubmission(body: IWebsiteSubmission) {
   )
 }
 
-const v1Handlers = [
+export const handlers = [
+  http.get(`${V1}/websites`, ({ request }) => {
+    const query = WebsiteListQuery.safeParse(
+      Object.fromEntries(new URL(request.url).searchParams)
+    )
+    if (!query.success) {
+      return errorResponse(422, 'invalid', 'Parâmetros de busca inválidos.')
+    }
+
+    return HttpResponse.json(listMockWebsites(query.data))
+  }),
+  http.get(`${V1}/categories`, () => HttpResponse.json(mockCategories())),
+  http.get(`${V1}/websites/:id/neighbours`, ({ params }) => {
+    const neighbours = mockNeighbours(String(params.id))
+    if (!neighbours)
+      return errorResponse(404, 'not_found', 'Site não encontrado.')
+
+    return HttpResponse.json(neighbours)
+  }),
   http.get(`${V1}/websites/preview`, ({ request }) => {
     const input = new URL(request.url).searchParams.get('url') ?? ''
     const url = toAbsoluteUrl(input)
@@ -110,7 +117,7 @@ const v1Handlers = [
     const website = getMockSubmittedWebsite(String(params.id))
     if (!website) return errorResponse(404, 'not_found', 'Site não encontrado.')
 
-    return HttpResponse.json(withVerification(website))
+    return HttpResponse.json(withMockVerification(website))
   }),
   http.post(`${V1}/websites/:id/verify`, ({ params }) => {
     const id = String(params.id)
@@ -119,29 +126,8 @@ const v1Handlers = [
     }
 
     const result = mockVerification(id)
-    if (result.verifiedAt) verifiedAtById.set(id, result.verifiedAt)
+    if (result.verifiedAt) markMockVerified(id, result.verifiedAt)
 
     return HttpResponse.json(result)
   }),
 ]
-
-const legacyHandlers = [
-  http.get(`${API_URL}/websites`, () => {
-    return HttpResponse.json(rankWebsites(listedWebsites()))
-  }),
-  http.get(`${API_URL}/keywords`, () => {
-    return HttpResponse.json(MOCK_KEYWORDS)
-  }),
-  http.delete(`${API_URL}/website/:id`, () => {
-    return HttpResponse.json()
-  }),
-  http.get(`${API_URL}/website/:id`, ({ params }) => {
-    const website = listedWebsites().find((w) => w.id === params.id)
-    if (website) {
-      return HttpResponse.json(website)
-    }
-    return HttpResponse.json({ message: 'Not found' }, { status: 404 })
-  }),
-]
-
-export const handlers = [...v1Handlers, ...legacyHandlers]

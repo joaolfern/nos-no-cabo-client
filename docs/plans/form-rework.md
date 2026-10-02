@@ -7,6 +7,64 @@ The form is rebuilt from scratch for the community-driven flow described in
 frontend is built against MSW mocks that follow the target contract
 ([`13-api-contract`](../architecture/target/backend/13-api-contract.puml)).
 
+## Current status and next steps (2026-10-02)
+
+Read this first when picking the work up in a new session.
+
+**Where things are**
+
+- Phases 1–6 of the form rework are done, and phase 7 (server foundation and catalog) is
+  mostly done; see "Roadmap after the form rework" below.
+- **nos-sr** (branch `workers-foundation`, uncommitted): npm workspaces with
+  `@nosnocabo/contract` (zod schemas, published to npm), `services/gateway` (CORS, per-IP rate
+  limits, `/v1` forwarding) and `services/catalog` (D1). The Flask app is untouched alongside it
+  and gets deleted at the cutover; there is no production data to migrate.
+  - **Staging:** `https://nnc-gateway-staging.joaolfern.workers.dev/v1`, deployed by hand
+    with the owner's wrangler login. The catalog has no public URL. D1 is migrated to
+    0002 and seeded with 12 projects. Turnstile has a real staging widget, with hostnames
+    `nosnocabo.joaolfern.workers.dev` and `localhost`.
+  - Allowed origins on staging: `https://nosnocabo.joaolfern.workers.dev`, `http://localhost:5173`.
+- **nos-client** (branch `rework-appearance-internal`, uncommitted):
+  - **Reads:** everything comes from `/v1` (`v1Api`), with no legacy API, no admin
+    password and no feature flag. MSW mocks the same `/v1` contract.
+  - **Tooling:** pnpm, TypeScript 7 (native) for `pnpm build`, oxlint (`.oxlintrc.json`)
+    and Vitest (the `test` section of `vite.config.ts`). See `CLAUDE.md` for the commands.
+
+**Open items**
+
+1. **Contract 0.2.0:** being published. Then run `pnpm add @nosnocabo/contract@0.2.0` in
+   nos-client, plus `pnpm build` and `pnpm test`. Until then, `node_modules` holds a local
+   copy of the build.
+2. **Commit both repos.** Suggested grouping:
+   - nos-sr: Workers foundation; search, neighbours and seed.
+   - nos-client: terms and footer; ranking and verify panel; remove the old wizard; read path
+     on `/v1`; tooling.
+3. **GitHub, when it's available:**
+   - secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` for staging deploys from CI;
+   - a Trusted Publisher on npm (repository `joaolfern/nos-no-cabo-server`, workflow
+     `workers.yml`) so contract releases publish from a `contract-vX.Y.Z` tag.
+4. **Before launch: buy `nosnocabo.com.br`.**
+   - Point `NOS_NO_CABO_URL`/`RING_BASE_URL` (the widget links that end up in members'
+     sites), the gateway's allowed origins and a production Turnstile widget at it *before*
+     anyone installs the widget.
+   - Set up rate limiting with Cloudflare's own rules on the custom domain. The Workers
+     rate-limit binding is approximate, and staging on `workers.dev` can't use WAF rules.
+5. **Leftovers in `.oxlintrc.json`** from another project: the `android`/`ios`/`.expo`
+   ignores, and the `zod` import ban pointing at a non-existent `src/lib/validation.ts`.
+   Harmless; confirm with the owner before removing.
+6. **msw stays on 2.x.** 3.0 breaks the setup and the interception in Vitest.
+7. **Never load-test deployed services.** Bursts of requests to staging need explicit
+   permission; test rate limits locally.
+
+**Next tracks (owner's choice)**
+
+- **Frontend optimization** (started with the tooling): lazy-load routes (website page,
+  widget editor, terms, landing) and look at the large JS chunk the build warns about.
+- **Phase 8, moderation:** the queue plus a Workers AI content check replaces
+  `AUTO_PUBLISH`; rejection reasons; community reports replace the `mailto:` on
+  "Notificar problema".
+- Phases 9–11 as listed in the roadmap.
+
 ## Goals
 
 - One screen instead of a 6-step modal wizard: paste a URL, review the prefilled fields, pick
@@ -347,9 +405,35 @@ request (it ships in the JS bundle), and "Notificar problema" calls the admin-on
 before any public release: turn the button into a report (phase 8) or a `mailto:` until then,
 and remove the password from the client.
 
-0. **Decide the platform.** Accept ADR 0002 (Cloudflare Workers) or pick the GCP fallback.
-   Decide where the shared zod `contract` package lives (it is needed by both repos).
-7. **Server foundation and catalog.** This is the biggest phase.
+0. **Platform — decided.** Cloudflare Workers (ADR 0002 accepted). The repos stay separate:
+   the zod `contract` lives in `nos-sr` as `packages/contract`, published as a versioned npm
+   package that nos-client installs.
+7. **Server foundation and catalog.** This is the biggest phase. *In progress (branch
+   `workers-foundation` in `nos-sr`):*
+   - done: npm workspaces with `@nosnocabo/contract` (zod, ready to publish), the gateway
+     (CORS, submit rate limit, `/v1` forwarding) and the catalog (D1 schema, every catalog
+     endpoint below with keyset pagination), 26 tests in the Workers runtime, CI for
+     checks, staging deploy and contract publishing;
+   - staging is live: `https://nnc-gateway-staging.joaolfern.workers.dev/v1` (the catalog has
+     no public URL; only the gateway reaches it). `contract` 0.1.0 is on npm; 0.1.1 adds a
+     CommonJS build so Jest and older resolvers can load it.
+   - nos-client: the `/v1` hooks use `v1Api` (`VITE_V1_API_URL`); `VITE_V1_MOCKS=false` calls
+     the real `/v1` while the legacy API stays mocked. The `/v1` types come from the contract.
+     Submissions that come back already `published` (staging's `AUTO_PUBLISH`) don't become
+     drafts.
+   - done: the read path is on `/v1` with no flag (there is no production yet, so no data
+     migration is needed):
+     - the feed uses `GET /v1/websites` as an infinite query (cursor pages, server sort,
+       `categoria` and `q`); the category list and counts come from `GET /v1/categories`
+       (`{ total, items }`);
+     - the website page uses `GET /v1/websites/:id`, and `GET /v1/websites/:id/neighbours`
+       for Anterior/Próximo (ring order: verified first, then publication date, wrapping) and
+       a random site, until the router service exists;
+     - search ignores accents and case (`search_key`, migration 0002);
+     - "Notificar problema" is a `mailto:` until community reports exist, and the admin
+       password, the legacy `api` instance and the legacy mocks are gone.
+   - staging is seeded with 12 real projects (`npm run seed:staging` in `services/catalog`).
+   - next: publish `@nosnocabo/contract` 0.2.0, then phase 8 (moderation).
    - Workers project in `nos-sr`: gateway and catalog Workers, D1 schema and migrations,
      `contract` package, CI deploying a staging environment.
    - Catalog endpoints, in the order the client already uses them:

@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { useSearchParams } from 'react-router'
-import { useKeywordsData } from '@/hooks/useDataHooks'
-import type { IKeyword, IWebsite } from '@/interfaces/IWebsite'
+import { useCategoriesData } from '@/hooks/useDataHooks'
+import type { IKeyword } from '@/interfaces/IWebsite'
 import {
   getCategoryLabel,
   sortByCategoryOrder,
@@ -11,7 +11,11 @@ export const CATEGORY_SEARCH_PARAM = 'categoria'
 
 export function useKeywordFilter() {
   const [searchParams, setSearchParams] = useSearchParams()
-  const { data: keywords, isLoading: keywordIsLoading } = useKeywordsData()
+  const { data: categories, isLoading: keywordIsLoading } = useCategoriesData()
+  const keywords = useMemo<IKeyword[] | undefined>(
+    () => categories?.items.map(({ slug }) => ({ id: slug, name: slug })),
+    [categories]
+  )
   const selectedName = searchParams.get(CATEGORY_SEARCH_PARAM)
 
   const keywordsMap = useMemo(() => {
@@ -63,26 +67,12 @@ export function useKeywordFilter() {
     [setSelectedName]
   )
 
-  const filterByKeyword = useCallback(
-    (websites: IWebsite[], selectedKeywords: string[]): IWebsite[] => {
-      if (selectedKeywords.length === 0) return websites
-
-      return websites.filter((website) =>
-        website.keywords.some((keyword) =>
-          selectedKeywords.includes(keyword.id)
-        )
-      )
-    },
-    []
-  )
-
   return {
     selectedKeywords,
     keywordOptions,
     updateKeywords,
     getKeywordById,
     keywordIsLoading,
-    filterByKeyword,
     clearKeywords,
   }
 }

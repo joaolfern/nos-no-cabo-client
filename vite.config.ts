@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tsConfigPaths from 'vite-tsconfig-paths'
@@ -17,5 +18,15 @@ export default defineConfig({
         quietDeps: true,
       },
     },
+  },
+  test: {
+    environment: 'jsdom',
+    // Same origin as the mocked API URL, so jsdom's CORS checks don't block MSW.
+    environmentOptions: { jsdom: { url: 'https://localhost:3000' } },
+    // Node 25's own localStorage would shadow jsdom's.
+    execArgv: ['--no-experimental-webstorage'],
+    globals: true,
+    setupFiles: ['./vitest.setup.ts'],
+    css: { modules: { classNameStrategy: 'non-scoped' } },
   },
 })

@@ -1,3 +1,4 @@
+import { isCategorySlug } from '@/pages/Feed/constants/categories'
 import type { IWebsiteSubmission } from '@/interfaces/IWebsite'
 import { toAbsoluteUrl } from '@/utils/normalizeUrl/normalizeUrl'
 
@@ -78,6 +79,6 @@ export function toSubmission(
     description: values.description.trim(),
     color: toHexColor(values.color) ?? undefined,
     faviconUrl: faviconUrl ?? undefined,
-    categories: values.categories,
+    categories: values.categories.filter(isCategorySlug),
   }
 }

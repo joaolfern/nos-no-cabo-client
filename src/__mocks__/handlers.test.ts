@@ -1,4 +1,4 @@
-import { api } from '@/api/api'
+import { v1Api } from '@/api/api'
 import { resetMockSubmissions } from '@/__mocks__/data/submissions'
 import type { IApiError } from '@/interfaces/IApiError'
 import type {
@@ -27,7 +27,7 @@ beforeEach(resetMockSubmissions)
 
 describe('v1 mock handlers', () => {
   it('previews a new url', async () => {
-    const { data } = await api.get<IWebsitePreview>('v1/websites/preview', {
+    const { data } = await v1Api.get<IWebsitePreview>('websites/preview', {
       params: { url: 'meu-site.dev' },
     })
 
@@ -41,7 +41,7 @@ describe('v1 mock handlers', () => {
   it('reports duplicates and unreachable urls with the error envelope', async () => {
     await expect(
       rejection(
-        api.get('v1/websites/preview', {
+        v1Api.get('websites/preview', {
           params: { url: 'queridodiario.ok.org.br' },
         })
       )
@@ -53,7 +53,7 @@ describe('v1 mock handlers', () => {
 
     await expect(
       rejection(
-        api.get('v1/websites/preview', {
+        v1Api.get('websites/preview', {
           params: { url: 'site-inacessivel.org' },
         })
       )
@@ -61,21 +61,21 @@ describe('v1 mock handlers', () => {
   })
 
   it('accepts a submission as checking and serves it by id', async () => {
-    const created = await api.post<ISubmittedWebsite>('v1/websites', submission)
+    const created = await v1Api.post<ISubmittedWebsite>('websites', submission)
 
     expect(created.status).toBe(202)
     expect(created.data.status).toBe('checking')
 
-    const { data } = await api.get<ISubmittedWebsite>(
-      `v1/websites/${created.data.id}`
+    const { data } = await v1Api.get<ISubmittedWebsite>(
+      `websites/${created.data.id}`
     )
     expect(data).toMatchObject({ id: created.data.id, status: 'checking' })
   })
 
   it('returns the status of several submissions in one request', async () => {
-    const created = await api.post<ISubmittedWebsite>('v1/websites', submission)
+    const created = await v1Api.post<ISubmittedWebsite>('websites', submission)
 
-    const { data } = await api.get('v1/websites/status', {
+    const { data } = await v1Api.get('websites/status', {
       params: { ids: `${created.data.id},nao-existe` },
     })
 
@@ -84,21 +84,21 @@ describe('v1 mock handlers', () => {
 
   it('rejects invalid and duplicate submissions', async () => {
     await expect(
-      rejection(api.post('v1/websites', { ...submission, categories: [] }))
+      rejection(v1Api.post('websites', { ...submission, categories: [] }))
     ).resolves.toMatchObject({ code: 'invalid', status: 422 })
 
-    await api.post('v1/websites', submission)
+    await v1Api.post('websites', submission)
     await expect(
-      rejection(api.post('v1/websites', submission))
+      rejection(v1Api.post('websites', submission))
     ).resolves.toMatchObject({ code: 'duplicate', status: 409 })
   })
 
   it('verifies a website and 404s unknown ids', async () => {
-    const { data } = await api.post('v1/websites/4/verify')
+    const { data } = await v1Api.post('websites/4/verify')
     expect(data).toMatchObject({ verified: true })
 
     await expect(
-      rejection(api.post('v1/websites/nao-existe/verify'))
+      rejection(v1Api.post('websites/nao-existe/verify'))
     ).resolves.toMatchObject({ code: 'not_found', status: 404 })
   })
 })

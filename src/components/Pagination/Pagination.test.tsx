@@ -5,14 +5,14 @@ import { Pagination } from './Pagination'
 describe('Pagination', () => {
   it('renders nothing when there is a single page', () => {
     const { container } = render(
-      <Pagination page={1} pageCount={1} onChange={jest.fn()} />
+      <Pagination page={1} pageCount={1} onChange={vi.fn()} />
     )
 
     expect(container).toBeEmptyDOMElement()
   })
 
   it('marks the current page', () => {
-    render(<Pagination page={2} pageCount={3} onChange={jest.fn()} />)
+    render(<Pagination page={2} pageCount={3} onChange={vi.fn()} />)
 
     expect(screen.getByRole('button', { name: 'Página 2' })).toHaveAttribute(
       'aria-current',
@@ -24,7 +24,7 @@ describe('Pagination', () => {
   })
 
   it('goes to the chosen, previous and next pages', async () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
     render(<Pagination page={2} pageCount={3} onChange={onChange} />)
 
     await userEvent.click(screen.getByRole('button', { name: 'Página 3' }))
@@ -40,13 +40,13 @@ describe('Pagination', () => {
 
   it('disables previous on the first page and next on the last', () => {
     const { rerender } = render(
-      <Pagination page={1} pageCount={3} onChange={jest.fn()} />
+      <Pagination page={1} pageCount={3} onChange={vi.fn()} />
     )
     expect(
       screen.getByRole('button', { name: 'Página anterior' })
     ).toBeDisabled()
 
-    rerender(<Pagination page={3} pageCount={3} onChange={jest.fn()} />)
+    rerender(<Pagination page={3} pageCount={3} onChange={vi.fn()} />)
     expect(
       screen.getByRole('button', { name: 'Próxima página' })
     ).toBeDisabled()

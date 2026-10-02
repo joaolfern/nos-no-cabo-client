@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { api } from '@/api/api'
+import { v1Api } from '@/api/api'
 import { useNotificationPermission } from '@/hooks/useNotificationPermission'
 import type { IWebsiteStatus } from '@/interfaces/IWebsite'
 import { usePendingSubmissions } from '@/pages/SubmitWebsite/hooks/usePendingSubmissions'
@@ -48,8 +48,8 @@ export function usePendingStatusPolling() {
   const { data: statuses } = useQuery({
     queryKey: ['websiteStatuses', ids],
     queryFn: () =>
-      api
-        .get<IWebsiteStatus[]>('v1/websites/status', {
+      v1Api
+        .get<IWebsiteStatus[]>('websites/status', {
           params: { ids: ids.join(',') },
         })
         .then((res) => res.data),

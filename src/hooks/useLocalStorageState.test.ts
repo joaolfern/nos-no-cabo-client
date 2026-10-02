@@ -7,7 +7,7 @@ const isSize = (value: string): value is Size =>
 
 describe('useLocalStorageState', () => {
   beforeEach(() => localStorage.clear())
-  afterEach(() => jest.restoreAllMocks())
+  afterEach(() => vi.restoreAllMocks())
 
   it('starts from the initial value', () => {
     const { result } = renderHook(() =>
@@ -49,10 +49,10 @@ describe('useLocalStorageState', () => {
   })
 
   it('keeps working in memory when storage throws', () => {
-    jest.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
       throw new Error('blocked')
     })
-    jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
       throw new Error('blocked')
     })
 

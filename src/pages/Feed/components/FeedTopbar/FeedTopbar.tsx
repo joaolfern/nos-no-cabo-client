@@ -3,7 +3,6 @@ import { FeedFilters } from '@/pages/Feed/components/FeedFilters/FeedFilters'
 import { FeedSort } from '@/pages/Feed/components/FeedSort/FeedSort'
 import { ViewToggle } from '@/pages/Feed/components/ViewToggle/ViewToggle'
 import styles from './FeedTopbar.module.scss'
-import { useWebsites } from '@/pages/Feed/hooks/useWebsites'
 import { useFilters } from '@/pages/Feed/hooks/useFilters'
 import type { FeedView } from '@/interfaces/IFeedView'
 import {
@@ -12,7 +11,7 @@ import {
 } from '@/pages/Feed/constants/categories'
 
 type FeedTopbarProps = {
-  // Number of projects after filtering. Falls back to the unfiltered total.
+  // Number of projects matching the current filters, from the server.
   total?: number
   view?: FeedView
   onViewChange?: (view: FeedView) => void
@@ -25,9 +24,8 @@ export function FeedTopbar({
 }: FeedTopbarProps) {
   const isMobile = useIsMobile()
 
-  const { websitesRaw } = useWebsites()
   const { selectedKeywords, getKeywordById } = useFilters()
-  const count = total ?? websitesRaw?.length
+  const count = total
   const category = getKeywordById(selectedKeywords[0] ?? '')
   const {
     Icon,
