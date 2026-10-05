@@ -1,4 +1,7 @@
-import { CATEGORY_SLUGS, type CategorySlug } from '@nosnocabo/contract'
+import {
+  CATEGORY_SLUGS,
+  type CategorySlug,
+} from '@nosnocabo/contract/categories'
 import type { IconType } from 'react-icons'
 import {
   LuAccessibility,
