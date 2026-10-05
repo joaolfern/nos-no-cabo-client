@@ -1,9 +1,12 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  // The SPA, served as static assets at nosnocabo.joaolfern.workers.dev.
+  // The SPA, served as static assets at nosnocabo.com.br. The router's routes on /ring/* and
+  // /r/* run before this custom domain.
   "name": "nosnocabo",
   "compatibility_date": "2026-08-22",
+  "workers_dev": true,
   "preview_urls": false,
+  "routes": [{ "pattern": "nosnocabo.com.br", "custom_domain": true }],
   "assets": {
     "directory": "./dist",
     "not_found_handling": "single-page-application",
