@@ -2,6 +2,11 @@
 @use '@/styles/tokens/border.scss' as *;
 @use '@/styles/tokens/animations.scss' as *;
 
+.wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
 .container {
   display: flex;
   align-items: stretch;
@@ -33,6 +38,10 @@
 
   &:hover {
     background: var(--color-raised);
+  }
+
+  &:disabled {
+    cursor: progress;
   }
 }
 

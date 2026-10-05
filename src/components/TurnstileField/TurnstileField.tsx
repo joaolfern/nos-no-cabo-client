@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import clsx from 'clsx'
 import styles from './TurnstileField.module.scss'
 
 const TURNSTILE_SCRIPT_URL =
@@ -10,6 +11,7 @@ type TurnstileApi = {
     options: {
       sitekey: string
       language: string
+      appearance: TurnstileAppearance
       callback: (token: string) => void
       'expired-callback': () => void
       'error-callback': () => void
@@ -23,6 +25,8 @@ declare global {
     turnstile?: TurnstileApi
   }
 }
+
+type TurnstileAppearance = 'always' | 'interaction-only'
 
 let turnstileScript: Promise<TurnstileApi> | null = null
 
@@ -46,11 +50,13 @@ function loadTurnstile(): Promise<TurnstileApi> {
 type TurnstileFieldProps = {
   siteKey: string
   onTokenChange: (token: string | null) => void
+  appearance?: TurnstileAppearance
 }
 
 export function TurnstileField({
   siteKey,
   onTokenChange,
+  appearance = 'always',
 }: TurnstileFieldProps) {
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -65,6 +71,7 @@ export function TurnstileField({
         widgetId = turnstile.render(containerRef.current, {
           sitekey: siteKey,
           language: 'pt-br',
+          appearance,
           callback: onTokenChange,
           'expired-callback': () => onTokenChange(null),
           'error-callback': () => onTokenChange(null),
@@ -76,7 +83,12 @@ export function TurnstileField({
       isMounted = false
       if (widgetId) window.turnstile?.remove(widgetId)
     }
-  }, [siteKey, onTokenChange])
+  }, [siteKey, onTokenChange, appearance])
 
-  return <div ref={containerRef} className={styles.widget} />
+  return (
+    <div
+      ref={containerRef}
+      className={clsx({ [styles.widget]: appearance === 'always' })}
+    />
+  )
 }

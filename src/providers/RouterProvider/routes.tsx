@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { Route, Routes } from 'react-router'
+import { Navigate, Route, Routes } from 'react-router'
 import { NosNoCaboLayout } from '@/layouts/NosNoCaboLayout/NosNoCaboLayout'
 
 // Each page is its own chunk: a visitor downloads only the pages they open.
@@ -49,6 +49,9 @@ export function Router() {
           <Route Component={WidgetEditor} path='/websites/:id/selo' />
           <Route Component={Terms} path='/termos' />
         </Route>
+        {/* The ring router answers these; they reach the site only when it fails open. */}
+        <Route element={<Navigate to='/' replace />} path='/ring/*' />
+        <Route element={<Navigate to='/' replace />} path='/r/*' />
         <Route Component={NotFound} path='*' />
       </Routes>
     </Suspense>

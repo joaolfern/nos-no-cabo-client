@@ -6,7 +6,7 @@ import { Typography } from '@/components/Typography/Typography'
 import { Tag } from '@/components/Tag/Tag'
 import { Link } from '@/components/Link/Link'
 import type { IWebsite } from '@/interfaces/IWebsite'
-import { mockWebsiteLikes } from '@/pages/Website/utils/mockWebsiteMetrics/mockWebsiteMetrics'
+import { visitUrl } from '@/utils/visitUrl/visitUrl'
 import { getPrimaryKeyword } from '@/pages/Feed/utils/getPrimaryKeyword'
 import { formatCompactNumber } from '@/utils/formatCompactNumber/formatCompactNumber'
 import { VerificationStatus } from '@/pages/WidgetEditor/components/VerificationStatus/VerificationStatus'
@@ -67,7 +67,7 @@ function FeedCardInner({
           </span>
           <a
             className={styles.externalLink}
-            href={website.url}
+            href={visitUrl(website)}
             target='_blank'
             rel='noopener noreferrer'
             aria-label={`Visitar ${website.name}`}
@@ -97,7 +97,7 @@ function FeedCardInner({
           {!aside && variant === 'detailed' && !readOnly && (
             <span className={styles.likes} title='Curtidas'>
               <LuThumbsUp aria-hidden={true} />
-              {formatCompactNumber(mockWebsiteLikes(website.id))}
+              {formatCompactNumber(website.likes ?? 0)}
             </span>
           )}
         </div>

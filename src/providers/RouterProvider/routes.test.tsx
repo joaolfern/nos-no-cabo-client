@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { render } from '@/__tests__/utils.test'
 import { Router } from '@/providers/RouterProvider/routes'
 
@@ -22,4 +22,13 @@ describe('Router', () => {
 
     expect(await screen.findByText(/não encontrad/i)).toBeInTheDocument()
   })
+
+  it.each(['/r/abc123', '/ring/01SITE/next'])(
+    'sends %s home when the ring router is bypassed',
+    async (path) => {
+      await visit(path)
+
+      await waitFor(() => expect(window.location.pathname).toBe('/'))
+    }
+  )
 })

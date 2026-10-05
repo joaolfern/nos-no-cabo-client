@@ -1,5 +1,5 @@
 import type { IWebsite } from '@/interfaces/IWebsite'
-import { mockWebsiteClicks } from '@/pages/Website/utils/mockWebsiteMetrics/mockWebsiteMetrics'
+import { mockStats } from '@/__mocks__/data/metrics'
 
 const RECENT_CLICKS_WEIGHT = 3
 const VERIFIED_BONUS = 2
@@ -24,11 +24,11 @@ export function rankScore({
 }
 
 function websiteScore(website: IWebsite) {
-  const clicks = mockWebsiteClicks(website.id)
+  const stats = mockStats(website.id)
 
   return rankScore({
-    recentClicks: clicks.recent,
-    totalClicks: clicks.total,
+    recentClicks: stats.clicks30d,
+    totalClicks: stats.clicks,
     verified: Boolean(website.verifiedAt),
   })
 }

@@ -1,7 +1,9 @@
 import { v1Api } from '@/api/api'
+import { resetMockMetrics } from '@/__mocks__/data/metrics'
 import { getMockReports, resetMockReports } from '@/__mocks__/data/reports'
 import { resetMockSubmissions } from '@/__mocks__/data/submissions'
 import type { IApiError } from '@/interfaces/IApiError'
+import type { IWebsitePage, IWebsiteStats } from '@/interfaces/IWebsiteStats'
 import type {
   IWebsitePreview,
   IWebsiteSubmission,
@@ -27,6 +29,7 @@ function rejection(promise: Promise<unknown>) {
 beforeEach(() => {
   resetMockSubmissions()
   resetMockReports()
+  resetMockMetrics()
 })
 
 describe('v1 mock handlers', () => {
@@ -128,6 +131,48 @@ describe('v1 mock handlers', () => {
       rejection(
         v1Api.post(`websites/${checking.id}/reports`, { reason: 'spam' })
       )
+    ).resolves.toMatchObject({ code: 'not_found', status: 404 })
+  })
+
+  it('serves stats and counts a vote once per voter', async () => {
+    const voterId = '6f1c2b8e-4d3a-4f5e-9a7b-1c2d3e4f5a6b'
+    const { data: before } = await v1Api.get<IWebsiteStats>('websites/1/stats')
+
+    const { data: liked } = await v1Api.post<IWebsiteStats>(
+      'websites/1/votes',
+      {
+        voterId,
+        value: 1,
+      }
+    )
+    expect(liked.likes).toBe(before.likes + 1)
+
+    const { data: switched } = await v1Api.post<IWebsiteStats>(
+      'websites/1/votes',
+      { voterId, value: -1 }
+    )
+    expect(switched).toMatchObject({
+      likes: before.likes,
+      dislikes: before.dislikes + 1,
+    })
+
+    await expect(
+      rejection(v1Api.post('websites/1/votes', { voterId: 'eu', value: 1 }))
+    ).resolves.toMatchObject({ code: 'invalid', status: 422 })
+    await expect(
+      rejection(v1Api.post('websites/nada/votes', { voterId, value: 1 }))
+    ).resolves.toMatchObject({ code: 'not_found', status: 404 })
+  })
+
+  it('serves the whole website page in one response', async () => {
+    const { data } = await v1Api.get<IWebsitePage>('websites/2/page')
+
+    expect(data.website).toMatchObject({ id: '2', status: 'published' })
+    expect(data.neighbours.next).not.toBeNull()
+    expect(data.stats).toMatchObject({ clicks: expect.any(Number) })
+
+    await expect(
+      rejection(v1Api.get('websites/nada/page'))
     ).resolves.toMatchObject({ code: 'not_found', status: 404 })
   })
 })

@@ -1,8 +1,9 @@
 import clsx from 'clsx'
 import { LuChevronLeft, LuChevronRight, LuShuffle } from 'react-icons/lu'
 import { Link } from '@/components/Link/Link'
-import { useWebsiteMetrics } from '@/pages/Website/hooks/useWebsiteMetrics'
 import { useAdjacentWebsites } from '@/pages/Website/hooks/useAdjacentWebsites'
+import { useWebsiteStats } from '@/pages/Website/hooks/useWebsiteStats'
+import { buildWebsiteMetrics } from '@/pages/Website/utils/websiteMetrics'
 import type { IWebsite } from '@/interfaces/IWebsite'
 import styles from './WebsiteMetrics.module.scss'
 
@@ -13,7 +14,8 @@ interface WebsiteMetricsProps {
 }
 
 export function WebsiteMetrics({ website }: WebsiteMetricsProps) {
-  const metrics = useWebsiteMetrics(website)
+  const { data: stats } = useWebsiteStats(website.id)
+  const metrics = buildWebsiteMetrics(stats)
   const { previous, next, random, isLoading } = useAdjacentWebsites(website.id)
 
   return (
@@ -21,7 +23,16 @@ export function WebsiteMetrics({ website }: WebsiteMetricsProps) {
       <div className={styles.grid}>
         {metrics.map((metric) => (
           <div key={metric.id} className={styles.metric}>
-            {metric.display === 'counter' ? (
+            {metric.value === undefined ? (
+              <span
+                className={clsx(styles.value, styles.valueBone)}
+                aria-hidden={true}
+              >
+                000
+              </span>
+            ) : metric.value === null ? (
+              <span className={styles.value}>–</span>
+            ) : metric.display === 'counter' ? (
               <VisitCounter value={metric.value} />
             ) : (
               <span className={styles.value}>

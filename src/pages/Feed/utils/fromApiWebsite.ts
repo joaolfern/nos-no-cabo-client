@@ -18,5 +18,7 @@ export function fromApiWebsite(website: Website): IWebsite {
     updatedAt: date,
     status: website.status,
     verifiedAt: website.verifiedAt,
+    shortCode: website.shortCode,
+    likes: website.likes,
   }
 }

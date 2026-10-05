@@ -6,7 +6,7 @@ import type { IWebsite } from '@/interfaces/IWebsite'
 import type { FeedCardVariant } from '@/pages/Feed/components/FeedCard/FeedCard'
 import type { FeedPendingItem } from '@/pages/Feed/components/FeedCardList/FeedCardList'
 import { getPrimaryKeyword } from '@/pages/Feed/utils/getPrimaryKeyword'
-import { mockWebsiteLikes } from '@/pages/Website/utils/mockWebsiteMetrics/mockWebsiteMetrics'
+import { visitUrl } from '@/utils/visitUrl/visitUrl'
 import { formatCompactNumber } from '@/utils/formatCompactNumber/formatCompactNumber'
 import { VerificationStatus } from '@/pages/WidgetEditor/components/VerificationStatus/VerificationStatus'
 import styles from './FeedTable.module.scss'
@@ -111,12 +111,12 @@ export function FeedTable({
                   </td>
                   {showLikes && (
                     <td className={styles.likes}>
-                      {formatCompactNumber(mockWebsiteLikes(website.id))}
+                      {formatCompactNumber(website.likes ?? 0)}
                     </td>
                   )}
                   <td className={styles.visit}>
                     <a
-                      href={website.url}
+                      href={visitUrl(website)}
                       target='_blank'
                       rel='noopener noreferrer'
                       aria-label={`Visitar ${website.name}`}

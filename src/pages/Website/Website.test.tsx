@@ -4,6 +4,8 @@ import { render } from '@/__tests__/utils.test'
 import { v1Api } from '@/api/api'
 import type { ISubmittedWebsite } from '@/interfaces/IWebsite'
 import { mockNeighbours } from '@/__mocks__/data/catalog'
+import { mockStats } from '@/__mocks__/data/metrics'
+import { server } from '@/__mocks__/node'
 import { Website } from '@/pages/Website/Website'
 
 async function renderWebsite(id: string) {
@@ -34,6 +36,41 @@ describe('Website page', () => {
       'href',
       `/website/${neighbours?.next?.id}`
     )
+  })
+
+  it('shows the real stats and visits through the short link', async () => {
+    const stats = mockStats('2')
+
+    await renderWebsite('2')
+
+    expect(
+      await screen.findByText(stats.clicks30d.toLocaleString('pt-BR'))
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(stats.referrals.toLocaleString('pt-BR'))
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('img', { name: stats.clicks.toLocaleString('pt-BR') })
+    ).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Visitar site/ })).toHaveAttribute(
+      'href',
+      'https://nosnocabo.pages.dev/r/2'
+    )
+  })
+
+  it('loads the site, its neighbours and its stats in one request', async () => {
+    const paths: string[] = []
+    const track = ({ request }: { request: Request }) => {
+      paths.push(new URL(request.url).pathname)
+    }
+    server.events.on('request:start', track)
+
+    await renderWebsite('2')
+    await screen.findByText(mockStats('2').clicks30d.toLocaleString('pt-BR'))
+    server.events.removeListener('request:start', track)
+
+    const sitePaths = paths.filter((path) => path.includes('/websites/2'))
+    expect(sitePaths).toEqual(['/v1/websites/2/page'])
   })
 
   it('recommends six other sites', async () => {
@@ -70,16 +107,12 @@ describe('Website page', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('holds the ring navigation row with placeholders until the neighbours arrive', async () => {
+  it('shows the ring neighbours together with the site, with no placeholders left', async () => {
     const neighbours = mockNeighbours('2')
     await renderWebsite('2')
 
     await screen.findByRole('heading', { level: 1 })
-    expect(screen.getAllByText('Carregando vizinho')).toHaveLength(3)
-
-    expect(
-      await screen.findByTitle(neighbours?.next?.name ?? '')
-    ).toBeInTheDocument()
+    expect(screen.getByTitle(neighbours?.next?.name ?? '')).toBeInTheDocument()
     expect(screen.queryAllByText('Carregando vizinho')).toHaveLength(0)
   })
 

@@ -9,9 +9,9 @@ import { ReportButton } from '@/pages/Webring/components/ReportButton/ReportButt
 import { WebsiteAuthorAndDate } from '@/pages/Webring/components/WebsiteAuthorAndDate/WebsiteAuthorAndDate'
 import { WebsiteVotes } from '@/pages/Website/components/WebsiteVotes/WebsiteVotes'
 import type { IWebsite } from '@/interfaces/IWebsite'
-import { mockWebsiteLikes } from '@/pages/Website/utils/mockWebsiteMetrics/mockWebsiteMetrics'
 import { VerificationStatus } from '@/pages/WidgetEditor/components/VerificationStatus/VerificationStatus'
 import { VerifyPanel } from '@/pages/WidgetEditor/components/VerifyPanel/VerifyPanel'
+import { visitUrl } from '@/utils/visitUrl/visitUrl'
 import styles from './WebsiteInfoCard.module.scss'
 import { getCategoryLabel } from '@/pages/Feed/constants/categories'
 
@@ -95,12 +95,16 @@ export function WebsiteInfoCard({ website }: WebsiteInfoCardProps) {
 
         <div className={styles.actions}>
           <Button asChild={true} variant='tertiary' className={styles.visit}>
-            <a href={website.url} target='_blank' rel='noopener noreferrer'>
+            <a
+              href={visitUrl(website)}
+              target='_blank'
+              rel='noopener noreferrer'
+            >
               Visitar site
               <LuArrowUpRight size='1rem' />
             </a>
           </Button>
-          <WebsiteVotes initialLikes={mockWebsiteLikes(website.id)} />
+          <WebsiteVotes websiteId={website.id} />
         </div>
 
         {!website.verifiedAt && (

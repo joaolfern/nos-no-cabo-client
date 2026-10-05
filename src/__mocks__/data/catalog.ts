@@ -6,6 +6,7 @@ import type {
   WebsiteNeighbours,
 } from '@nosnocabo/contract'
 import { CATEGORY_SLUGS } from '@nosnocabo/contract'
+import { mockNetLikes } from '@/__mocks__/data/metrics'
 import { rankWebsites } from '@/__mocks__/data/ranking'
 import {
   fromPublishedWebsite,
@@ -13,7 +14,6 @@ import {
 } from '@/__mocks__/data/submissions'
 import { MOCK_WEBSITES } from '@/__mocks__/data/websites'
 import type { IWebsite } from '@/interfaces/IWebsite'
-import { mockWebsiteLikes } from '@/pages/Website/utils/mockWebsiteMetrics/mockWebsiteMetrics'
 
 // The mock catalog: the same filters, sorts and paging as the real /v1 list.
 
@@ -52,9 +52,7 @@ const SORTS: Record<
   melhores: rankWebsites,
   recentes: (websites) => [...websites].sort(byDateDesc),
   curtidos: (websites) =>
-    [...websites].sort(
-      (a, b) => mockWebsiteLikes(b.id) - mockWebsiteLikes(a.id)
-    ),
+    [...websites].sort((a, b) => mockNetLikes(b.id) - mockNetLikes(a.id)),
   az: (websites) =>
     [...websites].sort((a, b) =>
       a.name.localeCompare(b.name, 'pt-BR', { sensitivity: 'base' })

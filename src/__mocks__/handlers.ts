@@ -5,6 +5,7 @@ import {
   mockNeighbours,
   withMockVerification,
 } from '@/__mocks__/data/catalog'
+import { applyMockVote, mockStats } from '@/__mocks__/data/metrics'
 import { addMockReport } from '@/__mocks__/data/reports'
 import {
   createMockSubmission,
@@ -18,7 +19,11 @@ import { V1_API_URL } from '@/config/env'
 import type { ApiErrorCode, IApiErrorResponse } from '@/interfaces/IApiError'
 import type { IWebsiteSubmission } from '@/interfaces/IWebsite'
 import { toAbsoluteUrl } from '@/utils/normalizeUrl/normalizeUrl'
-import { ReportSubmission, WebsiteListQuery } from '@nosnocabo/contract'
+import {
+  ReportSubmission,
+  VoteSubmission,
+  WebsiteListQuery,
+} from '@nosnocabo/contract'
 import { http, HttpResponse } from 'msw'
 
 const V1 = V1_API_URL
@@ -127,6 +132,36 @@ export const handlers = [
 
     addMockReport(id, report.data)
     return new HttpResponse(null, { status: 202 })
+  }),
+  http.get(`${V1}/websites/:id/page`, ({ params }) => {
+    const id = String(params.id)
+    const website = getMockSubmittedWebsite(id)
+    if (!website) return errorResponse(404, 'not_found', 'Site não encontrado.')
+
+    return HttpResponse.json({
+      website: withMockVerification(website),
+      neighbours: mockNeighbours(id) ?? {
+        previous: null,
+        next: null,
+        random: null,
+      },
+      stats: mockStats(id),
+    })
+  }),
+  http.get(`${V1}/websites/:id/stats`, ({ params }) =>
+    HttpResponse.json(mockStats(String(params.id)))
+  ),
+  http.post(`${V1}/websites/:id/votes`, async ({ params, request }) => {
+    const id = String(params.id)
+    if (getMockSubmittedWebsite(id)?.status !== 'published') {
+      return errorResponse(404, 'not_found', 'Site não encontrado.')
+    }
+
+    const vote = VoteSubmission.safeParse(await request.json())
+    if (!vote.success) return errorResponse(422, 'invalid', 'Voto inválido.')
+
+    applyMockVote(id, vote.data.voterId, vote.data.value)
+    return HttpResponse.json(mockStats(id))
   }),
   http.get(`${V1}/websites/:id`, ({ params }) => {
     const website = getMockSubmittedWebsite(String(params.id))

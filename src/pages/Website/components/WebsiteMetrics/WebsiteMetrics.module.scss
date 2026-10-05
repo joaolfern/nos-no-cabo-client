@@ -151,6 +151,16 @@
   visibility: hidden;
 }
 
+.valueBone {
+  align-self: flex-start;
+  color: transparent;
+  background: linear-gradient(
+    transparent 15%,
+    var(--color-raised) 15% 85%,
+    transparent 85%
+  );
+}
+
 .navBone {
   color: transparent;
   background: linear-gradient(

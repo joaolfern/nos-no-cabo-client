@@ -33,6 +33,8 @@ export interface IWebsite {
   author?: IAuthor
   status?: WebsiteStatus
   verifiedAt?: string | null
+  shortCode?: string | null
+  likes?: number
 }
 
 export interface IWebsitesContext {

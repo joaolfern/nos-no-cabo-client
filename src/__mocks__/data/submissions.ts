@@ -1,5 +1,6 @@
 import { isCategorySlug } from '@/pages/Feed/constants/categories'
 import { MOCK_KEYWORDS } from '@/__mocks__/data/keywords'
+import { mockNetLikes } from '@/__mocks__/data/metrics'
 import { MOCK_WEBSITES } from '@/__mocks__/data/websites'
 import type {
   IVerificationResult,
@@ -17,7 +18,7 @@ export const UNREACHABLE_URL_MARKER = 'inacessivel'
 
 type StoredSubmission = Omit<
   ISubmittedWebsite,
-  'status' | 'rejectionReason' | 'publishedAt' | 'shortCode'
+  'status' | 'rejectionReason' | 'publishedAt' | 'shortCode' | 'likes'
 >
 
 const submissions = new Map<string, StoredSubmission>()
@@ -45,6 +46,7 @@ export function fromPublishedWebsite(website: IWebsite): ISubmittedWebsite {
     verifiedAt: website.verifiedAt ?? null,
     submittedAt: website.createdAt,
     publishedAt: website.createdAt,
+    likes: mockNetLikes(website.id),
   }
 }
 
@@ -60,6 +62,7 @@ function resolveReview(
       status: 'checking',
       shortCode: null,
       publishedAt: null,
+      likes: 0,
     }
   }
 
@@ -70,6 +73,7 @@ function resolveReview(
       rejectionReason: 'unsafe',
       shortCode: null,
       publishedAt: null,
+      likes: 0,
     }
   }
 
@@ -78,6 +82,7 @@ function resolveReview(
     status: 'published',
     shortCode: submission.id,
     publishedAt: new Date(reviewedAt).toISOString(),
+    likes: mockNetLikes(submission.id),
   }
 }
 
