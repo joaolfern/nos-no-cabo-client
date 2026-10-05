@@ -25,7 +25,7 @@ keep it current.
   Once the custom domain exists, Cloudflare caching and firewall rules will guard reads, at
   thresholds tuned per event. A per-host cap and a preview pass were built and then removed
   for the same reasons.
-- **nos-sr** (branch `moderation`, off the committed `workers-foundation`, uncommitted):
+- **nos-sr** (branch `moderation`; **pnpm** workspace since 2026-10-05, `pnpm-workspace.yaml` at the root):
   - **Workspaces:** `packages/contract`, `packages/ip` (private: groups an IPv6 /64 for IP
     hashes), `services/router`, `services/verification`,
     `services/catalog` and `services/gateway`. The services are listed explicitly so
@@ -106,7 +106,7 @@ keep it current.
       `localhost`.
     - Allowed origins: `https://nosnocabo.joaolfern.workers.dev`, `http://localhost:5173`.
   - **Local dev D1** (`services/catalog/.wrangler/state`) is at 0009 and seeded, with two
-    extra sites from an end-to-end run. `npm run dev` runs gateway, catalog and moderation
+    extra sites from an end-to-end run. `pnpm dev` runs gateway, catalog and moderation
     together. The AI binding is always remote and uses real neurons.
 - **nos-client** (branch `rework-appearance-internal`, uncommitted since the last commit):
   - "Notificar problema" opens a report dialog (`pages/Webring/components/ReportDialog`).
@@ -135,16 +135,16 @@ keep it current.
 2. **Deploy to staging (owner, in this order):**
    1. Create the private moderation repo on GitHub and push `services/moderation` to it. Then
       remove the `.gitignore` line and run `git submodule add <url> services/moderation`.
-   2. Create the queues: `npx wrangler queues create moderation-jobs-staging` and
-      `npx wrangler queues create moderation-jobs-staging-dlq`.
-   3. Deploy the catalog: `npm run deploy:staging` (applies 0003–0009). The old Worker can't
+   2. Create the queues: `pnpm exec wrangler queues create moderation-jobs-staging` and
+      `pnpm exec wrangler queues create moderation-jobs-staging-dlq`.
+   3. Deploy the catalog: `pnpm --filter @nosnocabo/catalog run deploy:staging` (applies 0003–0009). The old Worker can't
       insert between migration 0005 and the new code going live, so deploy right away.
-   4. Deploy verification, then the router: `npm run deploy:staging -w @nosnocabo/verification`
+   4. Deploy verification, then the router: `pnpm --filter @nosnocabo/verification run deploy:staging`
       and `-w @nosnocabo/router`. The router's public URL becomes the client's staging
       `VITE_RING_BASE_URL` (see `.env.example`).
-   5. Deploy moderation: `npm run deploy:staging` in `services/moderation`. This also creates
+   5. Deploy moderation: `pnpm run deploy:staging` in `services/moderation`. This also creates
       the 00:05 UTC cron.
-   6. Deploy the gateway: `npm run deploy:staging`.
+   6. Deploy the gateway: `pnpm --filter @nosnocabo/gateway run deploy:staging`.
    7. Smoke test, **one at a time, no bursts:** one submission, one report, then
       `review list` and `review rebuild`. `rebuild` hasn't run against remote D1 yet.
       Also: one `Verificar` press, and one ring link and one `/r/` link on the router URL.
@@ -575,7 +575,7 @@ and remove the password from the client.
      - search ignores accents and case (`search_key`, migration 0002; replaced by FTS5 in 0004);
      - "Notificar problema" is a `mailto:` until community reports exist, and the admin
        password, the legacy `api` instance and the legacy mocks are gone.
-   - staging is seeded with 12 real projects (`npm run seed:staging` in `services/catalog`).
+   - staging is seeded with 12 real projects (`pnpm run seed:staging` in `services/catalog`).
    - next: publish `@nosnocabo/contract` 0.2.0, then phase 8 (moderation).
    - Workers project in `nos-sr`: gateway and catalog Workers, D1 schema and migrations,
      `contract` package, CI deploying a staging environment.
