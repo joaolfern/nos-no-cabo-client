@@ -14,7 +14,7 @@ interface WebsiteMetricsProps {
 
 export function WebsiteMetrics({ website }: WebsiteMetricsProps) {
   const metrics = useWebsiteMetrics(website)
-  const { previous, next, random } = useAdjacentWebsites(website.id)
+  const { previous, next, random, isLoading } = useAdjacentWebsites(website.id)
 
   return (
     <section className={styles.container}>
@@ -45,7 +45,10 @@ export function WebsiteMetrics({ website }: WebsiteMetricsProps) {
             <span className={styles.navName}>{previous.name}</span>
           </Link>
         ) : (
-          <span />
+          <NavPlaceholder
+            className={styles.navPrevious}
+            isLoading={isLoading}
+          />
         )}
 
         {random ? (
@@ -57,7 +60,7 @@ export function WebsiteMetrics({ website }: WebsiteMetricsProps) {
             Site aleatório
           </Link>
         ) : (
-          <span />
+          <NavPlaceholder isLoading={isLoading} />
         )}
 
         {next ? (
@@ -71,10 +74,30 @@ export function WebsiteMetrics({ website }: WebsiteMetricsProps) {
             <LuChevronRight size='1rem' />
           </Link>
         ) : (
-          <span />
+          <NavPlaceholder className={styles.navNext} isLoading={isLoading} />
         )}
       </nav>
     </section>
+  )
+}
+
+// Same box as a nav link, so the row keeps its height while loading and when a slot is empty.
+function NavPlaceholder({
+  className,
+  isLoading,
+}: {
+  className?: string
+  isLoading: boolean
+}) {
+  return (
+    <span
+      className={clsx(styles.navLink, styles.navPlaceholder, className, {
+        [styles.navHidden]: !isLoading,
+      })}
+      aria-hidden={true}
+    >
+      <span className={styles.navBone}>Carregando vizinho</span>
+    </span>
   )
 }
 

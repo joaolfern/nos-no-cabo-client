@@ -1,14 +1,10 @@
 import { Loading } from '@/components/Loading/Loading'
+import styles from './WebsiteLoader.module.scss'
 
-interface WebsiteLoaderProps {
-  children: React.ReactNode
-  isLoading: boolean
-}
-
-export function WebsiteLoader({ children, isLoading }: WebsiteLoaderProps) {
-  if (isLoading) {
-    return <Loading />
-  }
-
-  return <>{children}</>
+export function WebsiteLoader() {
+  return (
+    <div className={styles.loading} role='status' aria-label='Carregando site'>
+      <Loading aria-hidden={true} />
+    </div>
+  )
 }
