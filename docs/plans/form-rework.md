@@ -7,7 +7,7 @@ The form is rebuilt from scratch for the community-driven flow described in
 frontend is built against MSW mocks that follow the target contract
 ([`13-api-contract`](../architecture/target/backend/13-api-contract.puml)).
 
-## Current status and next steps (2026-10-02)
+## Current status and next steps (2026-10-05)
 
 Read this first when picking the work up in a new session. The owner's own steps (commits,
 deploys, GitHub, domain) are tracked as a checklist in [`../owner-todo.md`](../owner-todo.md);
@@ -15,198 +15,88 @@ keep it current.
 
 **Where things are**
 
-- Phases 1–7 are done. Phases 8 (moderation) and 9 (router and verification) are implemented.
-  The same session also hardened cost: derived data and the AI budget. All of it is tested
-  locally; none of it is deployed or committed. See "Roadmap after the form rework" below.
-- **No per-IP limits, on purpose.** The app will be shown in colleges, where a whole room
-  shares one IPv4 address, and a Turnstile "session" can't identify a person, because a new
-  solve gives a new session. Protection without identity comes from four things: Turnstile on
-  every write (submit, report), global caps (the AI budget), moderation and the owner's review.
-  Once the custom domain exists, Cloudflare caching and firewall rules will guard reads, at
-  thresholds tuned per event. A per-host cap and a preview pass were built and then removed
-  for the same reasons.
-- **nos-sr** (branch `moderation`; **pnpm** workspace since 2026-10-05, `pnpm-workspace.yaml` at the root):
-  - **Workspaces:** `packages/contract`, `packages/ip` (private: groups an IPv6 /64 for IP
-    hashes), `services/router`, `services/verification`,
-    `services/catalog` and `services/gateway`. The services are listed explicitly so
-    `services/moderation` stays out. The Flask app is untouched and goes at the cutover.
-  - **Contract 0.3.0** (unpublished):
-    - `ReportReason` and `ReportSubmission`.
-    - `normalizeUrl` now ignores the query string but keeps the path.
-  - **Catalog migrations:**
+- **Live on `nosnocabo.com.br`** since 2026-10-05, running on the `*-staging` Workers, D1 and
+  queues: the site (the `nosnocabo` static-assets Worker), the API on
+  `api.nosnocabo.com.br` (gateway) and the router on `nosnocabo.com.br/ring/*` and `/r/*`.
+  Phases 1–9 are deployed, along with the cost hardening. Both repos are on `main`.
+- **Phase 10 (metrics, ranking, likes) is deployed (2026-10-05) but not committed:** it went
+  out by hand from nos-sr branch `metrics` and nos-client's uncommitted `main`. See "Phase 10"
+  below and ADR 0006.
+- **No per-IP limits, on purpose.** The app is shown in colleges, where a whole room shares one
+  IPv4 address, and a Turnstile "session" can't identify a person. Protection without
+  identity comes from Turnstile on every write (submit, report, vote), global caps (the AI
+  budget), moderation and the owner's review. Cloudflare caching and firewall rules on the
+  domain are still to be set up (owner to-do).
+- **nos-sr** (pnpm workspace):
+  - **Workspaces:** `packages/contract`, `packages/ip`, `services/catalog`, `gateway`,
+    `router`, `verification` and `metrics`. `services/moderation` is a **private** submodule
+    with its own pnpm setup, kept out of the workspace. Never put moderation policy in a
+    public repo.
+  - **Contract:** 0.3.1 is published (zod-free `/categories` and `/url` entries). 0.4.0
+    (`Website.likes`, `WebsiteStats`, `VoteSubmission`) is on the `metrics` branch, unpublished.
+  - **Catalog:** D1 at migration 0010. Submissions start as `checking` and go to the
+    `moderation-jobs` queue; derived data (counts, categories, FTS5) is kept by triggers (ADR
+    0005); reports flag a site for review and never hide it; report alerts wait on Email
+    Routing.
+  - **Moderation** (private): Llama Guard, at most 250 AI checks per UTC day, a backlog drained
+    by a 00:05 UTC cron, a dead-letter queue, and the `review` script.
+  - **Router:** in-memory ring snapshot, refetched when `getRingVersion()` changes.
+  - **Verification:** manual check with a one-minute cooldown, hourly re-check (two misses
+    remove the badge).
+  - **Free-plan cron triggers:** moderation and verification use 2 (staging only; production
+    environments aren't deployed). Metrics adds a third.
+- **nos-client** (`main`): reads everything from `/v1` (`v1Api`), MSW mocks the same contract.
+  Lazy routes, Zod out of the bundle, per-page meta tags (`usePageMeta`) and `og.png`.
+  Deployed with `pnpm run deploy:web`.
 
-    | Migration | Adds |
-    |---|---|
-    | 0003 | reports, `review_flag` |
-    | 0004 | derived data and its triggers |
-    | 0005 | drops `search_key` |
-    | 0006 | `ring_group` |
-    | 0007 | status index |
-    | 0008 | `moderation_backlog` |
-    | 0009 | query-free URL keys |
-    | 0010 | verification misses; short codes for seeded sites |
-  - **Moderation (phase 8):**
-    - Submissions always start as `checking` and go to the `moderation-jobs` queue.
-    - The moderation Worker decides through `CatalogRpc`, a `WorkerEntrypoint` that only
-      service bindings reach.
-    - Undecidable sites are held for manual review: unreachable, or a model error after 3
-      attempts.
-    - Jobs that fail every attempt go to a dead-letter queue, whose consumer also holds the
-      site.
-  - **Moderation Worker** (`services/moderation`, **private**):
-    - Llama Guard, the page reader, the review script (`list`, `approve`, `reject`,
-      `rebuild`) and its own README.
-    - It lives in its own repo, mounted as a git submodule. Until that repo exists it's a
-      local `git init` folder listed in nos-sr's `.gitignore`.
-    - Never put moderation policy in a public repo.
-  - **Derived data** (ADR 0005, plan `2026-10-02-catalog-derived-data.md`):
-    - Category counts, the published total, each site's categories and an FTS5 index are
-      stored and kept by triggers.
-    - `sql/rebuild-derived.sql` (or `review rebuild`) recomputes them.
-    - Ring neighbours are index seeks. `CatalogRpc.getRing()` and `getRingVersion()` are
-      ready for the phase 9 router.
-    - Search matches word prefixes, not substrings inside words.
-  - **AI budget:**
-    - At most 250 checks per UTC day (`AI_DAILY_CHECKS`; ~31 neurons each, inside the free
-      10k).
-    - Over budget, sites wait in `moderation_backlog`. A 00:05 UTC cron re-queues them up
-      to the new day's budget.
-  - **Reports:** any report flags the site for review (`review_flag = reported`). A report
-    never hides a site; the owner decides with `review approve` or `review reject`. Repeat
-    reports from the same network are merged into one row.
-  - **Report alert:** the report that flags a site emails the owner once, in the background
-    (`src/lib/alerts.ts`). Later reports stay quiet until the owner reviews it. Sending is
-    skipped until the `ALERT_EMAIL` binding exists (see "Before launch"), and a failed send
-    never blocks the report.
-  - **Preview:** open, with no Turnstile and no limit. An abuser can only spend the daily
-    request cap until the custom-domain firewall rules exist (a deliberate choice).
-  - **Phase 9** (plan `2026-10-02-phase-9-router-verification.md`):
-    - **Router Worker** (`services/router`, public `workers.dev`):
-      - `/ring/:id/prev|next|random` and `/r/:code` answer with a 302 to the member site.
-      - It keeps the ring snapshot (id, URL, short code) in memory, checks
-        `getRingVersion()` at most once a minute and refetches only on change. If the catalog
-        fails, it keeps serving the stale snapshot.
-      - Random is uniform and never the current site. With no other site to go to, or an
-        unknown id or code, links go to `HOME_URL`.
-      - `robots.txt` disallows `/ring/` and `/r/`.
-    - **Verification Worker** (`services/verification`, private):
-      - The gateway forwards `POST /v1/websites/:id/verify` to it.
-      - Cooldown: one check per site per minute (an atomic claim in the catalog).
-      - The check looks for `[data-nnc-widget="<id>"]` with a link to a `HOME_HOSTS` host
-        inside it.
-      - A manual check only grants the badge. An hourly cron (minute 17) re-checks up to 20
-        verified sites not checked in 20 h; two misses in a row remove the badge.
-    - **Free-plan cron triggers:** 5 per account. Moderation and verification use 4 across
-      staging and production.
-  - **Staging:**
-    - URL: `https://nnc-gateway-staging.joaolfern.workers.dev/v1`, deployed by hand with
-      the owner's wrangler login. The catalog has no public URL.
-    - D1 is at migration 0002, seeded with 12 projects.
-    - Turnstile has a real staging widget for `nosnocabo.joaolfern.workers.dev` and
-      `localhost`.
-    - Allowed origins: `https://nosnocabo.joaolfern.workers.dev`, `http://localhost:5173`.
-  - **Local dev D1** (`services/catalog/.wrangler/state`) is at 0009 and seeded, with two
-    extra sites from an end-to-end run. `pnpm dev` runs gateway, catalog and moderation
-    together. The AI binding is always remote and uses real neurons.
-- **nos-client** (branch `rework-appearance-internal`, uncommitted since the last commit):
-  - "Notificar problema" opens a report dialog (`pages/Webring/components/ReportDialog`).
-  - A rejected draft offers "Enviar de novo" (`/websites/novo?url=` prefills the form).
-  - The submit toast depends on the status.
-  - A site under review says so on its page and hides the report button.
-  - Widget ring links carry `rel="nofollow"`. Snippets copied earlier don't, and the phase 9
-    router's `robots.txt` covers them.
-  - `utils/normalizeUrl` mirrors the contract: no query string in the key.
-  - `TurnstileField`, `Field` and `ChoiceChip` moved to `src/components/`.
-  - `node_modules` holds a local build of contract 0.3.0 until it is published.
-  - **Reads:** everything comes from `/v1` (`v1Api`). MSW mocks the same contract.
-  - **Tooling:** pnpm, TypeScript 7 (native) for `pnpm build`, oxlint (`.oxlintrc.json`)
-    and Vitest (the `test` section of `vite.config.ts`). See `CLAUDE.md` for the commands.
+**Phase 10 (2026-10-05, ADR 0006)**
+
+- New `metrics` Worker with its own D1 (`visits`, `daily_stats`, `site_totals`, `votes`).
+- Clicks: every visit link goes through the router (`/r/<code>`; "Visitar site" too), which
+  records the click in `waitUntil`. Ring links also credit the source site with a referral.
+  Dedupe is a cookieless daily hash of IP and user-agent; bots and link previews are skipped.
+- Votes: 👍/👎 behind Turnstile; the catalog's `likes` is the net value "Curtidos" sorts by.
+- A cron every 3 hours (`23 */3 * * *`) pushes changed `rank_score`/`likes` values through
+  `CatalogRpc.setMetrics`; votes push `likes` right away.
+- Capacity (free plan): the website page is one request (`GET /v1/websites/:id/page`, composed
+  by the gateway); the client caches queries for 60 s and doesn't refetch on tab focus; `/ring/*`
+  and `/r/*` send the visitor home if they ever reach the SPA (the router failing open). About
+  8–10 Workers requests per engaged visitor, so roughly 10k such visitors a day.
+- Client: real stats on the website page (with a same-height loading state), real votes,
+  real "Curtidas" in the feed, and `visitUrl()` for every visit link. The mocked metrics are
+  gone; `src/__mocks__/data/metrics.ts` seeds the mocks.
+- Until 0.4.0 is published, nos-client's `node_modules/@nosnocabo/contract` is a symlink to the
+  local nos-sr build. `pnpm install` restores the published 0.3.1, which breaks the build until
+  `pnpm add @nosnocabo/contract@0.4.0`.
 
 **Open items**
 
-1. **Commit (owner).**
-   - nos-sr: contract 0.3.0; `packages/ip`; catalog (moderation, reports, derived data,
-     query-free keys); gateway (no rate limits); workspaces.
-   - The private moderation repo.
-   - nos-client: the report dialog, shared components, resend and review notice, nofollow,
-     the query-free URL key, and the docs.
-   - The derived-data executor ledger is in `.superpowers/sdd/2026-10-02-catalog-derived-data/`
-     (gitignored). Delete it after committing.
-2. **Deploy to staging (owner, in this order):**
-   1. Create the private moderation repo on GitHub and push `services/moderation` to it. Then
-      remove the `.gitignore` line and run `git submodule add <url> services/moderation`.
-   2. Create the queues: `pnpm exec wrangler queues create moderation-jobs-staging` and
-      `pnpm exec wrangler queues create moderation-jobs-staging-dlq`.
-   3. Deploy the catalog: `pnpm --filter @nosnocabo/catalog run deploy:staging` (applies 0003–0009). The old Worker can't
-      insert between migration 0005 and the new code going live, so deploy right away.
-   4. Deploy verification, then the router: `pnpm --filter @nosnocabo/verification run deploy:staging`
-      and `-w @nosnocabo/router`. The router's public URL becomes the client's staging
-      `VITE_RING_BASE_URL` (see `.env.example`).
-   5. Deploy moderation: `pnpm run deploy:staging` in `services/moderation`. This also creates
-      the 00:05 UTC cron.
-   6. Deploy the gateway: `pnpm --filter @nosnocabo/gateway run deploy:staging`.
-   7. Smoke test, **one at a time, no bursts:** one submission, one report, then
-      `review list` and `review rebuild`. `rebuild` hasn't run against remote D1 yet.
-      Also: one `Verificar` press, and one ring link and one `/r/` link on the router URL.
-   8. Next day: check that the 00:05 UTC drain ran. It's only covered by unit tests.
-3. **Publish contract 0.3.0**, then `pnpm add @nosnocabo/contract@0.3.0` in nos-client.
-4. **GitHub, when it's available:**
-   - Secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` for staging deploys from CI,
-     in both nos-sr and the moderation repo.
-   - A deploy workflow in the moderation repo that runs after the catalog deploy.
-   - A Trusted Publisher on npm (repository `joaolfern/nos-no-cabo-server`, workflow
-     `workers.yml`) so contract releases publish from a `contract-vX.Y.Z` tag.
-5. **Before launch: buy `nosnocabo.com.br`.**
-   - Point `NOS_NO_CABO_URL`/`RING_BASE_URL` (the widget links that end up in members'
-     sites), the gateway's allowed origins and a production Turnstile widget at it *before*
-     anyone installs the widget.
-   - Route `nosnocabo.com.br/ring/*` and `/r/*` to the router Worker, set its `HOME_URL`, and
-     add the domain to the verification Worker's `HOME_HOSTS`.
-   - Set up Cloudflare's own rate-limiting rules and Cache API caching of public lists on the
-     custom domain. This is the only real protection for the account's daily request cap.
-     The Workers rate-limit binding is approximate, and `workers.dev` can't use WAF rules.
-   - Create the production queues `moderation-jobs` and `moderation-jobs-dlq`.
-   - **Turn on report alerts:**
-     1. Enable Email Routing on the domain.
-     2. Verify the owner's address as a destination.
-     3. Add this to the catalog's `wrangler.jsonc`, in each environment:
-        `"send_email": [{ "name": "ALERT_EMAIL", "destination_address": "<owner>" }]`
-     4. Add the vars `ALERT_FROM` (e.g. `alertas@nosnocabo.com.br`) and `ALERT_TO`.
-
-     `workers.dev` can't send, so staging stays silent until then.
-   - Before showing the app in a college, check that the firewall rules' thresholds fit a
-     room sharing one address.
-   - Production deploys should avoid the 0005-style window: ship code that tolerates both
-     schemas, or apply column drops in a later deploy.
-6. **Known limitations, accepted for now:**
-   - The random neighbour is biased by rowid gaps (ADR 0005). The router will pick uniformly.
+1. **Phase 10 owner steps:** in [`../owner-todo.md`](../owner-todo.md) (create the metrics D1,
+   secrets, publish 0.4.0, commit, deploy).
+2. **Known limitations, accepted for now:**
    - Renaming a site, or resubmitting a rejected URL, scans the FTS table once.
    - Category-list order relies on ORDER BY inside a subquery. Switch to
      `json_group_array(… ORDER BY …)` once D1's SQLite is 3.44 or newer.
-   - `getNeighbours` makes up to 7 D1 calls.
    - Spam is bounded only by Turnstile, the AI budget and moderation. A determined spammer can
      fill each day's AI budget, and real submissions then wait behind spam in the backlog.
-   - Reported sites stay visible until the owner reviews them. The email alert (once the
-     domain exists) is the only push signal.
-   - Migration 0009's key cleanup is untested on real data with query strings.
+   - Reported sites stay visible until the owner reviews them.
    - A dead-letter message that fails 10 more times is dropped, with only an error log.
-7. **Leftovers in `.oxlintrc.json`** from another project: the `android`/`ios`/`.expo`
-   ignores, and the `zod` import ban pointing at a non-existent `src/lib/validation.ts`.
-   Harmless; confirm with the owner before removing.
-8. **msw stays on 2.x.** 3.0 breaks the setup and the interception in Vitest.
-9. **Never load-test deployed services.** Bursts of requests to staging need explicit
-   permission; test rate limits locally.
-10. **Exports:** `wrangler d1 export` refuses databases with the FTS5 table. To export, drop
-    `websites_fts`, export, recreate it and run the rebuild (ADR 0005).
+   - Clicks can be inflated by varying the user-agent, votes by clearing storage and solving
+     Turnstile again (ADR 0006).
+3. **msw stays on 2.x.** 3.0 breaks the setup and the interception in Vitest.
+4. **Never load-test deployed services.** Bursts of requests to staging need explicit
+   permission; test limits locally.
+5. **Exports:** `wrangler d1 export` refuses databases with the FTS5 table. To export, drop
+   `websites_fts`, export, recreate it and run the rebuild (ADR 0005).
+6. **Production deploys** should avoid the 0005-style window: ship code that tolerates both
+   schemas, or apply column drops in a later deploy.
 
 **Next tracks (owner's choice)**
 
-- **Phase 10, metrics, following ADR 0005:**
-  - A dedupe table on `(website_id, day, visitor_hash)`, with a trigger that increments
-    `daily_stats` only on new rows, instead of a raw events table.
-  - The hourly push sends absolute `rank_score`/`likes` values, and only those that changed.
-- **Frontend optimization:** lazy-load routes (website page, widget editor, terms, landing)
-  and look at the large JS chunk the build warns about.
+- The small CLS left on `/websites` (0.0072), and the landing page loading its chunks one
+  after another.
+- A time-limited boost for new sites in "Melhores" (ADR 0004).
+- Web Push for people who left (see "Future steps").
 
 ## Goals
 
@@ -486,7 +376,7 @@ modal's copy and editor link.
 - **"Melhores" ranking, computed by the backend** ([ADR 0004](../architecture/decisions/0004-ranking.md)):
   - `score = 3·ln(1 + clicks_30d) + ln(1 + clicks_total) + (verified ? 2 : 0)`, ties to the
     most recently published;
-  - computed hourly by the metrics service, stored as `websites.rank_score`, served by
+  - computed every 3 hours by the metrics service, stored as `websites.rank_score`, served by
     `GET /v1/websites?sort=melhores` (the default).
 - **Client:**
   - "Melhores" is the new default sort option and keeps the server's order (`sortWebsites`
@@ -587,20 +477,20 @@ and remove the password from the client.
      - `GET /v1/categories`.
    - Client: point `/v1` at staging (mocks stay for tests), replace `src/interfaces` with the
      contract types.
-8. **Moderation.** *Implemented, not deployed (see "Current status").* Queue consumer with
+8. **Moderation.** *Deployed (see "Current status").* Queue consumer with
    Workers AI llama-guard in a private Worker, `CatalogRpc.applyModeration` on the catalog,
    short code on publish, rejection reasons, a manual review script. Community reports
    (`POST /v1/websites/:id/reports`) replace the `mailto:`.
-9. **Verification and the router.** *Implemented, not deployed (see "Current status").*
+9. **Verification and the router.** *Deployed (see "Current status").*
    - `POST /v1/websites/:id/verify` (fetch the site, find `data-nnc-widget` and the link),
      rate limited, and a daily recheck cron (two misses remove the badge).
    - Router Worker: `/ring/:id/{prev,next,random}` (302) and `/r/:code`. It keeps the ring
      order from `CatalogRpc.getRing()` in memory and refetches when `getRingVersion()`
      changes; `robots.txt` disallows `/ring/`, plus a per-IP rate limit (ADR 0005).
      `VITE_RING_BASE_URL` points at it.
-10. **Metrics and ranking.** Click and view events with `visitor_hash` dedupe, `daily_stats`
-    rollups, hourly `rank_score` (ADR 0004), likes. Client: real numbers on the website page
-    replace `mockWebsiteMetrics`.
+10. **Metrics and ranking.** *Deployed, not committed (see "Current status", ADR 0006).*
+    Router-recorded clicks with a cookieless daily dedupe, `daily_stats` rollups, a 3-hourly
+    `rank_score` (ADR 0004), net likes from 👍/👎 votes. The website page shows real numbers.
 11. **Cutover.**
     - Feed on server pagination (`useInfiniteQuery`), sort and filters as query params. Delete
       `sortWebsites`, the client filters and the legacy list.

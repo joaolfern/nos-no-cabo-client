@@ -26,6 +26,7 @@ package "catalog D1" {
     verified_at : integer (null = unverified)
     last_verification_check_at : integer
     rank_score : real (hourly, from metrics; ADR 0004)
+    likes : integer (net 👍 − 👎, from metrics; ADR 0006)
     * submitter_ip_hash : text
   }
 
@@ -82,22 +83,36 @@ package "router KV" {
   }
 }
 
-package "metrics D1" {
-  entity "events" as events <<new>> {
-    * id : integer <<PK>>
+package "metrics D1 (ADR 0006)" {
+  entity "visits" as visits <<new>> {
+    * website_id : text <<PK>>
+    * day : text <<PK>>
+    * visitor_hash : text <<PK>>
+    * kind : text <<PK>>  click | referral
     --
-    * website_id : text
-    * type : text  view | click | like
-    * at : integer
-    visitor_hash : text
+    dedupe only; deleted after its day
   }
   entity "daily_stats" as daily <<new>> {
     * website_id : text <<PK>>
     * day : text <<PK>>
     --
-    views : integer
     clicks : integer
+    referrals : integer
+  }
+  entity "site_totals" as totals <<new>> {
+    * website_id : text <<PK>>
+    --
+    clicks : integer
+    referrals : integer
     likes : integer
+    dislikes : integer
+  }
+  entity "votes" as votes <<new>> {
+    * website_id : text <<PK>>
+    * voter_hash : text <<PK>>
+    --
+    * value : integer  1 | -1
+    * updated_at : integer
   }
 }
 
@@ -107,8 +122,10 @@ websites ||--o{ moderation
 websites ||--o{ reports
 websites ||--|| fts : kept by triggers
 websites .. short : by id (cross-service,\nno FK)
-websites .. events : by id (cross-service,\nno FK)
-events .. daily : rolled up by cron
+websites .. totals : by id (cross-service,\nno FK)
+visits .. daily : new rows counted\nby triggers
+visits .. totals
+votes .. totals : kept by triggers
 
 note right of counters
   Derived values (ADR 0005) are kept by triggers and

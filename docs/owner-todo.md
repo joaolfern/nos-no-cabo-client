@@ -23,6 +23,25 @@ it's done. Context for each step: "Current status and next steps" in
       zod-free entries `@nosnocabo/contract/categories` and `/url`, which take Zod out of the
       site's bundle. nos-client now depends on it (2026-10-05).
 
+## Phase 10: metrics (in this order)
+
+Deployed by hand on 2026-10-05 from nos-sr branch `metrics` and nos-client's working tree, with
+the capacity changes (one request per site page, 60 s client cache, 3-hour rank push). Context:
+ADR 0006.
+
+- [x] Create the metrics database `nnc-metrics-staging` (id in `services/metrics/wrangler.jsonc`).
+- [x] Set `VISITOR_SALT` and `TURNSTILE_SECRET` on `nnc-metrics-staging`.
+- [x] Deploy catalog → metrics → router → gateway, then the site (`pnpm run deploy:web`).
+- [x] Smoke test: one `/r/` click was counted, and one vote passed Turnstile, reached the
+      catalog's `likes` and was then removed.
+- [ ] Publish `@nosnocabo/contract` 0.4.0 (from `nos-sr/packages/contract`), then run
+      `pnpm add @nosnocabo/contract@0.4.0` in nos-client. Until then nos-client's
+      `node_modules` links to the local build, and `pnpm install` breaks the build.
+- [ ] Commit both repos and merge `metrics` into nos-sr's `main`. What's live isn't in git
+      until then; CI redeploys the same code on the merge.
+- [ ] **Within 3 hours:** the metrics cron (minute 23 of every third hour, UTC) logged no
+      errors, and "Melhores" reflects the clicks.
+
 ## Staging deploy (in this order)
 
 CI did the catalog, verification, router and gateway on 2026-10-02 (migrations 0003–0010
@@ -79,6 +98,14 @@ domain all work.
 - [x] **Tell the agent the domain is active.** It then pushes, CI deploys the API domain and
       the router's routes, and `pnpm run deploy:web` deploys the site's domain and the URLs
       baked into widget snippets.
+- [ ] **Always Use HTTPS:** `nosnocabo.com.br` → SSL/TLS → Edge Certificates → turn on "Always
+      Use HTTPS". Today `http://nosnocabo.com.br` serves the site unencrypted (no redirect), so
+      a browser that remembers the `http://` address shows "Not secure". Later, once all is
+      well over HTTPS, consider HSTS on the same page (hard to undo, so not in a hurry).
+- [ ] **Ring links fail open:** in the Cloudflare dashboard's route settings for the router
+      (`nnc-router-staging`), set the request-limit failure mode of `nosnocabo.com.br/ring/*`
+      and `nosnocabo.com.br/r/*` to **Fail open**. Over the daily request limit, members' ring links then land on the site
+      instead of Cloudflare's error page. Check it's still set after the next router deploy.
 - [ ] Redirect `www.nosnocabo.com.br` to `nosnocabo.com.br`: a Redirect Rule in the dashboard
       (needs a proxied DNS record for `www`).
 - [ ] Set up Cloudflare caching for public lists and firewall rate-limiting rules, with

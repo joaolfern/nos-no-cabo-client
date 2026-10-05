@@ -35,7 +35,8 @@ site nobody visits shouldn't outrank one the community uses every day.
   - Verification adds a fixed bonus worth about the same as doubling recent clicks. It decides
     between similar sites without overriding real usage.
   - Ties go to the most recently published.
-- **When it's computed:** an hourly cron in the metrics service reads `daily_stats`, computes
+- **When it's computed:** a cron in the metrics service, every 3 hours to save D1 writes
+  ([0006](0006-metrics.md)), reads `daily_stats`, computes
   the score and pushes `{website_id, rank_score}` to the catalog's internal API. The catalog
   stores `websites.rank_score` and serves `ORDER BY rank_score DESC, published_at DESC`. An
   index on `(status, rank_score)` keeps the query cheap.
@@ -51,7 +52,7 @@ site nobody visits shouldn't outrank one the community uses every day.
   no client release.
 - A new site starts with no clicks and lands near the bottom of "Melhores". "Recentes" is where
   new sites get discovered; a time-limited boost for new sites can be added to the score later.
-- Clicks can be gamed. Events are deduplicated per `visitor_hash` per site per day before they
-  count, and the gateway's rate limit applies.
+- Clicks can be gamed. Events are deduplicated per visitor per site per day before they
+  count, without cookies or per-IP limits (see [0006](0006-metrics.md)).
 - Until `/v1/websites` exists, the legacy list endpoint returns sites in "Melhores" order (the
   mock does this), and the client keeps the other sort options locally.

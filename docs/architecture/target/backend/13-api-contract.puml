@@ -46,21 +46,27 @@ package "verification" {
 
 package "router" {
   class "GET /r/:code" as short <<new>> {
-    {field} 302 → website.url (+ click event)
+    {field} 302 → website.url (+ click, recorded after the redirect)
   }
   class "GET /ring/:id/next | prev | random" as ring <<new>> {
     {field} 302 → neighbour website.url
     {field} used by the widget links
+    {field} + click on the target, referral on :id
   }
 }
 
 package "metrics" {
-  class "POST /v1/websites/:id/events" as events <<new>> {
-    {field} body {type: view | click | like}
-    {field} → 204
+  class "GET /v1/websites/:id/page" as page <<new>> {
+    {field} → WebsitePage {website, neighbours, stats | null}
+    {field} composed by the gateway: one public request per website page
   }
   class "GET /v1/websites/:id/stats" as stats <<new>> {
-    {field} → {views, clicks, likes, daily[]}
+    {field} → WebsiteStats {clicks, clicks30d, referrals, likes, dislikes}
+  }
+  class "POST /v1/websites/:id/votes" as votes <<new>> {
+    {field} header cf-turnstile-response
+    {field} body {voterId: uuid, value: 1 | -1 | 0}
+    {field} → WebsiteStats; 404 unless published
   }
 }
 
@@ -91,6 +97,7 @@ package "schemas" {
     {field} rejectionReason? : unsafe | unreachable | error
     {field} verifiedAt : string | null (ISO)
     {field} submittedAt, publishedAt : string (ISO)
+    {field} likes : integer (net 👍 − 👎)
   }
   class "Page<T>" as page <<new>> {
     {field} items : T[]

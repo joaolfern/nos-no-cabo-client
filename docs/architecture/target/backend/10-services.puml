@@ -9,7 +9,7 @@ package "catalog (owns catalog D1)" {
   component "websites\nlist · get · create · preview" as websites <<new>>
   component "categories\n(11 slugs, docs/categories.md)" as categories <<new>>
   component "scraper\nHTMLRewriter: title, description,\nfavicon, theme color" as scraper <<new>>
-  component "CatalogRpc\ngetForModeration · applyModeration\ngetRing · getRingVersion\ngetVerificationTarget · claimVerificationCheck\nrecordVerification · dueForRecheck" as internal <<new>>
+  component "CatalogRpc\ngetForModeration · applyModeration\ngetRing · getRingVersion\ngetVerificationTarget · claimVerificationCheck\nrecordVerification · dueForRecheck\ngetRankInputs · setMetrics · isPublished" as internal <<new>>
 }
 
 package "moderation" {
@@ -28,9 +28,10 @@ package "router (public; ring snapshot in memory)" {
   component "webring navigation\n/ring/:id/next|prev|random" as ring <<new>>
 }
 
-package "metrics (owns metrics D1)" {
-  component "events\nview · click · like" as events <<new>>
-  component "daily rollups\n+ hourly rank_score\n(Cron)" as rollups <<new>>
+package "metrics (owns metrics D1; ADR 0006)" {
+  component "MetricsRpc.recordClick\ncookieless visitor hash,\none per site per day" as events <<new>>
+  component "stats · votes\nGET /websites/:id/stats\nPOST /websites/:id/votes (Turnstile)" as stats <<new>>
+  component "cron every 3 hours\nrank_score + net likes\n(changed values only)" as rollups <<new>>
 }
 
 queue "moderation-jobs" as q <<new>>
@@ -38,7 +39,7 @@ queue "moderation-jobs" as q <<new>>
 gw --> websites
 gw --> categories
 gw --> verifyNow
-gw --> events
+gw --> stats
 
 websites --> scraper
 websites --> q : enqueue on create
@@ -54,9 +55,10 @@ cron --> internal : due list, record misses
 
 ring --> internal : getRing when\ngetRingVersion changes
 short --> internal : (same snapshot:\nid, url, short code)
-rollups --> internal : rank_score\n(ADR 0004)
-short ..> events : click
-ring ..> events : click
+rollups --> internal : rank_score, likes\n(ADR 0004)
+stats --> internal : isPublished,\nnet likes
+short --> events : click
+ring --> events : click + referral
 
 note bottom of internal
   Only catalog writes the catalog database.
