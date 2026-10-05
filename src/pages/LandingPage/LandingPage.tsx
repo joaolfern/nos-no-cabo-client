@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import { usePageMeta } from '@/hooks/usePageMeta'
 import { MdAdd, MdHome } from 'react-icons/md'
 import { SiteFooter } from '@/layouts/NosNoCaboLayout/components/SiteFooter/SiteFooter'
 import styles from './LandingPage.module.scss'
@@ -11,6 +12,7 @@ import { LANDING_THEME } from './landingTheme'
 import { useTheme } from '@/hooks/useTheme'
 
 export function LandingPage() {
+  usePageMeta({ path: '/' })
   const { mode } = useTheme()
   const bubbles = useRingBubbles()
 

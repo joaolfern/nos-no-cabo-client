@@ -1,4 +1,6 @@
 import { PageTrail } from '@/components/PageTrail/PageTrail'
+import { usePageMeta } from '@/hooks/usePageMeta'
+import { useParams } from 'react-router'
 import { useWebsiteDetails } from '@/pages/Website/hooks/useWebsiteDetails'
 import { WebsiteLoader } from '@/pages/Website/components/WebsiteLoader/WebsiteLoader'
 import { WebsiteInfoCard } from '@/pages/Website/components/WebsiteInfoCard/WebsiteInfoCard'
@@ -9,6 +11,12 @@ import styles from './WebsiteContent.module.scss'
 
 export function WebsiteContent() {
   const { website, isLoading } = useWebsiteDetails()
+  const { id = '' } = useParams<{ id: string }>()
+  usePageMeta({
+    title: website?.name,
+    description: website?.description,
+    path: `/website/${id}`,
+  })
 
   if (isLoading) return <WebsiteLoader />
 
