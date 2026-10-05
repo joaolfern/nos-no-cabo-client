@@ -6,16 +6,17 @@ import { Typography } from '@/components/Typography/Typography'
 import { BubblyContainer } from './components/BubblyContainer/BubblyContainer'
 import { Button } from '@/components/Button/Button'
 import { Link } from '@/components/Link/Link'
-import { MOCK_BUBBLE_ITEMS } from './mocks'
+import { useRingBubbles } from './hooks/useRingBubbles'
 import { LANDING_THEME } from './landingTheme'
 import { useTheme } from '@/hooks/useTheme'
 
 export function LandingPage() {
   const { mode } = useTheme()
+  const bubbles = useRingBubbles()
 
   return (
     <div className={styles.root} style={LANDING_THEME[mode]}>
-      <BubblyContainer items={MOCK_BUBBLE_ITEMS} />
+      <BubblyContainer items={bubbles} />
       <div className={styles.landingPage}>
         <div className={styles.panel}>
           <div className={styles.header}>
