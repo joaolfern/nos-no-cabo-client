@@ -21,17 +21,21 @@ it's done. Context for each step: "Current status and next steps" in
 
 ## Staging deploy (in this order)
 
-- [ ] Create the queues: `npx wrangler queues create moderation-jobs-staging` and
+CI did the catalog, verification, router and gateway on 2026-10-02 (migrations 0003–0010
+applied). Staging reads, search and ring/short links checked.
+
+- [x] Create the queues: `npx wrangler queues create moderation-jobs-staging` and
       `npx wrangler queues create moderation-jobs-staging-dlq`.
-- [ ] Deploy the catalog: `npm run deploy:staging -w @nosnocabo/catalog`. This applies
+- [x] Deploy the catalog: `npm run deploy:staging -w @nosnocabo/catalog`. This applies
       migrations 0003–0010. Deploy the rest right after: the old code can't insert once
       0005 is applied.
-- [ ] Deploy verification, then the router: `npm run deploy:staging -w @nosnocabo/verification`
+- [x] Deploy verification, then the router: `npm run deploy:staging -w @nosnocabo/verification`
       and `npm run deploy:staging -w @nosnocabo/router`.
 - [ ] Deploy moderation: `npm run deploy:staging` in `services/moderation`.
-- [ ] Deploy the gateway: `npm run deploy:staging -w @nosnocabo/gateway`.
-- [ ] Rebuild the client for staging with `VITE_RING_BASE_URL` set to the router's
-      `workers.dev` URL (see `.env.example`).
+- [x] Deploy the gateway: `npm run deploy:staging -w @nosnocabo/gateway`.
+- [x] Deploy the frontend (`nosnocabo` Worker) against staging: `pnpm run deploy:web`
+      builds with `.env.production` (real API, router URL, real Turnstile key) and uploads
+      `dist` (first run 2026-10-02).
 - [ ] **Smoke test, one request at a time, no bursts:**
   - one submission, and watch it get moderated;
   - one report;
@@ -45,8 +49,10 @@ it's done. Context for each step: "Current status and next steps" in
 
 ## GitHub (once available)
 
-- [ ] Add repository secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` in nos-sr
-      and in the moderation repo.
+- [x] Add `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` to nos-sr (on the `staging`
+      environment). CI now deploys catalog, verification, router and gateway on every push to
+      `main` (first run: 2026-10-02, green).
+- [ ] Add the same secrets to the moderation repo, once it has a deploy workflow.
 - [ ] Add a deploy workflow to the moderation repo. It must run after the catalog deploy.
 - [ ] Set up an npm Trusted Publisher for `@nosnocabo/contract` (repository
       `joaolfern/nos-no-cabo-server`, workflow `workers.yml`). Releases then publish from a

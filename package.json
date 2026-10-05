@@ -11,7 +11,8 @@
     "format": "prettier --write src/",
     "prepare": "husky",
     "test": "vitest run",
-    "docs:diagrams": "bash docs/architecture/export-diagrams.sh"
+    "docs:diagrams": "bash docs/architecture/export-diagrams.sh",
+    "deploy:web": "pnpm build && wrangler deploy"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
@@ -51,7 +52,8 @@
     "typescript-plugin-css-modules": "^5.2.0",
     "vite": "^6.3.5",
     "vite-plugin-svgr": "^4.5.0",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.11",
+    "wrangler": "^4.146.0"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
