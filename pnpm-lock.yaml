@@ -12,8 +12,8 @@ importers:
         specifier: ^2.1.2
         version: 2.1.2(gsap@3.15.0)(react@19.3.0)
       '@nosnocabo/contract':
-        specifier: ^0.3.0
-        version: 0.3.0
+        specifier: ^0.3.1
+        version: 0.3.1
       '@react-spring/web':
         specifier: ^10.0.3
         version: 10.1.2(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -862,8 +862,8 @@ packages:
     os: [linux]
     libc: [glibc]
 
-  '@nosnocabo/contract@0.3.0':
-    resolution: {integrity: sha512-WAESlTSO+hL6Vs68rqfTxvYhLx5uakt+A9oFpLvHy9Iy00A9dsEuTHhG+jjA2mAGd/BDZzi/+3mxUEPDftAm1A==}
+  '@nosnocabo/contract@0.3.1':
+    resolution: {integrity: sha512-tpUs8zaPl5V9fGxw5mizYKJ7FKRgHqPQeKytwx0zWI+nbm6Iuz/MP9yXczBkTSSPVaMOIjn8PAVxB8Bf7UfijQ==}
 
   '@open-draft/deferred-promise@2.2.0':
     resolution: {integrity: sha512-CecwLWx3rhxVQF6V4bAgPS5t+So2sTbPgAzafKkVizyi7tlwpcFpdFqq+wqF2OwNBmqFuu6tOyouTuxgpMfzmA==}
@@ -3531,7 +3531,7 @@ snapshots:
   '@napi-rs/lzma-linux-x64-gnu@1.5.1':
     optional: true
 
-  '@nosnocabo/contract@0.3.0':
+  '@nosnocabo/contract@0.3.1':
     dependencies:
       zod: 4.6.5
 
