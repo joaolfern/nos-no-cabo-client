@@ -69,4 +69,27 @@ describe('Website page', () => {
       screen.queryByRole('button', { name: 'Notificar problema' })
     ).not.toBeInTheDocument()
   })
+
+  it('holds the ring navigation row with placeholders until the neighbours arrive', async () => {
+    const neighbours = mockNeighbours('2')
+    await renderWebsite('2')
+
+    await screen.findByRole('heading', { level: 1 })
+    expect(screen.getAllByText('Carregando vizinho')).toHaveLength(3)
+
+    expect(
+      await screen.findByTitle(neighbours?.next?.name ?? '')
+    ).toBeInTheDocument()
+    expect(screen.queryAllByText('Carregando vizinho')).toHaveLength(0)
+  })
+
+  it('holds the page with a loading state instead of collapsing it', async () => {
+    await renderWebsite('2')
+
+    expect(
+      screen.getByRole('status', { name: 'Carregando site' })
+    ).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { level: 1 })).toBeInTheDocument()
+    expect(screen.queryByRole('status', { name: 'Carregando site' })).toBeNull()
+  })
 })
