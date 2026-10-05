@@ -66,17 +66,17 @@ applied). Staging reads, search and ring/short links checked.
 
 The domain runs on the current stack (the `*-staging` Workers, D1 and queues): the site on
 `nosnocabo.com.br`, the router on `nosnocabo.com.br/ring/*` and `/r/*`, and the API on
-`api.nosnocabo.com.br`. The config is ready in both repos but not pushed: routes on a zone
-that isn't active would fail the deploy.
+`api.nosnocabo.com.br`. Live since 2026-10-05: the site, `api.nosnocabo.com.br`, and the ring and short links on the
+domain all work.
 
-- [ ] **Add the domain to Cloudflare:**
+- [x] **Add the domain to Cloudflare:**
   1. In Cloudflare, add the domain `nosnocabo.com.br` on the Free plan.
   2. At registro.br, replace `a.auto.dns.br`/`b.auto.dns.br` with the two Cloudflare
      nameservers.
   3. Wait until Cloudflare shows the domain as **Active**.
-- [ ] **Turnstile:** add `nosnocabo.com.br` to the hostnames of the existing widget. The site
+- [x] **Turnstile:** add `nosnocabo.com.br` to the hostnames of the existing widget. The site
       key doesn't change.
-- [ ] **Tell the agent the domain is active.** It then pushes, CI deploys the API domain and
+- [x] **Tell the agent the domain is active.** It then pushes, CI deploys the API domain and
       the router's routes, and `pnpm run deploy:web` deploys the site's domain and the URLs
       baked into widget snippets.
 - [ ] Redirect `www.nosnocabo.com.br` to `nosnocabo.com.br`: a Redirect Rule in the dashboard

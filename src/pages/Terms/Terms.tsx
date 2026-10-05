@@ -1,10 +1,12 @@
 import { PageTrail } from '@/components/PageTrail/PageTrail'
+import { usePageMeta } from '@/hooks/usePageMeta'
 import { Typography } from '@/components/Typography/Typography'
 import { TermsContent } from '@/pages/Terms/components/TermsContent/TermsContent'
 import { TERMS_VERSION_LABEL } from '@/pages/Terms/utils/terms'
 import styles from './Terms.module.scss'
 
 export function Terms() {
+  usePageMeta({ title: 'Termos de uso', path: '/termos' })
   return (
     <div className={styles.page}>
       <PageTrail

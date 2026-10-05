@@ -1,4 +1,5 @@
 import { FeedAside } from '@/pages/Feed/components/FeedAside/FeedAside'
+import { usePageMeta } from '@/hooks/usePageMeta'
 import { FeedCardList } from '@/pages/Feed/components/FeedCardList/FeedCardList'
 import { FeedLoadMore } from '@/pages/Feed/components/FeedLoadMore/FeedLoadMore'
 import { FeedTopbar } from '@/pages/Feed/components/FeedTopbar/FeedTopbar'
@@ -10,6 +11,7 @@ import { isFeedView } from '@/interfaces/IFeedView'
 import styles from './Feed.module.scss'
 
 export function Feed() {
+  usePageMeta({ title: 'Projetos', path: '/websites' })
   const { websites, total, isLoading, hasMore, loadMore, pageSize } =
     useWebsites()
   const { selectedKeywords, clearKeywords, clearSearch } = useFilters()

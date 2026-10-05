@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router'
+import { usePageMeta } from '@/hooks/usePageMeta'
 import { PageTrail } from '@/components/PageTrail/PageTrail'
 import { useMessage } from '@/contexts/useMessage'
 import type { ISubmittedWebsite } from '@/interfaces/IWebsite'
@@ -6,6 +7,12 @@ import { SubmitForm } from '@/pages/SubmitWebsite/components/SubmitForm/SubmitFo
 import styles from './SubmitWebsite.module.scss'
 
 export function SubmitWebsite() {
+  usePageMeta({
+    title: 'Adicionar um site',
+    description:
+      'Cole o endereço de um projeto brasileiro de tecnologia e adicione-o ao Nós no Cabo.',
+    path: '/websites/novo',
+  })
   const navigate = useNavigate()
   const { showMessage } = useMessage()
 

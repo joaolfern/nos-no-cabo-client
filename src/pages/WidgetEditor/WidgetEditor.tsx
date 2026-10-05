@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import { usePageMeta } from '@/hooks/usePageMeta'
 import { useMemo, useState, type ReactNode } from 'react'
 import { useParams } from 'react-router'
 import { LuCodeXml } from 'react-icons/lu'
@@ -124,6 +125,11 @@ function trailCrumbs(id: string, website?: ISubmittedWebsite): Crumb[] {
 export function WidgetEditor() {
   const { id = '' } = useParams<{ id: string }>()
   const website = useSubmittedWebsite(id)
+  usePageMeta({
+    title: website.data ? `Selo de ${website.data.name}` : 'Selo',
+    path: `/websites/${id}/selo`,
+    noIndex: true,
+  })
   const [options, setOptions] = useState<WidgetOptions>(DEFAULT_WIDGET_OPTIONS)
   const [backdrop, setBackdrop] = useState<Backdrop>('escuro')
   const terms = useTermsAcceptance()

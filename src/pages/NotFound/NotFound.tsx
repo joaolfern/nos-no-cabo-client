@@ -1,10 +1,14 @@
 import { Scene } from '@/components/Scene/Scene'
+import { usePageMeta } from '@/hooks/usePageMeta'
+import { useLocation } from 'react-router'
 import styles from './NotFound.module.scss'
 import { Link } from '@/components/Link/Link'
 import { Typography } from '@/components/Typography/Typography'
 import { MdHome } from 'react-icons/md'
 
 export function NotFound() {
+  const { pathname } = useLocation()
+  usePageMeta({ title: 'Página não encontrada', path: pathname, noIndex: true })
   return (
     <div className={styles.container}>
       <Scene

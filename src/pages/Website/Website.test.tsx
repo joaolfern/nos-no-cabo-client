@@ -92,4 +92,18 @@ describe('Website page', () => {
     expect(await screen.findByRole('heading', { level: 1 })).toBeInTheDocument()
     expect(screen.queryByRole('status', { name: 'Carregando site' })).toBeNull()
   })
+
+  it('names the page and describes it with the site it shows', async () => {
+    await renderWebsite('2')
+
+    await screen.findByRole('heading', { level: 1 })
+    await waitFor(() =>
+      expect(document.title).toBe(
+        'Conjuntura do mercado de trabalho brasileiro · Nós no Cabo'
+      )
+    )
+    expect(
+      document.head.querySelector('link[rel="canonical"]')?.getAttribute('href')
+    ).toBe('https://nosnocabo.pages.dev/website/2')
+  })
 })
