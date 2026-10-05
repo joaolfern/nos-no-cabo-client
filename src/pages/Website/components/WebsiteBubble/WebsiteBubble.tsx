@@ -1,5 +1,8 @@
 import styles from './WebsiteBubble.module.scss'
-import type { WebsiteBubbleProps } from './WebsiteBubble.types'
+import {
+  BUBBLE_FALLBACK_IMAGE,
+  type WebsiteBubbleProps,
+} from './WebsiteBubble.types'
 
 export type WebsiteBubbleExtendedProps = WebsiteBubbleProps & {
   isStationed?: boolean
@@ -26,10 +29,11 @@ export function WebsiteBubble({
         src={imageSrc}
         alt={title}
         className={styles.image}
-        onError={(e) => {
-          e.currentTarget.style.filter = 'grayscale(100%)'
-          e.currentTarget.style.opacity = '0.5'
-          e.currentTarget.style.backgroundColor = 'transparent'
+        onError={(event) => {
+          const image = event.currentTarget
+          if (!image.src.endsWith(BUBBLE_FALLBACK_IMAGE)) {
+            image.src = BUBBLE_FALLBACK_IMAGE
+          }
         }}
       />
       <span className={styles.title}>{title}</span>
