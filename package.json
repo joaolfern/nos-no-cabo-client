@@ -12,7 +12,8 @@
     "prepare": "husky",
     "test": "vitest run",
     "docs:diagrams": "bash docs/architecture/export-diagrams.sh",
-    "deploy:web": "pnpm build && wrangler deploy"
+    "deploy:web": "pnpm run snapshot:ring && pnpm build && wrangler deploy",
+    "snapshot:ring": "node --env-file=.env.production scripts/snapshotRing.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
