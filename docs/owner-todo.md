@@ -19,28 +19,32 @@ it's done. Context for each step: "Current status and next steps" in
   - Until then, `pnpm install` in nos-client breaks the build: it replaces a hand-copied
     local build.
 
+- [x] **Publish `@nosnocabo/contract` 0.3.1** (from `nos-sr/packages/contract`): adds the
+      zod-free entries `@nosnocabo/contract/categories` and `/url`, which take Zod out of the
+      site's bundle. nos-client now depends on it (2026-10-05).
+
 ## Staging deploy (in this order)
 
 CI did the catalog, verification, router and gateway on 2026-10-02 (migrations 0003–0010
 applied). Staging reads, search and ring/short links checked.
 
-- [x] Create the queues: `npx wrangler queues create moderation-jobs-staging` and
-      `npx wrangler queues create moderation-jobs-staging-dlq`.
-- [x] Deploy the catalog: `npm run deploy:staging -w @nosnocabo/catalog`. This applies
+- [x] Create the queues: `pnpm exec wrangler queues create moderation-jobs-staging` and
+      `pnpm exec wrangler queues create moderation-jobs-staging-dlq`.
+- [x] Deploy the catalog: `pnpm --filter @nosnocabo/catalog run deploy:staging`. This applies
       migrations 0003–0010. Deploy the rest right after: the old code can't insert once
       0005 is applied.
-- [x] Deploy verification, then the router: `npm run deploy:staging -w @nosnocabo/verification`
-      and `npm run deploy:staging -w @nosnocabo/router`.
-- [ ] Deploy moderation: `npm run deploy:staging` in `services/moderation`.
-- [x] Deploy the gateway: `npm run deploy:staging -w @nosnocabo/gateway`.
+- [x] Deploy verification, then the router: `pnpm --filter @nosnocabo/verification run deploy:staging`
+      and `pnpm --filter @nosnocabo/router run deploy:staging`.
+- [x] Deploy moderation: `pnpm run deploy:staging` in `services/moderation` (2026-10-05).
+- [x] Deploy the gateway: `pnpm --filter @nosnocabo/gateway run deploy:staging`.
 - [x] Deploy the frontend (`nosnocabo` Worker) against staging: `pnpm run deploy:web`
       builds with `.env.production` (real API, router URL, real Turnstile key) and uploads
       `dist` (first run 2026-10-02).
 - [ ] **Smoke test, one request at a time, no bursts:**
   - one submission, and watch it get moderated;
   - one report;
-  - `npm run review:staging -- list`;
-  - `npm run review:staging -- rebuild`;
+  - `pnpm run review:staging list`;
+  - `pnpm run review:staging rebuild`;
   - one "Verificar" press;
   - one `/ring/<id>/next` link and one `/r/<code>` link on the router URL.
 - [ ] **The next day:**
@@ -58,27 +62,36 @@ applied). Staging reads, search and ring/short links checked.
       `joaolfern/nos-no-cabo-server`, workflow `workers.yml`). Releases then publish from a
       `contract-vX.Y.Z` tag.
 
-## Before launch (needs `nosnocabo.com.br`)
+## Domain `nosnocabo.com.br` (bought 2026-10-05)
 
-- [ ] **Buy `nosnocabo.com.br`.**
-- [ ] **Before anyone installs a widget**, point these at the domain:
-  - the client's `VITE_NOS_NO_CABO_URL` and `VITE_RING_BASE_URL`;
-  - the gateway's `ALLOWED_ORIGINS`;
-  - a production Turnstile widget.
-- [ ] Route `nosnocabo.com.br/ring/*` and `/r/*` to the router Worker, and set its
-      `HOME_URL`.
-- [ ] Add the domain to the verification Worker's `HOME_HOSTS`.
-- [ ] Set up Cloudflare caching for public lists and firewall rate-limiting rules on the
-      domain, with thresholds that fit a classroom sharing one address.
-- [ ] Create the production queues `moderation-jobs` and `moderation-jobs-dlq`.
+The domain runs on the current stack (the `*-staging` Workers, D1 and queues): the site on
+`nosnocabo.com.br`, the router on `nosnocabo.com.br/ring/*` and `/r/*`, and the API on
+`api.nosnocabo.com.br`. The config is ready in both repos but not pushed: routes on a zone
+that isn't active would fail the deploy.
+
+- [ ] **Add the domain to Cloudflare:**
+  1. In Cloudflare, add the domain `nosnocabo.com.br` on the Free plan.
+  2. At registro.br, replace `a.auto.dns.br`/`b.auto.dns.br` with the two Cloudflare
+     nameservers.
+  3. Wait until Cloudflare shows the domain as **Active**.
+- [ ] **Turnstile:** add `nosnocabo.com.br` to the hostnames of the existing widget. The site
+      key doesn't change.
+- [ ] **Tell the agent the domain is active.** It then pushes, CI deploys the API domain and
+      the router's routes, and `pnpm run deploy:web` deploys the site's domain and the URLs
+      baked into widget snippets.
+- [ ] Redirect `www.nosnocabo.com.br` to `nosnocabo.com.br`: a Redirect Rule in the dashboard
+      (needs a proxied DNS record for `www`).
+- [ ] Set up Cloudflare caching for public lists and firewall rate-limiting rules, with
+      thresholds that fit a classroom sharing one address. The Free plan includes one rate
+      limiting rule.
 - [ ] **Turn on report alerts:**
   1. Enable Email Routing on the domain.
   2. Verify your address as a destination.
-  3. Add to the catalog's `wrangler.jsonc`, in each environment:
+  3. Add this to the catalog's `staging` block in `wrangler.jsonc`:
      `"send_email": [{ "name": "ALERT_EMAIL", "destination_address": "<you>" }]`
   4. Add the vars `ALERT_FROM` (e.g. `alertas@nosnocabo.com.br`) and `ALERT_TO`.
-- [ ] Plan production deploys so a column drop (like 0005) ships after the code that no
-      longer uses it.
+- [ ] Plan future deploys so a column drop (like 0005) ships after the code that no longer
+      uses it.
 
 ## Decisions waiting on you
 
