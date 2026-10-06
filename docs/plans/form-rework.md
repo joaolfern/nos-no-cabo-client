@@ -19,8 +19,7 @@ keep it current.
   queues: the site (the `nosnocabo` static-assets Worker), the API on
   `api.nosnocabo.com.br` (gateway) and the router on `nosnocabo.com.br/ring/*` and `/r/*`.
   Phases 1–9 are deployed, along with the cost hardening. Both repos are on `main`.
-- **Phase 10 (metrics, ranking, likes) is deployed (2026-10-05) but not committed:** it went
-  out by hand from nos-sr branch `metrics` and nos-client's uncommitted `main`. See "Phase 10"
+- **Phase 10 (metrics, ranking, likes) is deployed and committed (2026-10-05).** See "Phase 10"
   below and ADR 0006.
 - **No per-IP limits, on purpose.** The app is shown in colleges, where a whole room shares one
   IPv4 address, and a Turnstile "session" can't identify a person. Protection without
@@ -32,8 +31,8 @@ keep it current.
     `router`, `verification` and `metrics`. `services/moderation` is a **private** submodule
     with its own pnpm setup, kept out of the workspace. Never put moderation policy in a
     public repo.
-  - **Contract:** 0.3.1 is published (zod-free `/categories` and `/url` entries). 0.4.0
-    (`Website.likes`, `WebsiteStats`, `VoteSubmission`) is on the `metrics` branch, unpublished.
+  - **Contract:** 0.4.0 is published (`Website.likes`, `WebsiteStats`, `VoteSubmission`,
+    `WebsitePage`, plus 0.3.1's zod-free `/categories` and `/url` entries).
   - **Catalog:** D1 at migration 0010. Submissions start as `checking` and go to the
     `moderation-jobs` queue; derived data (counts, categories, FTS5) is kept by triggers (ADR
     0005); reports flag a site for review and never hide it; report alerts wait on Email
@@ -65,9 +64,6 @@ keep it current.
 - Client: real stats on the website page (with a same-height loading state), real votes,
   real "Curtidas" in the feed, and `visitUrl()` for every visit link. The mocked metrics are
   gone; `src/__mocks__/data/metrics.ts` seeds the mocks.
-- Until 0.4.0 is published, nos-client's `node_modules/@nosnocabo/contract` is a symlink to the
-  local nos-sr build. `pnpm install` restores the published 0.3.1, which breaks the build until
-  `pnpm add @nosnocabo/contract@0.4.0`.
 
 **Open items**
 
@@ -488,7 +484,7 @@ and remove the password from the client.
      order from `CatalogRpc.getRing()` in memory and refetches when `getRingVersion()`
      changes; `robots.txt` disallows `/ring/`, plus a per-IP rate limit (ADR 0005).
      `VITE_RING_BASE_URL` points at it.
-10. **Metrics and ranking.** *Deployed, not committed (see "Current status", ADR 0006).*
+10. **Metrics and ranking.** *Deployed (see "Current status", ADR 0006).*
     Router-recorded clicks with a cookieless daily dedupe, `daily_stats` rollups, a 3-hourly
     `rank_score` (ADR 0004), net likes from 👍/👎 votes. The website page shows real numbers.
 11. **Cutover.**

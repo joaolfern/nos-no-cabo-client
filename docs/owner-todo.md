@@ -34,11 +34,8 @@ ADR 0006.
 - [x] Deploy catalog → metrics → router → gateway, then the site (`pnpm run deploy:web`).
 - [x] Smoke test: one `/r/` click was counted, and one vote passed Turnstile, reached the
       catalog's `likes` and was then removed.
-- [ ] Publish `@nosnocabo/contract` 0.4.0 (from `nos-sr/packages/contract`), then run
-      `pnpm add @nosnocabo/contract@0.4.0` in nos-client. Until then nos-client's
-      `node_modules` links to the local build, and `pnpm install` breaks the build.
-- [ ] Commit both repos and merge `metrics` into nos-sr's `main`. What's live isn't in git
-      until then; CI redeploys the same code on the merge.
+- [x] Publish `@nosnocabo/contract` 0.4.0; nos-client depends on it (2026-10-05).
+- [x] Commit both repos and merge `metrics` into nos-sr's `main` (CI redeployed, green).
 - [ ] **Within 3 hours:** the metrics cron (minute 23 of every third hour, UTC) logged no
       errors, and "Melhores" reflects the clicks.
 
