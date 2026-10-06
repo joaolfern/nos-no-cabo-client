@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import { useNavigate } from 'react-router'
 import { LuArrowUpRight } from 'react-icons/lu'
 import { Image } from '@/components/Image/Image'
 import { Link } from '@/components/Link/Link'
@@ -30,6 +31,13 @@ export function FeedTable({
   highlightKeywordId,
 }: FeedTableProps) {
   const showLikes = variant === 'detailed'
+  const navigate = useNavigate()
+
+  // The whole row opens the site; links and buttons inside it keep their own action.
+  function openRow(event: React.MouseEvent, websiteId: string) {
+    if ((event.target as HTMLElement).closest('a, button')) return
+    navigate(`/website/${websiteId}`)
+  }
 
   return (
     <div className={styles.container}>
@@ -37,10 +45,8 @@ export function FeedTable({
         <thead>
           <tr>
             <th className={styles.siteColumn}>Site</th>
-            <th className={styles.optional}>Descrição</th>
-            <th className={clsx(styles.categoryColumn, styles.optional)}>
-              Categoria
-            </th>
+            <th>Descrição</th>
+            <th className={styles.categoryColumn}>Categoria</th>
             {showLikes && <th className={styles.likesColumn}>Curtidas</th>}
             <th className={styles.visitColumn}>
               <span className={styles.srOnly}>Visitar</span>
@@ -64,10 +70,8 @@ export function FeedTable({
                   <span className={styles.name}>{website.name}</span>
                 </span>
               </td>
-              <td className={clsx(styles.description, styles.optional)}>
-                {website.description}
-              </td>
-              <td className={clsx(styles.category, styles.optional)}>
+              <td className={styles.description}>{website.description}</td>
+              <td className={styles.category}>
                 {getCategoryLabel(website.keywords[0]?.name ?? '')}
               </td>
               <td className={styles.pendingStatus} colSpan={showLikes ? 2 : 1}>
@@ -80,7 +84,12 @@ export function FeedTable({
                 <SkeletonRow key={index} showLikes={showLikes} />
               ))
             : data.map((website) => (
-                <tr key={website.id} data-testid='feed-card'>
+                <tr
+                  key={website.id}
+                  data-testid='feed-card'
+                  className={styles.linkRow}
+                  onClick={(event) => openRow(event, website.id)}
+                >
                   <td>
                     <span className={styles.siteCell}>
                       <Link
@@ -101,10 +110,8 @@ export function FeedTable({
                       />
                     </span>
                   </td>
-                  <td className={clsx(styles.description, styles.optional)}>
-                    {website.description}
-                  </td>
-                  <td className={clsx(styles.category, styles.optional)}>
+                  <td className={styles.description}>{website.description}</td>
+                  <td className={styles.category}>
                     {getCategoryLabel(
                       getPrimaryKeyword(website, highlightKeywordId)?.name ?? ''
                     )}
@@ -144,10 +151,10 @@ function SkeletonRow({ showLikes }: { showLikes: boolean }) {
           </span>
         </span>
       </td>
-      <td className={styles.optional}>
+      <td>
         <span className={styles.boneText}>&nbsp;</span>
       </td>
-      <td className={styles.optional}>
+      <td>
         <span className={clsx(styles.boneText, styles.boneShort)}>&nbsp;</span>
       </td>
       {showLikes && <td />}

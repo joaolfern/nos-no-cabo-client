@@ -82,18 +82,48 @@
 .nav {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-areas: 'previous random next';
   align-items: center;
   gap: $spacing-xs;
   padding: $spacing-xs;
   border-top: $border-base;
+
+  // Phones: the neighbours share the top row, each with its name under the label.
+  @media (max-width: $breakpoint-sm) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      'previous next'
+      'random random';
+  }
 }
 
 .navPrevious {
+  grid-area: previous;
   justify-self: start;
 }
 
 .navNext {
+  grid-area: next;
   justify-self: end;
+  text-align: right;
+}
+
+.navRandom {
+  grid-area: random;
+  justify-self: center;
+}
+
+.navText {
+  display: flex;
+  align-items: baseline;
+  gap: $spacing-xxs;
+  min-width: 0;
+
+  @media (max-width: $breakpoint-sm) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
 }
 
 .navLink {
@@ -133,6 +163,12 @@
 .navMuted {
   color: var(--color-text-muted);
   white-space: nowrap;
+
+  @media (min-width: #{$breakpoint-sm + 1px}) {
+    &::after {
+      content: ':';
+    }
+  }
 }
 
 .navAccent {

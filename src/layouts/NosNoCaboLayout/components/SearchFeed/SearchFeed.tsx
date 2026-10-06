@@ -22,17 +22,18 @@ export function SearchFeed({ container }: SearchFeedProps) {
     (search: string) => {
       updateSearch(search)
 
-      const currentParams = new URLSearchParams()
+      // Only the search's own parameter changes; the category filter stays in the address.
+      const params = new URLSearchParams(window.location.search)
+      if (search) params.set('s', search)
+      else params.delete('s')
 
-      currentParams.set('s', search)
-
-      if (!search) {
-        currentParams.delete('s')
-      }
-
-      const newSearch = currentParams.toString()
-
-      if (newSearch) window.history.replaceState(null, '', `?${newSearch}`)
+      const query = params.toString()
+      // Keep the router's history state: it holds the key scroll positions are saved under.
+      window.history.replaceState(
+        window.history.state,
+        '',
+        query ? `?${query}` : window.location.pathname
+      )
     },
     [updateSearch]
   )

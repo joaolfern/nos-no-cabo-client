@@ -1,17 +1,19 @@
 @use '@/styles/tokens/spacing.scss' as *;
 @use '@/styles/tokens/border.scss' as *;
-@use '@/styles/tokens/breakpoints.scss' as *;
 @use '@/styles/tokens/animations.scss' as *;
 
 .container {
   border: $border-base;
   border-radius: $radius-md-lg;
   background: var(--color-surface);
-  overflow: hidden;
+  // Narrow screens scroll the table sideways instead of squeezing its columns.
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
 }
 
 .table {
   width: 100%;
+  min-width: 46rem;
   table-layout: fixed;
   border-collapse: collapse;
   color: var(--color-text-base);
@@ -53,6 +55,23 @@
   tbody td:first-child {
     padding-block: $spacing-xs;
   }
+
+  // The site column stays in view while the rest scrolls sideways.
+  th:first-child,
+  td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: var(--color-surface);
+  }
+
+  tbody tr:hover td:first-child {
+    background: var(--color-raised);
+  }
+}
+
+.linkRow {
+  cursor: pointer;
 }
 
 .siteColumn {
@@ -70,15 +89,6 @@ th.likesColumn {
 
 .visitColumn {
   width: 3.25rem;
-}
-
-// Below sm there's no room for the long text columns.
-.optional {
-  display: none;
-
-  @media (min-width: $breakpoint-sm) {
-    display: table-cell;
-  }
 }
 
 .siteCell {
@@ -112,7 +122,7 @@ th.likesColumn {
 
 .name {
   min-width: 0;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .description {

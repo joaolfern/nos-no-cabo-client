@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useSearchParams } from 'react-router'
 import { Button } from '@/components/Button/Button'
 import { Input } from '@/components/Input/Input'
-import { Link } from '@/components/Link/Link'
 import { Textarea } from '@/components/Textarea/Textarea'
 import { Typography } from '@/components/Typography/Typography'
 import { TURNSTILE_SITE_KEY } from '@/config/env'
@@ -213,9 +212,6 @@ export function SubmitForm({ onSubmitted }: SubmitFormProps) {
         <div className={styles.actions}>
           <Button type='submit' disabled={submit.isPending}>
             {submit.isPending ? 'Enviando…' : 'Enviar site'}
-          </Button>
-          <Button variant='secondary' asChild>
-            <Link to='/websites'>Cancelar</Link>
           </Button>
         </div>
         <p className={styles.submitMessage} role='alert'>

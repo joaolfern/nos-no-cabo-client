@@ -40,22 +40,24 @@ export function Search({
     setIsFocused(true)
   }
 
+  // Phones show the field only while open, so closing has to be reachable without a keyboard.
+  function close() {
+    setIsFocused(false)
+    inputRef.current?.blur()
+    onChange?.('')
+  }
+
   function handleClear(e: React.MouseEvent<HTMLButtonElement>) {
     e.stopPropagation()
-
-    if (inputRef.current) {
-      inputRef.current.value = ''
-      focusInput()
-    }
-    if (onChange) onChange('')
+    close()
   }
 
   function handleEscape(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === 'Escape') {
-      setIsFocused(false)
-      if (inputRef && inputRef.current) inputRef.current.blur()
-      if (onChange) onChange('')
-    }
+    if (e.key === 'Escape') close()
+  }
+
+  function handleBlur() {
+    if (!inputRef.current?.value) setIsFocused(false)
   }
 
   return (
@@ -75,7 +77,7 @@ export function Search({
           ) : (
             <ButtonIcon
               key='clear'
-              label='Clear'
+              label='Fechar busca'
               className={styles.mainButton}
               onClick={handleClear}
               variant='transparent'
@@ -92,6 +94,7 @@ export function Search({
             })}
             onChange={handleChange}
             onKeyDown={handleEscape}
+            onBlur={handleBlur}
             {...rest}
           />
         </div>

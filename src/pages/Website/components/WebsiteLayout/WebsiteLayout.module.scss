@@ -1,9 +1,15 @@
 @use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/breakpoints.scss' as *;
 
 .container {
   display: flex;
   flex-direction: column;
   gap: $spacing-md;
-  margin-inline: $spacing-xl;
+  margin-inline: $spacing-sm;
   margin-block: $spacing-md;
+
+  // Same inline spacing as the top bar, so the edges line up.
+  @media (min-width: $breakpoint-sm) {
+    margin-inline: $spacing-xl;
+  }
 }

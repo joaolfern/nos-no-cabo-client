@@ -17,7 +17,11 @@
   display: flex;
   flex-direction: column;
   gap: 1.125rem;
-  padding: 1.375rem $spacing-xl $spacing-xxxl;
+  padding: 1.375rem $spacing-sm $spacing-xxxl;
+
+  @media (min-width: $breakpoint-sm) {
+    padding-inline: $spacing-xl;
+  }
 }
 
 .clearFilters {

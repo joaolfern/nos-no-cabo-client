@@ -52,8 +52,10 @@ export function WebsiteMetrics({ website }: WebsiteMetricsProps) {
             title={previous.name}
           >
             <LuChevronLeft size='1rem' />
-            <span className={styles.navMuted}>Anterior:</span>
-            <span className={styles.navName}>{previous.name}</span>
+            <span className={styles.navText}>
+              <span className={styles.navMuted}>Anterior</span>
+              <span className={styles.navName}>{previous.name}</span>
+            </span>
           </Link>
         ) : (
           <NavPlaceholder
@@ -65,13 +67,13 @@ export function WebsiteMetrics({ website }: WebsiteMetricsProps) {
         {random ? (
           <Link
             to={`/website/${random.id}`}
-            className={clsx(styles.navLink, styles.navAccent)}
+            className={clsx(styles.navLink, styles.navAccent, styles.navRandom)}
           >
             <LuShuffle size='1rem' />
             Site aleatório
           </Link>
         ) : (
-          <NavPlaceholder isLoading={isLoading} />
+          <NavPlaceholder className={styles.navRandom} isLoading={isLoading} />
         )}
 
         {next ? (
@@ -80,8 +82,10 @@ export function WebsiteMetrics({ website }: WebsiteMetricsProps) {
             className={clsx(styles.navLink, styles.navNext)}
             title={next.name}
           >
-            <span className={styles.navMuted}>Próximo:</span>
-            <span className={styles.navName}>{next.name}</span>
+            <span className={styles.navText}>
+              <span className={styles.navMuted}>Próximo</span>
+              <span className={styles.navName}>{next.name}</span>
+            </span>
             <LuChevronRight size='1rem' />
           </Link>
         ) : (
