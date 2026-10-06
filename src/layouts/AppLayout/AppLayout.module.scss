@@ -1,6 +1,5 @@
 @use '@/styles/tokens/spacing.scss' as *;
 @use '@/styles/tokens/breakpoints.scss' as *;
-@use '@/styles/tokens/mixins.scss' as *;
 
 .container {
   --topbar-height: 4.625rem;
@@ -16,23 +15,6 @@
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-}
-
-// Wide pages scroll below the top bar on desktop, so the bar stays in view while
-// the stable gutter keeps content from shifting. Mobile and focused pages keep
-// page scrolling, so the bar scrolls away with the content.
-@media (min-width: $breakpoint-md) {
-  .wide {
-    height: 100dvh;
-  }
-
-  .wide .content {
-    min-height: 0;
-    overflow-y: auto;
-    scrollbar-gutter: stable;
-
-    @include scrollbar();
-  }
 }
 
 .topbarContent {

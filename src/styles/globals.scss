@@ -1,9 +1,15 @@
 @use '@/styles/tokens/border.scss' as *;
+@use '@/styles/tokens/mixins.scss' as *;
 @use '@/styles/tokens/typography.scss' as *;
 @use '@/styles/viewTransitions.scss';
 
+// The window is the page's only scroll container; the gutter keeps layouts from
+// shifting when a page grows a scrollbar.
 html {
   background: var(--color-background-300);
+  scrollbar-gutter: stable;
+
+  @include scrollbar();
 }
 
 html,

@@ -1,8 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { Providers } from '@/providers'
 import { ENABLE_MOCKS } from '@/config/env'
-import { Router } from '@/providers/RouterProvider/routes'
+import { AppRouter } from '@/providers/RouterProvider/AppRouter'
 import './styles/index.scss'
 
 async function enableMocking() {
@@ -18,9 +17,7 @@ async function enableMocking() {
 enableMocking().then(() => {
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
-      <Providers>
-        <Router />
-      </Providers>
+      <AppRouter />
     </StrictMode>
   )
 })

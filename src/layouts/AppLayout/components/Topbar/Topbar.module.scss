@@ -2,8 +2,19 @@
 @use '@/styles/tokens/breakpoints.scss' as *;
 @use '@/styles/tokens/border.scss' as *;
 
+// The window is the only scroll container (so the router can restore scroll positions).
+// On desktop, wide pages keep the bar in view by sticking it to the top.
 .topbar {
   position: relative;
+
+  @media (min-width: $breakpoint-md) {
+    &:not(.focused) {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--color-background-100);
+    }
+  }
 }
 
 .content {
