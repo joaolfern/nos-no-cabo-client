@@ -36,8 +36,8 @@ ADR 0006.
       catalog's `likes` and was then removed.
 - [x] Publish `@nosnocabo/contract` 0.4.0; nos-client depends on it (2026-10-05).
 - [x] Commit both repos and merge `metrics` into nos-sr's `main` (CI redeployed, green).
-- [ ] **Within 3 hours:** the metrics cron (minute 23 of every third hour, UTC) logged no
-      errors, and "Melhores" reflects the clicks.
+- [x] The metrics cron ran: PNAAT's `rank_score` became 2.772589 from the smoke-test click
+      (checked 2026-10-06).
 
 ## Staging deploy (in this order)
 
@@ -95,7 +95,7 @@ domain all work.
 - [x] **Tell the agent the domain is active.** It then pushes, CI deploys the API domain and
       the router's routes, and `pnpm run deploy:web` deploys the site's domain and the URLs
       baked into widget snippets.
-- [ ] **Always Use HTTPS:** `nosnocabo.com.br` → SSL/TLS → Edge Certificates → turn on "Always
+- [x] **Always Use HTTPS:** `nosnocabo.com.br` → SSL/TLS → Edge Certificates → turn on "Always
       Use HTTPS". Today `http://nosnocabo.com.br` serves the site unencrypted (no redirect), so
       a browser that remembers the `http://` address shows "Not secure". Later, once all is
       well over HTTPS, consider HSTS on the same page (hard to undo, so not in a hurry).
