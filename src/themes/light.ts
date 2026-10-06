@@ -30,14 +30,15 @@ export const LIGHT_THEME_VARIABLES: Record<ThemeVariables, string> = {
   'color-danger-100': '#ffeaea',
   'color-danger-700': '#e63946',
 
-  'color-border-400': '#e6e0e3',
+  'color-border-400': '#e3e1e3',
 
-  'color-background-100': '#f2f0f2',
-  'color-background-200': '#e6e0e3',
-  'color-background-300': '#c5c0c8',
+  // Flat: the page, cards and inputs share one colour and borders separate them.
+  'color-background-100': '#fbfafb',
+  'color-background-200': '#fbfafb',
+  'color-background-300': '#d5d2d5',
 
-  'color-surface': '#faf9fa',
-  'color-raised': '#e9e5e8',
+  'color-surface': '#fbfafb',
+  'color-raised': '#efedef',
 
   'blur-background': '20px',
 

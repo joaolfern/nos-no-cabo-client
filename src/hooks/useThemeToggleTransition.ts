@@ -11,11 +11,10 @@ type Point = { x: number; y: number }
 // instant swap when the API is unsupported, the app's own animations
 // toggle is off, or the OS asks for reduced motion.
 export function useThemeToggleTransition() {
-  const { mode, updateThemeMode, animationsEnabled } = useTheme()
+  const { nextMode, updateThemeMode, animationsEnabled } = useTheme()
 
   const toggleTheme = useCallback(
     (event: React.MouseEvent<HTMLElement>) => {
-      const nextMode = mode === 'dark' ? 'light' : 'dark'
       const applyTheme = () => updateThemeMode(nextMode)
 
       if (!canAnimateWave(animationsEnabled)) {
@@ -28,7 +27,7 @@ export function useThemeToggleTransition() {
 
       transition.ready.then(() => animateWave(origin), noop)
     },
-    [mode, updateThemeMode, animationsEnabled]
+    [nextMode, updateThemeMode, animationsEnabled]
   )
 
   return { toggleTheme }

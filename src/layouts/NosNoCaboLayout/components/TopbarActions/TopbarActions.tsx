@@ -1,19 +1,33 @@
-import { MdAdd, MdDarkMode, MdLightMode } from 'react-icons/md'
+import type { ReactNode } from 'react'
+import { MdAdd, MdBrightness4, MdDarkMode, MdLightMode } from 'react-icons/md'
 import { Button } from '@/components/Button/Button'
 import { ButtonIcon } from '@/components/ButtonIcon/ButtonIcon'
 import { useTheme } from '@/hooks/useTheme'
 import { useThemeToggleTransition } from '@/hooks/useThemeToggleTransition'
 import { Link } from '@/components/Link/Link'
+import type { ThemeModes } from '@/interfaces/ITheme'
 import styles from './TopbarActions.module.scss'
+
+// The icon shows the current theme; the label says what a click switches to.
+const THEME_ICON: Record<ThemeModes, ReactNode> = {
+  dark: <MdDarkMode size={20} />,
+  dimmed: <MdBrightness4 size={20} />,
+  light: <MdLightMode size={20} />,
+}
+
+const SWITCH_LABEL: Record<ThemeModes, string> = {
+  dark: 'Usar tema escuro',
+  dimmed: 'Usar tema suave',
+  light: 'Usar tema claro',
+}
 
 type TopbarActionsProps = {
   showAddSite?: boolean
 }
 
 export function TopbarActions({ showAddSite = true }: TopbarActionsProps) {
-  const { mode } = useTheme()
+  const { mode, nextMode } = useTheme()
   const { toggleTheme } = useThemeToggleTransition()
-  const isDark = mode === 'dark'
 
   return (
     <div className={styles.actions}>
@@ -27,11 +41,11 @@ export function TopbarActions({ showAddSite = true }: TopbarActionsProps) {
       )}
       <ButtonIcon
         variant='transparent'
-        label={isDark ? 'Usar tema claro' : 'Usar tema escuro'}
+        label={SWITCH_LABEL[nextMode]}
         className={styles.themeToggle}
         onClick={toggleTheme}
       >
-        {isDark ? <MdLightMode size={20} /> : <MdDarkMode size={20} />}
+        {THEME_ICON[mode]}
       </ButtonIcon>
     </div>
   )

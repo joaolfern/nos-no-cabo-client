@@ -63,7 +63,7 @@ export function UnverifiedModal({
             websiteId={websiteId}
             options={{
               preset: 'faixa',
-              theme: mode === 'dark' ? 'escuro' : 'claro',
+              theme: mode === 'light' ? 'claro' : 'escuro',
               accent: 'rosa',
               logo: 'cor',
               nav: false,

@@ -1,7 +1,12 @@
 import { ThemeContext } from '@/contexts/ThemeContext'
 import type { IThemeContext } from '@/interfaces/ITheme'
-import { DARK_THEME_VARIABLES } from '@/themes/dark'
-import { LIGHT_THEME_VARIABLES } from '@/themes/light'
+import {
+  THEME_VARIABLES,
+  isDimmedUnlocked,
+  isThemeMode,
+  nextThemeMode,
+  recordSeenMode,
+} from '@/themes/themeModes'
 import {
   useEffect,
   useLayoutEffect,
@@ -25,15 +30,14 @@ const toggleAnimationReducer = (state: boolean) => {
 
 const getCurrentTheme = () => {
   const storedTheme = localStorage.getItem('themeMode')
-  if (storedTheme) {
-    return storedTheme as IThemeContext['mode']
-  }
+  if (isThemeMode(storedTheme)) return storedTheme
 
   return matchesDark(window.matchMedia('(prefers-color-scheme: dark)').matches)
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
   const [mode, setThemeMode] = useState<IThemeContext['mode']>(getCurrentTheme)
+  const [dimmedUnlocked, setDimmedUnlocked] = useState(isDimmedUnlocked)
   const [animationsEnabled, toggleAnimations] = useReducer(
     toggleAnimationReducer,
     localStorage.getItem('animationsEnabled') === 'false' ? false : true
@@ -45,16 +49,14 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   }
 
   function applyThemeVariables(themeMode: IThemeContext['mode']) {
-    const variables =
-      themeMode === 'dark' ? DARK_THEME_VARIABLES : LIGHT_THEME_VARIABLES
-
-    Object.entries(variables).forEach(([key, value]) => {
+    Object.entries(THEME_VARIABLES[themeMode]).forEach(([key, value]) => {
       document.documentElement.style.setProperty(`--${key}`, value)
     })
   }
 
   useLayoutEffect(() => {
     applyThemeVariables(mode)
+    setDimmedUnlocked(recordSeenMode(mode))
   }, [mode])
 
   useEffect(() => {
@@ -71,11 +73,12 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   const value: IThemeContext = useMemo(
     () => ({
       mode,
+      nextMode: nextThemeMode(mode, dimmedUnlocked),
       updateThemeMode,
       animationsEnabled,
       toggleAnimations,
     }),
-    [mode, toggleAnimations, animationsEnabled]
+    [mode, dimmedUnlocked, toggleAnimations, animationsEnabled]
   )
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
