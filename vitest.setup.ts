@@ -27,7 +27,6 @@ vi.mock('@/config/env', async (importOriginal) => ({
   NOS_NO_CABO_URL: 'https://nosnocabo.pages.dev',
   RING_BASE_URL: 'https://nosnocabo.pages.dev',
   TURNSTILE_SITE_KEY: undefined,
-  ENABLE_OPEN_LIBRARY_API: false,
 }))
 
 beforeAll(() => server.listen())

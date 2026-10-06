@@ -10,7 +10,6 @@ import { WebsiteAuthorAndDate } from '@/pages/Webring/components/WebsiteAuthorAn
 import { WebsiteVotes } from '@/pages/Website/components/WebsiteVotes/WebsiteVotes'
 import type { IWebsite } from '@/interfaces/IWebsite'
 import { VerificationStatus } from '@/pages/WidgetEditor/components/VerificationStatus/VerificationStatus'
-import { VerifyPanel } from '@/pages/WidgetEditor/components/VerifyPanel/VerifyPanel'
 import { visitUrl } from '@/utils/visitUrl/visitUrl'
 import styles from './WebsiteInfoCard.module.scss'
 import { getCategoryLabel } from '@/pages/Feed/constants/categories'
@@ -106,10 +105,6 @@ export function WebsiteInfoCard({ website }: WebsiteInfoCardProps) {
           </Button>
           <WebsiteVotes websiteId={website.id} />
         </div>
-
-        {!website.verifiedAt && (
-          <VerifyPanel websiteId={website.id} websiteName={website.name} />
-        )}
       </div>
     </aside>
   )

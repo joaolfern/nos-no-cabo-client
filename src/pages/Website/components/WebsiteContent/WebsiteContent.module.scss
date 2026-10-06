@@ -12,7 +12,7 @@
 .layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-areas: 'info' 'primary' 'reads';
+  grid-template-areas: 'info' 'side' 'primary';
   align-items: start;
   gap: $spacing-lg;
 
@@ -20,12 +20,12 @@
     grid-template-columns: 18.75rem minmax(0, 1fr);
     grid-template-areas:
       'info primary'
-      'info reads';
+      'info side';
   }
 
   @media (min-width: $breakpoint-lg) {
     grid-template-columns: 18.75rem minmax(0, 1fr) 17.5rem;
-    grid-template-areas: 'info primary reads';
+    grid-template-areas: 'info primary side';
   }
 }
 
@@ -34,7 +34,7 @@
 
   @media (min-width: $breakpoint-md) {
     position: sticky;
-    top: $spacing-lg;
+    top: calc(var(--topbar-height) + #{$spacing-lg});
   }
 }
 
@@ -46,12 +46,12 @@
   gap: $spacing-xl;
 }
 
-.readsColumn {
-  grid-area: reads;
+.sideColumn {
+  grid-area: side;
   min-width: 0;
 
   @media (min-width: $breakpoint-lg) {
     position: sticky;
-    top: $spacing-lg;
+    top: calc(var(--topbar-height) + #{$spacing-lg});
   }
 }

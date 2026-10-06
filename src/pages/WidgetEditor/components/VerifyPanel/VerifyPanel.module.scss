@@ -1,12 +1,9 @@
 @use '@/styles/tokens/spacing.scss' as *;
-@use '@/styles/tokens/border.scss' as *;
 
 .panel {
   display: flex;
   flex-direction: column;
   gap: $spacing-xs;
-  padding-top: $spacing-md;
-  border-top: $border-base;
   font-size: 0.8125rem;
   line-height: 1.5;
 }

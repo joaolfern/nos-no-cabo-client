@@ -6,7 +6,7 @@ import { WebsiteLoader } from '@/pages/Website/components/WebsiteLoader/WebsiteL
 import { WebsiteInfoCard } from '@/pages/Website/components/WebsiteInfoCard/WebsiteInfoCard'
 import { WebsiteMetrics } from '@/pages/Website/components/WebsiteMetrics/WebsiteMetrics'
 import { RecommendedSites } from '@/pages/Website/components/RecommendedSites/RecommendedSites'
-import { RecommendBooks } from '@/pages/Website/components/RecommendBooks/RecommendBooks'
+import { WebsiteSidebar } from '@/pages/Website/components/WebsiteSidebar/WebsiteSidebar'
 import styles from './WebsiteContent.module.scss'
 
 export function WebsiteContent() {
@@ -42,8 +42,8 @@ export function WebsiteContent() {
           <RecommendedSites websiteId={website.id} />
         </div>
 
-        <div className={styles.readsColumn}>
-          <RecommendBooks keywords={website.keywords} />
+        <div className={styles.sideColumn}>
+          <WebsiteSidebar website={website} />
         </div>
       </div>
     </section>

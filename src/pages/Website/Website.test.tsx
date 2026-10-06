@@ -73,6 +73,37 @@ describe('Website page', () => {
     expect(sitePaths).toEqual(['/v1/websites/2/page'])
   })
 
+  it('offers the badge and the short link in the side column', async () => {
+    await renderWebsite('2')
+
+    const side = await screen.findByRole('complementary', {
+      name: 'Sobre este site',
+    })
+    expect(
+      within(side).getByRole('link', { name: 'Adicionar o selo' })
+    ).toHaveAttribute('href', '/websites/2/selo')
+    expect(
+      within(side).getByText('https://nosnocabo.pages.dev/r/2')
+    ).toBeInTheDocument()
+  })
+
+  it('shows when a verified site got its badge', async () => {
+    await renderWebsite('4')
+
+    const side = await screen.findByRole('complementary', {
+      name: 'Sobre este site',
+    })
+    expect(within(side).getByText(/Verificado em/)).toBeInTheDocument()
+    expect(
+      within(side).getByRole('link', {
+        name: 'Personalizar e copiar o selo',
+      })
+    ).toHaveAttribute('href', '/websites/4/selo')
+    expect(
+      within(side).queryByRole('button', { name: 'Verificar' })
+    ).not.toBeInTheDocument()
+  })
+
   it('recommends six other sites', async () => {
     await renderWebsite('2')
 

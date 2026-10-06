@@ -14,10 +14,3 @@ v1Api.interceptors.response.use(
   (response) => response,
   (error) => Promise.reject(toApiError(error))
 )
-
-export const openLibraryApi = axios.create({
-  baseURL: 'https://openlibrary.org/',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-})

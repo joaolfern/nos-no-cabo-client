@@ -1,0 +1,65 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+@use '@/styles/tokens/animations.scss' as *;
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: $spacing-xs;
+  padding: $spacing-md;
+  border: $border-base;
+  border-radius: $radius-md-lg;
+  background: var(--color-surface);
+}
+
+.title {
+  margin: 0;
+  color: var(--color-text-base);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.text {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.link {
+  max-width: 100%;
+  color: var(--color-text-base);
+  font-size: 0.8125rem;
+  overflow-wrap: anywhere;
+}
+
+.textLink {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-xxs;
+  color: var(--color-primary-400);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+
+  svg {
+    @include has-motion {
+      transition: transform 0.15s;
+    }
+  }
+
+  &:hover {
+    text-decoration: underline;
+
+    svg {
+      transform: translateX(2px);
+    }
+  }
+}

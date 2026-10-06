@@ -1,11 +1,12 @@
 export type IThemeContext = {
   mode: ThemeModes
+  nextMode: ThemeModes
   updateThemeMode: (newMode: ThemeModes) => void
   animationsEnabled: boolean
   toggleAnimations: () => void
 }
 
-export type ThemeModes = 'light' | 'dark'
+export type ThemeModes = 'light' | 'dark' | 'dimmed'
 
 export type ThemeVariables =
   | 'color-neutral-100'
