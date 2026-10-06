@@ -108,12 +108,13 @@ domain all work.
 - [ ] Set up Cloudflare caching for public lists and firewall rate-limiting rules, with
       thresholds that fit a classroom sharing one address. The Free plan includes one rate
       limiting rule.
-- [ ] **Turn on report alerts:**
-  1. Enable Email Routing on the domain.
-  2. Verify your address as a destination.
-  3. Add this to the catalog's `staging` block in `wrangler.jsonc`:
-     `"send_email": [{ "name": "ALERT_EMAIL", "destination_address": "<you>" }]`
-  4. Add the vars `ALERT_FROM` (e.g. `alertas@nosnocabo.com.br`) and `ALERT_TO`.
+- [x] **Report alerts** (2026-10-06): Email Routing is on (Cloudflare MX, SPF and DKIM; the old
+      null MX and `-all` SPF were removed; DMARC `p=reject` stays). The catalog sends from
+      `alertas@nosnocabo.com.br` to the verified destination stored in the `ALERT_TO` secret.
+      To change the recipient: verify the new address in Email Routing, then
+      `pnpm exec wrangler secret put ALERT_TO --env staging` in `services/catalog`.
+- [ ] Approve PNAAT after the alert test: `pnpm run review:staging approve
+      01M2Y1SM00MZ2HKGHJ1SX009GA` (it was reported on purpose; it stays published meanwhile).
 - [ ] Plan future deploys so a column drop (like 0005) ships after the code that no longer
       uses it.
 
