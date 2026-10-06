@@ -26,10 +26,17 @@ export function WebsiteVotes({ websiteId }: WebsiteVotesProps) {
   const pendingRef = useRef<IVoteValue | null>(null)
 
   const shownVote = pendingVote ?? savedVote
-  const likes =
-    (stats?.likes ?? 0) - countOf(savedVote, 1) + countOf(shownVote, 1)
-  const dislikes =
-    (stats?.dislikes ?? 0) - countOf(savedVote, -1) + countOf(shownVote, -1)
+  const isLoadingStats = stats === undefined
+
+  // Blank while loading and "–" when metrics are down, never a misleading 0.
+  function countLabel(side: 1 | -1) {
+    if (isLoadingStats) return ''
+    if (stats === null) return '–'
+    const total = side === 1 ? stats.likes : stats.dislikes
+    return formatCompactNumber(
+      total - countOf(savedVote, side) + countOf(shownVote, side)
+    )
+  }
 
   const send = useCallback(
     (value: IVoteValue, turnstileToken: string | null) => {
@@ -71,17 +78,17 @@ export function WebsiteVotes({ websiteId }: WebsiteVotesProps) {
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.container} aria-busy={isPending}>
+      <div className={styles.container} aria-busy={isPending || isLoadingStats}>
         <button
           type='button'
           className={clsx(styles.button, { [styles.active]: shownVote === 1 })}
           title='Gostei'
           aria-pressed={shownVote === 1}
-          disabled={isPending}
+          disabled={isPending || isLoadingStats}
           onClick={() => choose(1)}
         >
           <LuThumbsUp size='1rem' />
-          <span className={styles.count}>{formatCompactNumber(likes)}</span>
+          <span className={styles.count}>{countLabel(1)}</span>
         </button>
         <span className={styles.divider} />
         <button
@@ -91,11 +98,11 @@ export function WebsiteVotes({ websiteId }: WebsiteVotesProps) {
           })}
           title='Não gostei'
           aria-pressed={shownVote === -1}
-          disabled={isPending}
+          disabled={isPending || isLoadingStats}
           onClick={() => choose(-1)}
         >
           <LuThumbsDown size='1rem' />
-          <span className={styles.count}>{formatCompactNumber(dislikes)}</span>
+          <span className={styles.count}>{countLabel(-1)}</span>
         </button>
       </div>
       {TURNSTILE_SITE_KEY && isPending && (

@@ -26,6 +26,38 @@ beforeEach(() => {
 })
 
 describe('WebsiteVotes', () => {
+  it('never shows a 0 next to a remembered vote while the counts load', async () => {
+    localStorage.setItem('nnc-votes', JSON.stringify({ '1': 1 }))
+    const seeded = mockStats('1')
+
+    await render(<WebsiteVotes websiteId='1' />)
+
+    expect(likeButton()).toHaveAttribute('aria-pressed', 'true')
+    expect(likeButton()).not.toHaveTextContent(/\d/)
+    expect(likeButton()).toBeDisabled()
+
+    await waitFor(() =>
+      expect(likeButton()).toHaveTextContent(formatCompactNumber(seeded.likes))
+    )
+    expect(likeButton()).not.toBeDisabled()
+  })
+
+  it('shows a dash when the counts are unavailable', async () => {
+    server.use(
+      http.get(`${V1_API_URL}/websites/:id/page`, ({ params }) =>
+        HttpResponse.json({
+          website: { id: params.id },
+          neighbours: { previous: null, next: null, random: null },
+          stats: null,
+        })
+      )
+    )
+    await render(<WebsiteVotes websiteId='1' />)
+
+    await waitFor(() => expect(likeButton()).toHaveTextContent('–'))
+    expect(dislikeButton()).toHaveTextContent('–')
+  })
+
   it('likes, switches to a dislike and removes the vote', async () => {
     const seeded = await renderVotes()
 
