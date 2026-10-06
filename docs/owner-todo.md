@@ -59,8 +59,8 @@ applied). Staging reads, search and ring/short links checked.
 - [ ] **Smoke test, one request at a time, no bursts:**
   - one submission, and watch it get moderated;
   - one report;
-  - `pnpm run review:staging list`;
-  - `pnpm run review:staging rebuild`;
+  - `pnpm review list` (from the nos-sr root);
+  - `pnpm review rebuild`;
   - one "Verificar" press;
   - one `/ring/<id>/next` link and one `/r/<code>` link on the router URL.
 - [ ] **The next day:**
@@ -113,7 +113,7 @@ domain all work.
       `alertas@nosnocabo.com.br` to the verified destination stored in the `ALERT_TO` secret.
       To change the recipient: verify the new address in Email Routing, then
       `pnpm exec wrangler secret put ALERT_TO --env staging` in `services/catalog`.
-- [x] The alert test arrived (2026-10-06); its report on PNAAT was declined with `review approve`.
+- [x] The alert test arrived (2026-10-06); its report on PNAAT was declined (now `pnpm review dismiss <id>`).
 - [ ] Plan future deploys so a column drop (like 0005) ships after the code that no longer
       uses it.
 
