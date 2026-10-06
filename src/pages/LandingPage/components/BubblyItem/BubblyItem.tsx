@@ -6,6 +6,7 @@ import { WebsiteBubble } from '@/pages/Website/components/WebsiteBubble/WebsiteB
 import type { WebsiteBubbleProps } from '@/pages/Website/components/WebsiteBubble/WebsiteBubble.types'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import type { BubbleTrajectoryConfig } from '../../LandingPage.types'
+import { BUBBLE_LANE_PADDING_PX } from '../../utils/getNextBubble'
 import styles from './BubblyItem.module.scss'
 
 gsap.registerPlugin(useGSAP, Draggable)
@@ -252,9 +253,20 @@ export const BubblyItem = memo(function BubblyItemInner({
   const cssVariables = {
     '--lane': trajectoryConfig.lane,
     '--lane-count': laneCount,
-    '--lane-padding': '10px',
+    '--lane-padding': `${BUBBLE_LANE_PADDING_PX}px`,
     '--size': `${trajectoryConfig.size}px`,
+    ...(trajectoryConfig.width && {
+      '--width': `${trajectoryConfig.width}px`,
+      '--bubble-max-width': `${trajectoryConfig.width}px`,
+    }),
     '--top': `${trajectoryConfig.top}%`,
+    ...(trajectoryConfig.side === 'left' && {
+      '--left': `${trajectoryConfig.inset}%`,
+    }),
+    ...(trajectoryConfig.side === 'right' && {
+      '--left': 'auto',
+      '--right': `${trajectoryConfig.inset}%`,
+    }),
   } as React.CSSProperties
 
   return (

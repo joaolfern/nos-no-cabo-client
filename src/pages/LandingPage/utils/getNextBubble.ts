@@ -5,11 +5,16 @@ const MAX_LANE_COUNT = 12
 const MOBILE_LANE_SIZE_PX = 96
 const DESKTOP_LANE_SIZE_PX = 132
 const HORIZONTAL_GUTTER_PX = 24
+const PHONE_MAX_WIDTH_PX = 600
+export const PHONE_LANE_COUNT = 2
+export const BUBBLE_LANE_PADDING_PX = 16
 
 export function getLaneCount(
   viewportWidth = window.innerWidth,
   laneSizePx?: number
 ) {
+  if (viewportWidth < PHONE_MAX_WIDTH_PX) return PHONE_LANE_COUNT
+
   const isMobileViewport = getIsMobile(viewportWidth)
   const targetLaneSize =
     laneSizePx ||

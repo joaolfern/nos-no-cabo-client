@@ -7,7 +7,8 @@ $fuschia: #ff0081;
   position: relative;
   border-radius: $radius-lg;
   border: $border-base;
-  max-width: 400px;
+  box-sizing: border-box;
+  max-width: var(--bubble-max-width, 400px);
   white-space: nowrap;
   display: inline-flex;
   align-items: center;
@@ -15,18 +16,18 @@ $fuschia: #ff0081;
   font-weight: 600;
   line-height: 1.2;
   gap: $spacing-xxs;
-  background-color: #ffffff56;
+  background-color: var(--bubble-background, #ffffff56);
   -webkit-font-smoothing: antialiased;
   text-rendering: geometricPrecision;
   cursor: pointer;
   text-decoration: none;
-  color: inherit;
+  color: var(--bubble-color, inherit);
   transition:
     transform ease-in 0.1s,
     box-shadow ease-in 0.25s;
   will-change: transform;
   z-index: 1;
-  box-shadow: 0 2px 25px rgba(255, 0, 130, 0.2);
+  box-shadow: var(--bubble-shadow, 0 2px 25px rgba(255, 0, 130, 0.2));
 
   &:focus {
     outline: 0;
@@ -88,10 +89,14 @@ $fuschia: #ff0081;
 
 .title {
   display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   line-height: 1.2;
 }
 
 .image {
+  flex: none;
   width: 1.5rem;
   height: 1.5rem;
   border-radius: $radius-sm;

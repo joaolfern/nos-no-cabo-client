@@ -26,7 +26,10 @@ export function LandingPage() {
               Nós no Cabo
             </Typography>
             <p>
-              <Typography variant='titleSm' color='tint'>
+              <Typography
+                variant='titleSm'
+                color={mode === 'light' ? 'muted' : 'tint'}
+              >
                 Conectando a comunidade brasileira
                 <br /> de tecnologia
               </Typography>

@@ -15,7 +15,16 @@ export const LANDING_THEME: Record<IThemeContext['mode'], CSSProperties> = {
     '--color-background-400': '#050313',
     '--color-background-500': '#1d1f21',
   } as CSSProperties,
+  dimmed: {
+    '--color-border-400': '#ffffff45',
+    '--color-background-400': '#050313',
+  } as CSSProperties,
+  // Light mode is plain: solid bubbles, no pink shadows and no glow on the lines.
   light: {
+    '--bubble-background': 'var(--color-surface)',
+    '--bubble-color': 'var(--color-text-base)',
+    '--bubble-shadow': '0 1px 3px rgb(0 0 0 / 0.08)',
+    '--landing-line-glow': 'none',
     '--color-border-400': '#e6e0e3',
     '--color-background-100': '#f2f0f2',
     '--color-background-200': '#e6e0e3',

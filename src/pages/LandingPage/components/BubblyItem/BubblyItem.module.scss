@@ -1,20 +1,26 @@
 .bubblyItemWrapper {
   position: absolute;
   top: var(--top);
-  left: clamp(
-    var(--lane-padding),
-    calc(
-      var(--lane-padding) +
-        ((100% - (var(--lane-padding) * 2)) / var(--lane-count) * var(--lane)) +
-        (
+  right: var(--right, auto);
+  left: var(
+    --left,
+    clamp(
+      var(--lane-padding),
+      calc(
+        var(--lane-padding) +
           (
-              (100% - (var(--lane-padding) * 2)) /
-                var(--lane-count) - var(--size)
-            ) /
-            2
-        )
-    ),
-    calc(100% - var(--lane-padding) - var(--size))
+            (100% - (var(--lane-padding) * 2)) / var(--lane-count) * var(--lane)
+          ) +
+          (
+            (
+                (100% - (var(--lane-padding) * 2)) /
+                  var(--lane-count) - var(--width, var(--size))
+              ) /
+              2
+          )
+      ),
+      calc(100% - var(--lane-padding) - var(--width, var(--size)))
+    )
   );
   // width: var(--size);
   height: var(--size);
