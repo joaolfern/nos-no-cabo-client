@@ -113,8 +113,7 @@ domain all work.
       `alertas@nosnocabo.com.br` to the verified destination stored in the `ALERT_TO` secret.
       To change the recipient: verify the new address in Email Routing, then
       `pnpm exec wrangler secret put ALERT_TO --env staging` in `services/catalog`.
-- [ ] Approve PNAAT after the alert test: `pnpm run review:staging approve
-      01M2Y1SM00MZ2HKGHJ1SX009GA` (it was reported on purpose; it stays published meanwhile).
+- [x] The alert test arrived (2026-10-06); its report on PNAAT was declined with `review approve`.
 - [ ] Plan future deploys so a column drop (like 0005) ships after the code that no longer
       uses it.
 
