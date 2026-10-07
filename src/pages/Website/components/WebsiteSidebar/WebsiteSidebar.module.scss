@@ -33,14 +33,6 @@
   line-height: 1.5;
 }
 
-.copyActions {
-  display: grid;
-  grid-auto-columns: minmax(0, 1fr);
-  grid-auto-flow: column;
-  gap: $spacing-xxs;
-  width: 100%;
-}
-
 .textLink {
   display: inline-flex;
   align-items: center;

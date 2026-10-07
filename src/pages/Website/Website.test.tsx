@@ -2,7 +2,6 @@ import { screen, waitFor, within } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
 import userEvent from '@testing-library/user-event'
 import { render } from '@/__tests__/utils.test'
-import { V1_API_URL } from '@/config/env'
 import { v1Api } from '@/api/api'
 import type { ISubmittedWebsite } from '@/interfaces/IWebsite'
 import { mockNeighbours } from '@/__mocks__/data/catalog'
@@ -75,7 +74,7 @@ describe('Website page', () => {
     expect(sitePaths).toEqual(['/v1/websites/2/page'])
   })
 
-  it('offers the badge and copies the short link and API in the side column', async () => {
+  it('offers the badge and copies the short link in the side column', async () => {
     const user = userEvent.setup()
     await renderWebsite('2')
 
@@ -90,13 +89,33 @@ describe('Website page', () => {
       'https://nosnocabo.pages.dev/r/2'
     )
     expect(
-      within(side).getByRole('button', { name: 'Copiado!' })
+      within(side).getByRole('button', { name: 'Link copiado' })
     ).toBeInTheDocument()
 
-    await user.click(within(side).getByRole('button', { name: 'Copiar API' }))
-    expect(await navigator.clipboard.readText()).toBe(
-      `${V1_API_URL}/websites/2`
-    )
+    expect(
+      within(side).queryByRole('button', { name: 'Enviar para…' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('shares the short link through the system share sheet', async () => {
+    const share = vi.fn().mockResolvedValue(undefined)
+    Object.defineProperty(navigator, 'share', {
+      value: share,
+      configurable: true,
+    })
+    const user = userEvent.setup()
+    await renderWebsite('2')
+
+    const side = await screen.findByRole('complementary', {
+      name: 'Sobre este site',
+    })
+    await user.click(within(side).getByRole('button', { name: 'Enviar para…' }))
+
+    expect(share).toHaveBeenCalledWith({
+      title: 'Conjuntura do mercado de trabalho brasileiro',
+      url: 'https://nosnocabo.pages.dev/r/2',
+    })
+    Reflect.deleteProperty(navigator, 'share')
   })
 
   it('shows when a verified site got its badge', async () => {
