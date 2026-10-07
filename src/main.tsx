@@ -2,7 +2,10 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { ENABLE_MOCKS } from '@/config/env'
 import { AppRouter } from '@/providers/RouterProvider/AppRouter'
+import { reloadOnPreloadError } from '@/utils/reloadOnPreloadError/reloadOnPreloadError'
 import './styles/index.scss'
+
+reloadOnPreloadError()
 
 async function enableMocking() {
   if (!ENABLE_MOCKS) {
