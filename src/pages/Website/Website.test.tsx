@@ -182,4 +182,21 @@ describe('Website page', () => {
       document.head.querySelector('link[rel="canonical"]')?.getAttribute('href')
     ).toBe('https://nosnocabo.pages.dev/website/2')
   })
+
+  it('shows a not-found page for a site that does not exist', async () => {
+    await renderWebsite('nao-existe')
+
+    expect(
+      await screen.findByRole('heading', {
+        level: 1,
+        name: 'Site não encontrado',
+      })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: /Ver todos os projetos/ })
+    ).toHaveAttribute('href', '/websites')
+    await waitFor(() =>
+      expect(document.title).toBe('Site não encontrado · Nós no Cabo')
+    )
+  })
 })

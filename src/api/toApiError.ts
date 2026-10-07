@@ -57,3 +57,6 @@ export function toApiError(error: unknown): IApiError {
 
   return { code: codeFromStatus(status), message: error.message, status }
 }
+
+export const isNotFoundError = (error: unknown) =>
+  isRecord(error) && error.code === 'not_found'
