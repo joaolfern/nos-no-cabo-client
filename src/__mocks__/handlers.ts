@@ -119,6 +119,13 @@ export const handlers = [
 
     return HttpResponse.json(getMockStatuses(ids))
   }),
+  http.post(`${V1}/websites/:id/subscriptions`, ({ params }) => {
+    if (getMockSubmittedWebsite(String(params.id))?.status !== 'checking') {
+      return errorResponse(404, 'not_found', 'Site não está em análise.')
+    }
+
+    return new HttpResponse(null, { status: 204 })
+  }),
   http.post(`${V1}/websites/:id/reports`, async ({ params, request }) => {
     const id = String(params.id)
     if (getMockSubmittedWebsite(id)?.status !== 'published') {

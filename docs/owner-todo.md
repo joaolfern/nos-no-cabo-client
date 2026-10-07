@@ -23,6 +23,22 @@ it's done. Context for each step: "Current status and next steps" in
       zod-free entries `@nosnocabo/contract/categories` and `/url`, which take Zod out of the
       site's bundle. nos-client now depends on it (2026-10-05).
 
+## Web Push (in this order)
+
+Built on 2026-10-07 in both repos' working trees, uncommitted. Context: "Web Push" in
+[`plans/form-rework.md`](plans/form-rework.md).
+
+- [x] Make a VAPID key pair: `node scripts/vapidKeys.mjs` in `nos-sr/services/catalog`.
+- [x] Put the public key in `wrangler.jsonc` (`env.staging.vars.VAPID_PUBLIC_KEY`) and in
+      nos-client's `.env.production` (`VITE_VAPID_PUBLIC_KEY`).
+- [x] `pnpm exec wrangler secret put VAPID_PRIVATE_KEY --env staging` in `services/catalog`.
+- [ ] Publish `@nosnocabo/contract` 0.5.0 (the client doesn't need it; it sends the browser's
+      own subscription JSON).
+- [ ] Commit both repos. CI deploys the catalog (applies migration 0011, adds the hourly cron),
+      then `pnpm run deploy:web`.
+- [ ] Smoke test, once: submit a site, press the bell, close the tab, approve it with
+      `pnpm review`, and wait for the notification (within the hour, from the cron).
+
 ## Phase 10: metrics (in this order)
 
 Deployed by hand on 2026-10-05 from nos-sr branch `metrics` and nos-client's working tree, with

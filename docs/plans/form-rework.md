@@ -7,7 +7,7 @@ The form is rebuilt from scratch for the community-driven flow described in
 frontend is built against MSW mocks that follow the target contract
 ([`13-api-contract`](../architecture/target/backend/13-api-contract.puml)).
 
-## Current status and next steps (2026-10-05)
+## Current status and next steps (2026-10-07)
 
 Read this first when picking the work up in a new session. The owner's own steps (commits,
 deploys, GitHub, domain) are tracked as a checklist in [`../owner-todo.md`](../owner-todo.md);
@@ -35,8 +35,8 @@ keep it current.
     `WebsitePage`, plus 0.3.1's zod-free `/categories` and `/url` entries).
   - **Catalog:** D1 at migration 0010. Submissions start as `checking` and go to the
     `moderation-jobs` queue; derived data (counts, categories, FTS5) is kept by triggers (ADR
-    0005); reports flag a site for review and never hide it; report alerts wait on Email
-    Routing.
+    0005); reports flag a site for review and never hide it; report alerts are emailed through
+    Email Routing on `nosnocabo.com.br` (`ALERT_TO` is a secret).
   - **Moderation** (private): Llama Guard, at most 250 AI checks per UTC day, a backlog drained
     by a 00:05 UTC cron, a dead-letter queue, and the `review` script.
   - **Router:** in-memory ring snapshot, refetched when `getRingVersion()` changes.
@@ -65,6 +65,21 @@ keep it current.
   real "Curtidas" in the feed, and `visitUrl()` for every visit link. The mocked metrics are
   gone; `src/__mocks__/data/metrics.ts` seeds the mocks.
 
+**Web Push (2026-10-07, built, not deployed)**
+
+- Contract 0.5.0: `PushSubscriptionSubmission` (the browser's `PushSubscription.toJSON()`).
+- Catalog: migration 0011 (`push_subscriptions`), `POST /v1/websites/:id/subscriptions` (only
+  while `checking`, at most 5 per site, endpoint must be a known push service), RFC 8291/8292
+  in `src/lib/webPush.ts` on WebCrypto (tested against the RFC 8291 vector). `applyModeration`
+  pushes right away; an hourly cron (`41 * * * *`, the 4th of 5 free-plan triggers) pushes
+  decisions made by the review script and drops subscriptions older than 7 days. Sending is
+  best effort: a claimed subscription is deleted even if its push fails. No VAPID keys means
+  no sending.
+- Client: `public/sw.js`, `usePushSubscription` (subscribes each checking draft once when
+  notification permission is granted; the in-tab polling stays as the fallback). Off while
+  mocks are on (MSW's worker owns the root scope) or without `VITE_VAPID_PUBLIC_KEY`.
+- Owner steps in [`../owner-todo.md`](../owner-todo.md).
+
 **Open items**
 
 1. **Phase 10 owner steps:** in [`../owner-todo.md`](../owner-todo.md) (create the metrics D1,
@@ -92,7 +107,7 @@ keep it current.
 - The small CLS left on `/websites` (0.0072), and the landing page loading its chunks one
   after another.
 - A time-limited boost for new sites in "Melhores" (ADR 0004).
-- Web Push for people who left (see "Future steps").
+- Screenshot moderation, if text-only checks prove weak.
 
 ## Goals
 
@@ -406,8 +421,8 @@ modal's copy and editor link.
 
 ## Future steps
 
-**Notify people who already left (Web Push).** Phase 3 only notifies while a tab is open. To
-reach someone who closed the site:
+**Notify people who already left (Web Push).** Built on 2026-10-07 (see "Current status"); the
+original design:
 
 1. Client: register a service worker (a small `public/sw.js`; it must coexist with the dev-only
    MSW worker), create a push subscription with the server's VAPID public key when the person opts

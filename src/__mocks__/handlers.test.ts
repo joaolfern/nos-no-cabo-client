@@ -45,6 +45,24 @@ describe('v1 mock handlers', () => {
     })
   })
 
+  it('accepts push subscriptions only for sites still in review', async () => {
+    const { data: website } = await v1Api.post<ISubmittedWebsite>(
+      'websites',
+      submission
+    )
+    const subscription = {
+      endpoint: 'https://fcm.googleapis.com/fcm/send/abc',
+      keys: { p256dh: 'p256dh', auth: 'auth' },
+    }
+
+    await expect(
+      v1Api.post(`websites/${website.id}/subscriptions`, subscription)
+    ).resolves.toMatchObject({ status: 204 })
+    await expect(
+      rejection(v1Api.post('websites/1/subscriptions', subscription))
+    ).resolves.toMatchObject({ code: 'not_found', status: 404 })
+  })
+
   it('reports duplicates and unreachable urls with the error envelope', async () => {
     await expect(
       rejection(

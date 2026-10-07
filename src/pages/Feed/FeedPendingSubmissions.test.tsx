@@ -15,6 +15,12 @@ import {
   type IPendingSubmission,
 } from '@/pages/SubmitWebsite/utils/pendingSubmissions'
 
+const push = vi.hoisted(() => ({
+  pushPublicKey: vi.fn((): string | null => null),
+  getPushSubscription: vi.fn(),
+}))
+vi.mock('@/pages/SubmitWebsite/utils/pushSubscription', () => push)
+
 const BELL_LABEL = 'Avise-me quando meus sites forem publicados'
 
 const submission: IWebsiteSubmission = {
@@ -191,5 +197,30 @@ describe('Feed with pending submissions', () => {
         expect.objectContaining({ tag: expect.stringContaining('nnc-') })
       )
     )
+  })
+
+  it('subscribes checking drafts to push once, when permission is granted', async () => {
+    Object.defineProperty(window, 'Notification', {
+      configurable: true,
+      value: Object.assign(vi.fn(), { permission: 'granted' }),
+    })
+    push.pushPublicKey.mockReturnValue('public-key')
+    push.getPushSubscription.mockResolvedValue({
+      toJSON: () => ({
+        endpoint: 'https://fcm.googleapis.com/fcm/send/abc',
+        keys: { p256dh: 'p256dh', auth: 'auth' },
+      }),
+    })
+    storeDrafts([draftFor({})])
+
+    const { unmount } = await render(<Feed />)
+
+    await waitFor(() => expect(storedDrafts()[0]?.pushSubscribed).toBe(true))
+    expect(push.getPushSubscription).toHaveBeenCalledWith('public-key')
+
+    unmount()
+    await render(<Feed />)
+    expect(await screen.findByText('Em análise')).toBeInTheDocument()
+    expect(push.getPushSubscription).toHaveBeenCalledTimes(1)
   })
 })

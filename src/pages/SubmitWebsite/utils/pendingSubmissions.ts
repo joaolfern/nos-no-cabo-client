@@ -23,6 +23,7 @@ export interface IPendingSubmission {
   status: WebsiteStatus
   rejectionReason?: WebsiteRejectionReason
   submittedAt: string
+  pushSubscribed?: boolean
 }
 
 export const NO_PENDING_SUBMISSIONS: IPendingSubmission[] = []

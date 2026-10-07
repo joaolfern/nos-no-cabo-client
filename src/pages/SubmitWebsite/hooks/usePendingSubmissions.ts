@@ -52,5 +52,15 @@ export function usePendingSubmissions() {
     [setStored]
   )
 
-  return { drafts, addDraft, updateDrafts, removeDrafts }
+  const markPushSubscribed = useCallback(
+    (ids: string[]) =>
+      setStored((current) =>
+        current.map((draft) =>
+          ids.includes(draft.id) ? { ...draft, pushSubscribed: true } : draft
+        )
+      ),
+    [setStored]
+  )
+
+  return { drafts, addDraft, updateDrafts, removeDrafts, markPushSubscribed }
 }
