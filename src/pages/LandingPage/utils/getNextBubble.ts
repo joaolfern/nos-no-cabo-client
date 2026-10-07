@@ -29,4 +29,13 @@ export function getLaneCount(
   return Math.min(MAX_LANE_COUNT, Math.max(MIN_LANE_COUNT, computed))
 }
 
+// Fewer sites than lanes: keep them in the middle lanes instead of crowding the left.
+export function getCenteredLane(
+  index: number,
+  itemCount: number,
+  laneCount: number
+) {
+  return index + Math.max(0, (laneCount - itemCount) / 2)
+}
+
 export const LANE_COUNT = getLaneCount(window.innerWidth)

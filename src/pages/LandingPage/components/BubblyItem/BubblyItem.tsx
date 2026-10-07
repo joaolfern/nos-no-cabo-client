@@ -13,6 +13,7 @@ gsap.registerPlugin(useGSAP, Draggable)
 
 type BubblyItemProps = WebsiteBubbleProps & {
   trajectoryConfig: BubbleTrajectoryConfig
+  lane: number
   laneCount: number
   onWrapperRefChange?: (element: HTMLDivElement | null) => void
 }
@@ -25,6 +26,7 @@ export const BubblyItem = memo(function BubblyItemInner({
   title,
   url,
   trajectoryConfig,
+  lane,
   laneCount,
   onWrapperRefChange,
 }: BubblyItemProps) {
@@ -251,7 +253,7 @@ export const BubblyItem = memo(function BubblyItemInner({
   }
 
   const cssVariables = {
-    '--lane': trajectoryConfig.lane,
+    '--lane': lane,
     '--lane-count': laneCount,
     '--lane-padding': `${BUBBLE_LANE_PADDING_PX}px`,
     '--size': `${trajectoryConfig.size}px`,

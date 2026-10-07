@@ -4,6 +4,7 @@ import styles from './BubblyContainer.module.scss'
 import {
   BUBBLE_LANE_PADDING_PX,
   PHONE_LANE_COUNT,
+  getCenteredLane,
   getLaneCount,
 } from '../../utils/getNextBubble'
 import type { BubbleInstance } from '../../LandingPage.types'
@@ -73,7 +74,7 @@ export function BubblyContainer({ items }: { items: WebsiteBubbleProps[] }) {
         bubbleRefs={bubbleRefs}
         containerRef={containerRef}
       />
-      {activeBubbles.map((bubble) => (
+      {activeBubbles.map((bubble, index) => (
         <BubblyItem
           key={bubble.uniqueId}
           id={bubble.item.id}
@@ -81,6 +82,7 @@ export function BubblyContainer({ items }: { items: WebsiteBubbleProps[] }) {
           title={bubble.item.title}
           url={bubble.item.url}
           trajectoryConfig={bubble.config}
+          lane={getRenderedLane(bubble, index, activeBubbles.length, laneCount)}
           laneCount={laneCount}
           onWrapperRefChange={(element) => {
             if (element) {
@@ -93,6 +95,17 @@ export function BubblyContainer({ items }: { items: WebsiteBubbleProps[] }) {
       ))}
     </div>
   )
+}
+
+// Phone pills are placed by side and inset, so their lane stays as created.
+function getRenderedLane(
+  bubble: BubbleInstance,
+  index: number,
+  bubbleCount: number,
+  laneCount: number
+) {
+  if (bubble.config.side) return bubble.config.lane
+  return getCenteredLane(index, bubbleCount, laneCount)
 }
 
 function getWiggleConfig() {
@@ -264,13 +277,14 @@ function getActiveItems(items: WebsiteBubbleProps[], laneCount: number) {
   }
   const shuffled = shuffleArray(items).slice(0, laneCount)
   const bubbles: BubbleInstance[] = shuffled.map((item, i) => {
+    const lane = getCenteredLane(i, shuffled.length, laneCount)
     const size = BASE_SIZE
     let top = getRandomTopPercent()
     let attempts = 0
 
     while (
       intersectsBlacklist(
-        i,
+        lane,
         laneCount,
         top,
         size,
@@ -286,7 +300,7 @@ function getActiveItems(items: WebsiteBubbleProps[], laneCount: number) {
 
     if (
       intersectsBlacklist(
-        i,
+        lane,
         laneCount,
         top,
         size,
@@ -326,7 +340,7 @@ function getActiveItems(items: WebsiteBubbleProps[], laneCount: number) {
       uniqueId: `${item.id}-${Date.now()}-${i}`,
       item,
       config: {
-        lane: i,
+        lane,
         size,
         width: PILL_MAX_WIDTH_PX,
         top,
