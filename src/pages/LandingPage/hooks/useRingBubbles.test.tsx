@@ -29,14 +29,25 @@ function serveSites() {
 const storedCache = () =>
   JSON.parse(localStorage.getItem(RING_CACHE_KEY) ?? 'null')
 
+const staleCache = (items: unknown) =>
+  JSON.stringify({ fetchedAt: ringSnapshot.fetchedAt - 1, items })
+
+const X_BUBBLES = [
+  { id: 'x', title: 'X', url: '/website/x', imageSrc: '/favicon.svg' },
+]
+
 beforeEach(() => localStorage.clear())
+afterEach(() => vi.restoreAllMocks())
 
 describe('useRingBubbles', () => {
-  it('starts from the bundled snapshot and refreshes the cache for next time', async () => {
+  it('starts from a stale bundled snapshot and refreshes the cache for next time', async () => {
+    vi.spyOn(Date, 'now').mockReturnValue(
+      ringSnapshot.fetchedAt + RING_CACHE_MAX_AGE_MS + 1
+    )
     const calls = serveSites()
     const { result } = renderHook(() => useRingBubbles())
 
-    expect(result.current).toEqual(ringSnapshot)
+    expect(result.current).toEqual(ringSnapshot.items)
     await waitFor(() =>
       expect(storedCache()?.items).toEqual([
         {
@@ -48,43 +59,50 @@ describe('useRingBubbles', () => {
       ])
     )
     expect(calls).toHaveLength(1)
-    expect(result.current).toEqual(ringSnapshot)
+    expect(result.current).toEqual(ringSnapshot.items)
   })
 
   it('uses a fresh cache without any request', async () => {
+    const now = ringSnapshot.fetchedAt + 10
+    vi.spyOn(Date, 'now').mockReturnValue(now)
     const calls = serveSites()
-    const items = [
-      { id: 'x', title: 'X', url: '/website/x', imageSrc: '/favicon.svg' },
-    ]
     localStorage.setItem(
       RING_CACHE_KEY,
-      JSON.stringify({ fetchedAt: Date.now(), items })
+      JSON.stringify({ fetchedAt: now, items: X_BUBBLES })
     )
 
     const { result } = renderHook(() => useRingBubbles())
 
-    expect(result.current).toEqual(items)
+    expect(result.current).toEqual(X_BUBBLES)
     await new Promise((resolve) => setTimeout(resolve, 50))
     expect(calls).toHaveLength(0)
   })
 
   it('shows a stale cache right away and refreshes it in the background', async () => {
+    const now = ringSnapshot.fetchedAt + 2 * RING_CACHE_MAX_AGE_MS
+    vi.spyOn(Date, 'now').mockReturnValue(now)
     const calls = serveSites()
-    const items = [
-      { id: 'x', title: 'X', url: '/website/x', imageSrc: '/favicon.svg' },
-    ]
     localStorage.setItem(
       RING_CACHE_KEY,
       JSON.stringify({
-        fetchedAt: Date.now() - RING_CACHE_MAX_AGE_MS - 1,
-        items,
+        fetchedAt: now - RING_CACHE_MAX_AGE_MS - 1,
+        items: X_BUBBLES,
       })
     )
 
     const { result } = renderHook(() => useRingBubbles())
 
-    expect(result.current).toEqual(items)
+    expect(result.current).toEqual(X_BUBBLES)
     await waitFor(() => expect(calls).toHaveLength(1))
+  })
+
+  it('prefers a snapshot newer than the cache', () => {
+    vi.spyOn(Date, 'now').mockReturnValue(ringSnapshot.fetchedAt + 1)
+    localStorage.setItem(RING_CACHE_KEY, staleCache(X_BUBBLES))
+
+    const { result } = renderHook(() => useRingBubbles())
+
+    expect(result.current).toEqual(ringSnapshot.items)
   })
 
   it('keeps what it has when the refresh fails', async () => {
@@ -92,7 +110,7 @@ describe('useRingBubbles', () => {
     const { result } = renderHook(() => useRingBubbles())
 
     await new Promise((resolve) => setTimeout(resolve, 50))
-    expect(result.current).toEqual(ringSnapshot)
+    expect(result.current).toEqual(ringSnapshot.items)
     expect(storedCache()).toBeNull()
   })
 })

@@ -14,21 +14,25 @@ import type { WebsiteBubbleProps } from '@/pages/Website/components/WebsiteBubbl
 export const RING_CACHE_KEY = 'nnc-ring-bubbles'
 const RING_SAMPLE_SIZE = 48
 
+const newerOf = (cache: RingCache | null, snapshot: RingCache) =>
+  cache && cache.fetchedAt > snapshot.fetchedAt ? cache : snapshot
+
 const isCacheOrEmpty = (value: unknown): value is RingCache | null =>
   value === null || isRingCache(value)
 
-// The first paint never waits: it uses the cache or the build-time snapshot, and a stale
-// cache is refreshed in the background for the next visit.
+// The first paint never waits: it uses the newer of the cache and the build-time snapshot,
+// and refreshes a stale one in the background for the next visit.
 export function useRingBubbles(): WebsiteBubbleProps[] {
   const [cache, setCache] = useLocalStorageJson<RingCache | null>(
     RING_CACHE_KEY,
     null,
     isCacheOrEmpty
   )
-  const [items] = useState(() => cache?.items ?? ringSnapshot)
+  const newest = newerOf(cache, ringSnapshot)
+  const [items] = useState(() => newest.items)
 
   useEffect(() => {
-    if (!isStale(cache, Date.now())) return
+    if (!isStale(newest, Date.now())) return
 
     v1Api
       .get<{ items: ISubmittedWebsite[] }>('websites', {
@@ -40,7 +44,7 @@ export function useRingBubbles(): WebsiteBubbleProps[] {
           setCache({ fetchedAt: Date.now(), items: bubbles })
       })
       .catch(() => {})
-  }, [cache, setCache])
+  }, [newest, setCache])
 
   return items
 }

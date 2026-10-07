@@ -35,7 +35,8 @@ try {
   }))
   if (bubbles.length === 0) throw new Error('the API returned no sites')
 
-  writeFileSync(OUTPUT, JSON.stringify(bubbles, null, 2) + '\n')
+  const snapshot = { fetchedAt: Date.now(), items: bubbles }
+  writeFileSync(OUTPUT, JSON.stringify(snapshot, null, 2) + '\n')
   console.log(`snapshot:ring: ${bubbles.length} sites from ${api}`)
 } catch (error) {
   console.warn(`snapshot:ring: keeping the current snapshot (${error.message})`)
