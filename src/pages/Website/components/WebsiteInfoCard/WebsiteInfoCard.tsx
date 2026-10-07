@@ -103,7 +103,7 @@ export function WebsiteInfoCard({ website }: WebsiteInfoCardProps) {
               <LuArrowUpRight size='1rem' />
             </a>
           </Button>
-          <WebsiteVotes websiteId={website.id} />
+          <WebsiteVotes key={website.id} websiteId={website.id} />
         </div>
       </div>
     </aside>

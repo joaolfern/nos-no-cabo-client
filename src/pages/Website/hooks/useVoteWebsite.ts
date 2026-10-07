@@ -8,7 +8,12 @@ import type {
   IWebsiteStats,
 } from '@/interfaces/IWebsiteStats'
 import { websitePageKey } from '@/hooks/useDataHooks'
-import { getVoterId } from '@/pages/Website/utils/voterStorage'
+import {
+  clearPendingVote,
+  getPendingVote,
+  getVoterId,
+  storeVote,
+} from '@/pages/Website/utils/voterStorage'
 
 type VoteInput = {
   value: IVoteValue
@@ -24,13 +29,22 @@ export function useVoteWebsite(websiteId: string) {
         .post<IWebsiteStats>(
           `websites/${websiteId}/votes`,
           { voterId: getVoterId(), value },
-          { headers: turnstileHeaders(turnstileToken) }
+          {
+            headers: turnstileHeaders(turnstileToken),
+            adapter: 'fetch',
+            fetchOptions: { keepalive: true },
+          }
         )
         .then((res) => res.data),
-    onSuccess: (stats) =>
+    onSuccess: (stats, { value }) => {
+      storeVote(websiteId, value)
       queryClient.setQueryData<IWebsitePage>(
         websitePageKey(websiteId),
         (page) => page && { ...page, stats }
-      ),
+      )
+    },
+    onSettled: (_stats, _error, { value }) => {
+      if (getPendingVote(websiteId) === value) clearPendingVote(websiteId)
+    },
   })
 }

@@ -95,6 +95,53 @@ describe('WebsiteVotes', () => {
     expect(localStorage.getItem('nnc-voter')).toMatch(/^[0-9a-f-]{36}$/)
   })
 
+  it('keeps the buttons usable while a vote is sent and sends the latest choice', async () => {
+    const sentValues: number[] = []
+    let releaseFirst = () => {}
+    const firstHeld = new Promise<void>((resolve) => {
+      releaseFirst = resolve
+    })
+    server.use(
+      http.post(`${V1_API_URL}/websites/:id/votes`, async ({ request }) => {
+        const { value } = (await request.clone().json()) as { value: number }
+        sentValues.push(value)
+        if (sentValues.length === 1) await firstHeld
+      })
+    )
+    const seeded = await renderVotes()
+
+    await userEvent.click(likeButton())
+    expect(likeButton()).not.toBeDisabled()
+    await userEvent.click(dislikeButton())
+    expect(dislikeButton()).toHaveAttribute('aria-pressed', 'true')
+    releaseFirst()
+
+    await waitFor(() => expect(sentValues).toEqual([1, -1]))
+    await waitFor(() =>
+      expect(localStorage.getItem('nnc-pending-votes')).toBe('{}')
+    )
+    expect(JSON.parse(localStorage.getItem('nnc-votes') ?? '{}')).toEqual({
+      '1': -1,
+    })
+    expect(dislikeButton()).toHaveTextContent(
+      formatCompactNumber(seeded.dislikes + 1)
+    )
+  })
+
+  it('sends a vote left pending by a previous visit', async () => {
+    localStorage.setItem('nnc-pending-votes', JSON.stringify({ '1': 1 }))
+
+    await render(<WebsiteVotes websiteId='1' />)
+
+    await waitFor(() =>
+      expect(JSON.parse(localStorage.getItem('nnc-votes') ?? '{}')).toEqual({
+        '1': 1,
+      })
+    )
+    expect(localStorage.getItem('nnc-pending-votes')).toBe('{}')
+    expect(likeButton()).toHaveAttribute('aria-pressed', 'true')
+  })
+
   it('undoes the vote and says so when it fails', async () => {
     server.use(
       http.post(`${V1_API_URL}/websites/:id/votes`, () =>

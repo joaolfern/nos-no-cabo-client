@@ -1,51 +1,7 @@
 import { useEffect, useRef } from 'react'
 import clsx from 'clsx'
+import { loadTurnstile, type TurnstileAppearance } from './loadTurnstile'
 import styles from './TurnstileField.module.scss'
-
-const TURNSTILE_SCRIPT_URL =
-  'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'
-
-type TurnstileApi = {
-  render: (
-    element: HTMLElement,
-    options: {
-      sitekey: string
-      language: string
-      appearance: TurnstileAppearance
-      callback: (token: string) => void
-      'expired-callback': () => void
-      'error-callback': () => void
-    }
-  ) => string
-  remove: (widgetId: string) => void
-}
-
-declare global {
-  interface Window {
-    turnstile?: TurnstileApi
-  }
-}
-
-type TurnstileAppearance = 'always' | 'interaction-only'
-
-let turnstileScript: Promise<TurnstileApi> | null = null
-
-function loadTurnstile(): Promise<TurnstileApi> {
-  turnstileScript ??= new Promise((resolve, reject) => {
-    const script = document.createElement('script')
-    script.src = TURNSTILE_SCRIPT_URL
-    script.async = true
-    script.onload = () =>
-      window.turnstile ? resolve(window.turnstile) : reject()
-    script.onerror = () => {
-      turnstileScript = null
-      reject()
-    }
-    document.head.appendChild(script)
-  })
-
-  return turnstileScript
-}
 
 type TurnstileFieldProps = {
   siteKey: string
