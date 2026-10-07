@@ -62,7 +62,9 @@
   z-index: 1;
   pointer-events: auto;
   margin-top: auto;
-  margin-bottom: 15%;
+  margin-bottom: calc(
+    #{$spacing-xxxxl} + #{$spacing-xl} + env(safe-area-inset-bottom)
+  );
 
   @media (min-width: $breakpoint-md) {
     flex-wrap: wrap;

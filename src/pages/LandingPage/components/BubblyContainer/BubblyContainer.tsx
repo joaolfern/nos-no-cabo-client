@@ -31,6 +31,7 @@ const PHONE_SLOTS = [
 ] as const
 const PHONE_BAND_TOP_PERCENT = 35
 const PHONE_BAND_BOTTOM_PERCENT = 76
+const PHONE_BUTTONS_CLEARANCE_PX = 174
 const PHONE_PILL_WIDTH_RATIO = 0.62
 const PHONE_JITTER_INSET = 2.5
 const PHONE_JITTER_TOP = 0.4
@@ -217,8 +218,12 @@ function getPhoneItems(
 ): BubbleInstance[] {
   const width = Math.floor(viewportWidth * PHONE_PILL_WIDTH_RATIO)
   const sizePercent = (size / viewportHeight) * 100
+  const bandBottomPercent = Math.min(
+    PHONE_BAND_BOTTOM_PERCENT,
+    ((viewportHeight - PHONE_BUTTONS_CLEARANCE_PX) / viewportHeight) * 100
+  )
   const step =
-    (PHONE_BAND_BOTTOM_PERCENT - PHONE_BAND_TOP_PERCENT - sizePercent) /
+    (bandBottomPercent - PHONE_BAND_TOP_PERCENT - sizePercent) /
     (PHONE_SLOTS.length - 1)
 
   return shuffleArray(items)
