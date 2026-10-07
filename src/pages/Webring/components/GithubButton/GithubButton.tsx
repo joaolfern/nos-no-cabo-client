@@ -1,4 +1,4 @@
-import { DiGithubBadge } from 'react-icons/di'
+import { LuGithub } from 'react-icons/lu'
 import styles from './GithubButton.module.scss'
 
 interface GithubButtonProps {
@@ -17,7 +17,7 @@ export function GithubButton({ repo }: GithubButtonProps) {
       target='_blank'
       rel='noopener noreferrer'
     >
-      <DiGithubBadge />
+      <LuGithub aria-hidden={true} />
       Ver no GitHub
     </a>
   )

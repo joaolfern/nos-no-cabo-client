@@ -1,8 +1,8 @@
 import { LuArrowRight } from 'react-icons/lu'
-import { Copyable } from '@/components/Copyable/Copyable'
 import { Link } from '@/components/Link/Link'
-import { RING_BASE_URL } from '@/config/env'
+import { RING_BASE_URL, V1_API_URL } from '@/config/env'
 import type { IWebsite } from '@/interfaces/IWebsite'
+import { CopyButton } from '@/pages/Website/components/CopyButton/CopyButton'
 import { VerifyPanel } from '@/pages/WidgetEditor/components/VerifyPanel/VerifyPanel'
 import styles from './WebsiteSidebar.module.scss'
 
@@ -20,6 +20,7 @@ interface WebsiteSidebarProps {
 export function WebsiteSidebar({ website }: WebsiteSidebarProps) {
   const shortLink =
     website.shortCode && `${RING_BASE_URL}/r/${website.shortCode}`
+  const apiUrl = `${V1_API_URL}/websites/${website.id}`
 
   return (
     <aside className={styles.sidebar} aria-label='Sobre este site'>
@@ -45,14 +46,15 @@ export function WebsiteSidebar({ website }: WebsiteSidebarProps) {
         )}
       </section>
 
-      {shortLink && (
-        <section className={styles.card} aria-labelledby='website-share-title'>
-          <h2 id='website-share-title' className={styles.title}>
-            Compartilhar
-          </h2>
-          <Copyable text={shortLink} className={styles.link} />
-        </section>
-      )}
+      <section className={styles.card} aria-labelledby='website-share-title'>
+        <h2 id='website-share-title' className={styles.title}>
+          Compartilhar
+        </h2>
+        <div className={styles.copyActions}>
+          {shortLink && <CopyButton text={shortLink} label='Copiar link' />}
+          <CopyButton text={apiUrl} label='Copiar API' />
+        </div>
+      </section>
     </aside>
   )
 }

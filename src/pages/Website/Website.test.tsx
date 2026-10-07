@@ -1,6 +1,8 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
+import userEvent from '@testing-library/user-event'
 import { render } from '@/__tests__/utils.test'
+import { V1_API_URL } from '@/config/env'
 import { v1Api } from '@/api/api'
 import type { ISubmittedWebsite } from '@/interfaces/IWebsite'
 import { mockNeighbours } from '@/__mocks__/data/catalog'
@@ -73,7 +75,8 @@ describe('Website page', () => {
     expect(sitePaths).toEqual(['/v1/websites/2/page'])
   })
 
-  it('offers the badge and the short link in the side column', async () => {
+  it('offers the badge and copies the short link and API in the side column', async () => {
+    const user = userEvent.setup()
     await renderWebsite('2')
 
     const side = await screen.findByRole('complementary', {
@@ -82,9 +85,18 @@ describe('Website page', () => {
     expect(
       within(side).getByRole('link', { name: 'Adicionar o selo' })
     ).toHaveAttribute('href', '/websites/2/selo')
+    await user.click(within(side).getByRole('button', { name: 'Copiar link' }))
+    expect(await navigator.clipboard.readText()).toBe(
+      'https://nosnocabo.pages.dev/r/2'
+    )
     expect(
-      within(side).getByText('https://nosnocabo.pages.dev/r/2')
+      within(side).getByRole('button', { name: 'Copiado!' })
     ).toBeInTheDocument()
+
+    await user.click(within(side).getByRole('button', { name: 'Copiar API' }))
+    expect(await navigator.clipboard.readText()).toBe(
+      `${V1_API_URL}/websites/2`
+    )
   })
 
   it('shows when a verified site got its badge', async () => {

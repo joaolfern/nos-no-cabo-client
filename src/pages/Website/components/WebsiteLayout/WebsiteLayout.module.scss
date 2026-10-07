@@ -12,4 +12,9 @@
   @media (min-width: $breakpoint-sm) {
     margin-inline: $spacing-xl;
   }
+
+  // Fills the viewport under the top bar, so the footer starts below the fold.
+  @media (min-width: $breakpoint-md) {
+    min-height: calc(100dvh - var(--topbar-height) - #{$spacing-md * 2});
+  }
 }

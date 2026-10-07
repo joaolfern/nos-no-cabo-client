@@ -1,24 +1,35 @@
-@use '@/styles/tokens/shadow.scss' as *;
 @use '@/styles/tokens/spacing.scss' as *;
-@use '@/styles/tokens/mixins.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+@use '@/styles/tokens/animations.scss' as *;
 
 .githubButton {
-  position: relative;
-  color: var(--color-text-base);
-  display: flex;
+  display: inline-flex;
+  flex: none;
   align-items: center;
-  gap: $spacing-xxxs;
-  z-index: 2;
+  gap: 0.375rem;
+  height: 1.875rem;
+  padding: 0 0.625rem;
+  border: $border-base;
+  border-radius: $radius-full;
+  color: var(--color-text-base);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-decoration: none;
 
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 6px;
+  @include has-motion {
+    transition:
+      background 0.15s,
+      border-color 0.15s;
   }
 
-  &:hover {
-    @include card();
-    box-shadow: $shadow-md;
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--color-text-muted);
+    background: var(--color-raised);
   }
 }

@@ -44,6 +44,7 @@ const WEBSITES: IWebsite[] = [
     description:
       'Uma linguagem de programação inteiramente em português. Baseada em TypeScript.',
     url: 'https://github.com/DesignLiquido/delegua',
+    repo: 'https://github.com/DesignLiquido/delegua',
     color: '#3178c6',
     keywords: mockKeywords('educacao', 'inclusao'),
     createdAt: '2021-08-15T00:00:00.000Z',
