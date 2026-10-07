@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import clsx from 'clsx'
 import type { IconType } from 'react-icons'
 import { LuEllipsis } from 'react-icons/lu'
@@ -22,6 +23,7 @@ type CategoryListProps = {
   loading: boolean
   onSelect: (value: string | null) => void
   maxRows?: number
+  search?: ReactNode
 }
 
 export function CategoryList({
@@ -32,15 +34,19 @@ export function CategoryList({
   loading,
   onSelect,
   maxRows = Infinity,
+  search,
 }: CategoryListProps) {
   const { visible, hidden } = splitVisibleCategories(options, maxRows, selected)
   const countOf = (value: string) => counts.get(value) ?? 0
 
   return (
     <nav className={styles.list} aria-labelledby='feed-categories-title'>
-      <span id='feed-categories-title' className={styles.title}>
-        Categorias
-      </span>
+      <div className={styles.header}>
+        <span id='feed-categories-title' className={styles.title}>
+          Categorias
+        </span>
+        {search}
+      </div>
       {loading ? (
         <Loading />
       ) : (
@@ -81,8 +87,8 @@ export function CategoryList({
             </Dropdown>
           )}
           {options.length === 0 && (
-            <Typography variant='bodySm' color='muted'>
-              Nenhuma palavra-chave encontrada
+            <Typography variant='bodySm' color='muted' className={styles.empty}>
+              Nenhuma categoria encontrada
             </Typography>
           )}
         </>

@@ -9,12 +9,23 @@
   min-width: 0;
 }
 
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  padding-bottom: $spacing-xxs;
+}
+
 .title {
-  padding: 0 0.625rem $spacing-xxs;
+  padding: 0 0.625rem;
   color: var(--color-text-muted);
   font-size: 0.6875rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+}
+
+.empty {
+  padding: $spacing-xxs 0.625rem;
 }
 
 .row {

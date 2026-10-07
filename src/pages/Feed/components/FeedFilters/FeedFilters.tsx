@@ -36,7 +36,7 @@ FeedFilters.Panel = function FeedFiltersPanel() {
     getKeywordById,
   } = useFilters()
   const { data: categories } = useCategoriesData()
-  const [keywordQuery, setKeywordQuery] = useState('')
+  const [categoryQuery, setCategoryQuery] = useState('')
   const selected = selectedKeywords[0] ?? null
   const categoriesRef = useRef<HTMLDivElement>(null)
   const { capacity, heightForRows } = useFittingRowCount(categoriesRef, 'nav')
@@ -46,7 +46,7 @@ FeedFilters.Panel = function FeedFiltersPanel() {
   const counts = useMemo(() => countsBySlug(categories), [categories])
 
   const categoryOptions = useMemo(() => {
-    const query = standardizeString(keywordQuery).trim()
+    const query = standardizeString(categoryQuery).trim()
 
     // A keyword no project uses can only produce an empty feed, so it is
     // hidden unless it is already selected.
@@ -64,10 +64,10 @@ FeedFilters.Panel = function FeedFiltersPanel() {
       ...option,
       Icon: getCategoryMeta(getKeywordById(option.value)?.name ?? '').Icon,
     }))
-  }, [keywordOptions, keywordQuery, counts, selected, getKeywordById])
+  }, [keywordOptions, categoryQuery, counts, selected, getKeywordById])
 
   function clear() {
-    setKeywordQuery('')
+    setCategoryQuery('')
     clearKeywords()
   }
 
@@ -93,18 +93,6 @@ FeedFilters.Panel = function FeedFiltersPanel() {
           </button>
         </header>
 
-        <div className={styles.search}>
-          <LuTag className={styles.searchIcon} aria-hidden={true} />
-          <Input
-            className={styles.searchInput}
-            value={keywordQuery}
-            onChange={(event) => setKeywordQuery(event.target.value)}
-            placeholder='Palavras-chave'
-            aria-label='Buscar palavras-chave'
-            autoComplete='off'
-          />
-        </div>
-
         <div
           ref={categoriesRef}
           className={styles.categories}
@@ -118,6 +106,19 @@ FeedFilters.Panel = function FeedFiltersPanel() {
             loading={keywordIsLoading}
             onSelect={handleSelect}
             maxRows={capacity}
+            search={
+              <div className={styles.search}>
+                <LuTag className={styles.searchIcon} aria-hidden={true} />
+                <Input
+                  className={styles.searchInput}
+                  value={categoryQuery}
+                  onChange={(event) => setCategoryQuery(event.target.value)}
+                  placeholder='Filtrar categorias'
+                  aria-label='Filtrar categorias'
+                  autoComplete='off'
+                />
+              </div>
+            }
           />
         </div>
 
@@ -144,7 +145,7 @@ function KeywordFilter() {
 
   return (
     <DropdownButton
-      label='Palavras-chave'
+      label='Categorias'
       labelOfSelected={selectedLabel}
       onChange={updateKeywords}
       options={optionsByCount}

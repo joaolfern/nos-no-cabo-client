@@ -79,9 +79,7 @@ describe('CategoryList', () => {
   it('explains when nothing matches', () => {
     setup({ options: [] })
 
-    expect(
-      screen.getByText('Nenhuma palavra-chave encontrada')
-    ).toBeInTheDocument()
+    expect(screen.getByText('Nenhuma categoria encontrada')).toBeInTheDocument()
   })
 
   describe('when not every category fits', () => {
