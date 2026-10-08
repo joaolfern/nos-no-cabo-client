@@ -5,10 +5,14 @@ const VOTES_KEY = 'nnc-votes'
 const PENDING_VOTES_KEY = 'nnc-pending-votes'
 
 let sessionVoterId: string | undefined
-let votesVersion = 0
 const listeners = new Set<() => void>()
 
 type VoteMap = Record<string, IVoteValue>
+
+export type VotesSnapshot = { saved: VoteMap; pending: VoteMap }
+
+let snapshot: VotesSnapshot = { saved: {}, pending: {} }
+let snapshotSource = ''
 
 function readVoteMap(key: string): VoteMap {
   try {
@@ -24,18 +28,38 @@ function writeVoteMap(key: string, votes: VoteMap) {
   } catch {
     return
   }
-  votesVersion += 1
   listeners.forEach((listener) => listener())
 }
 
 export function subscribeToVotes(onChange: () => void) {
   listeners.add(onChange)
+  window.addEventListener('storage', onChange)
   return () => {
     listeners.delete(onChange)
+    window.removeEventListener('storage', onChange)
   }
 }
 
-export const getVotesVersion = () => votesVersion
+function readRaw(key: string) {
+  try {
+    return localStorage.getItem(key)
+  } catch {
+    return null
+  }
+}
+
+// Stable until the stored votes change, as useSyncExternalStore requires.
+export function getVotesSnapshot(): VotesSnapshot {
+  const source = `${readRaw(VOTES_KEY)}|${readRaw(PENDING_VOTES_KEY)}`
+  if (source !== snapshotSource) {
+    snapshotSource = source
+    snapshot = {
+      saved: readVoteMap(VOTES_KEY),
+      pending: readVoteMap(PENDING_VOTES_KEY),
+    }
+  }
+  return snapshot
+}
 
 // Without storage the id lasts until the page reloads, which is still one vote per visit.
 export function getVoterId() {
@@ -80,8 +104,12 @@ export function clearPendingVote(websiteId: string) {
 }
 
 // Cached net likes already count the saved vote; swap it for one still waiting on Turnstile.
-export function withPendingVote(websiteId: string, netLikes: number) {
-  const pending = getPendingVote(websiteId)
-  if (pending === null) return netLikes
-  return netLikes - getStoredVote(websiteId) + pending
+export function withPendingVote(
+  votes: VotesSnapshot,
+  websiteId: string,
+  netLikes: number
+) {
+  const pending = votes.pending[websiteId]
+  if (pending === undefined) return netLikes
+  return netLikes - (votes.saved[websiteId] ?? 0) + pending
 }

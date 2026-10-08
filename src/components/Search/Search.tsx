@@ -63,9 +63,11 @@ export function Search({
   return (
     <div className={styles.container}>
       <div
-        className={clsx(styles.content, className, {
-          [classNames?.contentFocused || '']: isFocused,
-        })}
+        className={clsx(
+          styles.content,
+          className,
+          isFocused && classNames?.contentFocused
+        )}
       >
         <div className={styles.inputContainer} onClick={handleFocus}>
           <Typography className={styles.searchIcon} color='subtle'>

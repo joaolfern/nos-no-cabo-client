@@ -48,7 +48,11 @@ export function ReportDialog({
   const [comment, setComment] = useState('')
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
   const [hasTriedSubmit, setHasTriedSubmit] = useState(false)
-  const report = useReportWebsite(websiteId)
+  const {
+    mutate: reportWebsite,
+    error: reportFailure,
+    isPending: isReporting,
+  } = useReportWebsite(websiteId)
   const { showMessage } = useMessage()
 
   const titleId = `report-${websiteId}`
@@ -61,8 +65,8 @@ export function ReportDialog({
     return null
   }
 
-  const errorMessage = report.error
-    ? (REPORT_ERROR_MESSAGES[report.error.code] ?? report.error.message)
+  const errorMessage = reportFailure
+    ? (REPORT_ERROR_MESSAGES[reportFailure.code] ?? reportFailure.message)
     : hasTriedSubmit && validationMessage()
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -70,7 +74,7 @@ export function ReportDialog({
     setHasTriedSubmit(true)
     if (!reason || needsTurnstile) return
 
-    report.mutate(
+    reportWebsite(
       { report: { reason, comment: comment || undefined }, turnstileToken },
       {
         onSuccess: () => {
@@ -149,8 +153,8 @@ export function ReportDialog({
           <Button type='button' variant='secondary' onClick={onClose}>
             Cancelar
           </Button>
-          <Button type='submit' disabled={report.isPending}>
-            {report.isPending ? 'Enviando…' : 'Enviar denúncia'}
+          <Button type='submit' disabled={isReporting}>
+            {isReporting ? 'Enviando…' : 'Enviar denúncia'}
           </Button>
         </div>
       </form>

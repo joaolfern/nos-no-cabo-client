@@ -65,6 +65,16 @@ Components must consume tokens, never hardcode arbitrary hex/pixel values. Prefe
 - Data fetching uses TanStack Query; keep query hooks in the feature's `hooks/` (see `src/pages/Feed/hooks/`).
 - Tests live next to the code (`Feed.test.tsx`) and use React Testing Library with `user-event`.
 
+### React Compiler
+
+React Compiler (`babel-plugin-react-compiler`, wired in `vite.config.ts` through `reactCompilerPreset()`) is active, in Vitest too. Don't manually add `useMemo`/`useCallback` unless there's a concrete, verified need it can't handle.
+
+- **Always destructure TanStack Query mutations**: `const { mutate: submitWebsite, isPending } = useSubmitWebsite()`, never `const submit = useSubmitWebsite()` + `submit.mutate(...)`. `useMutation`/`useQuery` return a new object every render (only `mutate`/`mutateAsync`/`refetch` are stable), so calling a method on the object makes the compiler depend on the whole object and re-create every function and child prop that uses it on every render.
+- **Declare helper functions before the code that uses them** (e.g. above a hook call whose inline callbacks call them). The compiler does not memoize function declarations used before their declaration, so they become new every render.
+- **No `?.`, `??`, `&&`, or ternaries inside a `try`/`catch`**: the compiler bails out of the whole component/hook ("Support value blocks … within a try/catch statement"). Move the expression into a small helper function called from the `try`.
+- **Don't read `ref.current` during render**, and don't return closures that read external mutable state (localStorage, module variables) without a reactive input: the compiler caches them. Expose such state through `useSyncExternalStore` with a snapshot that *is* the data (see `src/pages/Website/utils/voterStorage.ts`).
+- To see what re-renders and why, use the `react-profiling` skill.
+
 ## Code clarity over comments
 
 Prefer applying clean code concepts instead of comments: express intent through well-named variables, functions and components, small extracted helpers, and early returns. Code a beginner can read in a few lines beats a paragraph explaining it, and every comment costs tokens for AI agents too. oxlint already flags inline comments and `todo`/`fix`-style warning comments.

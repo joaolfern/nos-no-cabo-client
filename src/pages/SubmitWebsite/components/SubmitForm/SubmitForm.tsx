@@ -62,20 +62,25 @@ export function SubmitForm({ onSubmitted }: SubmitFormProps) {
     url,
     preview.data
   )
-  const submit = useSubmitWebsite()
+  const {
+    mutate: submitWebsite,
+    reset: resetSubmit,
+    error: submitFailure,
+    isPending: isSubmitting,
+  } = useSubmitWebsite()
 
   const errors = hasTriedSubmit ? validateSubmission(values) : {}
   const isDuplicate =
-    preview.error?.code === 'duplicate' || submit.error?.code === 'duplicate'
+    preview.error?.code === 'duplicate' || submitFailure?.code === 'duplicate'
   const needsTurnstile = Boolean(TURNSTILE_SITE_KEY) && !turnstileToken
   const submitError =
-    submit.error && submit.error.code !== 'duplicate'
-      ? (SUBMIT_ERROR_MESSAGES[submit.error.code] ?? submit.error.message)
+    submitFailure && submitFailure.code !== 'duplicate'
+      ? (SUBMIT_ERROR_MESSAGES[submitFailure.code] ?? submitFailure.message)
       : null
 
   function handleUrlChange(value: string) {
     setUrl(value)
-    submit.reset()
+    resetSubmit()
   }
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -89,7 +94,7 @@ export function SubmitForm({ onSubmitted }: SubmitFormProps) {
     }
     if (isDuplicate || needsTurnstile) return
 
-    submit.mutate(
+    submitWebsite(
       {
         submission: toSubmission(values, preview.data?.faviconUrl),
         turnstileToken,
@@ -129,7 +134,7 @@ export function SubmitForm({ onSubmitted }: SubmitFormProps) {
           onChange={handleUrlChange}
           validationError={errors.url}
           previewError={
-            submit.error?.code === 'duplicate' ? submit.error : preview.error
+            submitFailure?.code === 'duplicate' ? submitFailure : preview.error
           }
           isFetchingPreview={preview.isFetching}
           hasPreview={Boolean(preview.data)}
@@ -210,8 +215,8 @@ export function SubmitForm({ onSubmitted }: SubmitFormProps) {
         )}
 
         <div className={styles.actions}>
-          <Button type='submit' disabled={submit.isPending}>
-            {submit.isPending ? 'Enviando…' : 'Enviar site'}
+          <Button type='submit' disabled={isSubmitting}>
+            {isSubmitting ? 'Enviando…' : 'Enviar site'}
           </Button>
         </div>
         <p className={styles.submitMessage} role='alert'>

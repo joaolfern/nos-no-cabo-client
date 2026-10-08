@@ -20,6 +20,12 @@ export function Popup({
 }: PopupProps) {
   const triggerRef = React.useRef<HTMLDivElement | null>(null)
   const panelRef = React.useRef<HTMLDivElement | null>(null)
+  const [trigger, setTrigger] = React.useState<HTMLDivElement | null>(null)
+
+  const attachTrigger = React.useCallback((element: HTMLDivElement | null) => {
+    triggerRef.current = element
+    setTrigger(element)
+  }, [])
 
   const onDismiss = React.useCallback(() => {
     setIsOpen(false)
@@ -42,11 +48,11 @@ export function Popup({
       <div
         className={clsx(styles.trigger, classNames?.trigger)}
         onClick={handleToggle}
-        ref={triggerRef}
+        ref={attachTrigger}
       >
         {children}
       </div>
-      <Portal container={container || triggerRef.current}>
+      <Portal container={container || trigger}>
         <Panel
           {...props}
           className={classNames?.panel}

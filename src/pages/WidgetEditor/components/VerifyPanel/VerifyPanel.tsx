@@ -13,11 +13,16 @@ type VerifyPanelProps = {
 
 export function VerifyPanel({ websiteId, websiteName }: VerifyPanelProps) {
   const { showMessage } = useMessage()
-  const verify = useVerifyWebsite(websiteId)
-  const failure = verifyFailureMessage(verify.data, verify.error)
+  const {
+    mutate: verifyWebsite,
+    data: verification,
+    error: verifyFailure,
+    isPending: isVerifying,
+  } = useVerifyWebsite(websiteId)
+  const failure = verifyFailureMessage(verification, verifyFailure)
 
   function handleVerify() {
-    verify.mutate(undefined, {
+    verifyWebsite(undefined, {
       onSuccess: ({ verified }) => {
         if (verified)
           showMessage(`Selo encontrado. ${websiteName} agora é verificado.`)
@@ -40,9 +45,9 @@ export function VerifyPanel({ websiteId, websiteName }: VerifyPanelProps) {
           variant='secondary'
           small={true}
           onClick={handleVerify}
-          disabled={verify.isPending}
+          disabled={isVerifying}
         >
-          {verify.isPending ? (
+          {isVerifying ? (
             <>
               Verificando
               <LoadingDots />

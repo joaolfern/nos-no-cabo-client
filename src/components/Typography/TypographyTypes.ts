@@ -1,7 +1,9 @@
 import type { ElementType, HTMLAttributes } from 'react'
 
-export interface TypographyProps
-  extends Omit<HTMLAttributes<HTMLElement>, 'color'> {
+export interface TypographyProps extends Omit<
+  HTMLAttributes<HTMLElement>,
+  'color'
+> {
   as?: ElementType
   variant?: Variant
   color?: Color
@@ -9,12 +11,6 @@ export interface TypographyProps
 }
 
 type Variant =
-  | 'titleLg'
-  | 'titleMd'
-  | 'titleSm'
-  | 'bodyLg'
-  | 'bodyMd'
-  | 'bodySm'
-  | 'caption'
+  'titleLg' | 'titleMd' | 'titleSm' | 'bodyLg' | 'bodyMd' | 'bodySm' | 'caption'
 
 type Color = 'base' | 'muted' | 'subtle' | 'primary' | 'tint' | 'inherit'

@@ -12,12 +12,10 @@ export function Typography({
   style,
   ...props
 }: TypographyProps) {
-  const styleFinal: CSSProperties = {
+  const styleFinal = {
     ...style,
-    ...(lines && {
-      ['--line-clamp' as string]: lines,
-    }),
-  }
+    ...(lines && { '--line-clamp': lines }),
+  } as CSSProperties
 
   return (
     <Component
