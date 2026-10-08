@@ -5,6 +5,8 @@ import { render } from '@/__tests__/utils.test'
 import { mockStats, resetMockMetrics } from '@/__mocks__/data/metrics'
 import { server } from '@/__mocks__/node'
 import { V1_API_URL } from '@/config/env'
+import type { IWebsite } from '@/interfaces/IWebsite'
+import { queryClient } from '@/providers/QueryProvider/queryClient'
 import { WebsiteVotes } from '@/pages/Website/components/WebsiteVotes/WebsiteVotes'
 import { formatCompactNumber } from '@/utils/formatCompactNumber/formatCompactNumber'
 
@@ -82,6 +84,33 @@ describe('WebsiteVotes', () => {
     expect(dislikeButton()).toHaveTextContent(
       formatCompactNumber(seeded.dislikes)
     )
+  })
+
+  it('updates the like count in the cached feed and top list', async () => {
+    const feedKey = ['websites', 'list', { sort: 'novos' }]
+    const topKey = ['websites', 'top', 5]
+    const cachedSite = (id: string) => ({ id, likes: 10 })
+    queryClient.setQueryData(feedKey, {
+      pages: [{ items: [cachedSite('1'), cachedSite('2')], nextCursor: null }],
+      pageParams: [undefined],
+    })
+    queryClient.setQueryData<Partial<IWebsite>[]>(topKey, [cachedSite('1')])
+    const seeded = await renderVotes()
+
+    await userEvent.click(likeButton())
+    await waitFor(() => expect(likeButton()).not.toBeDisabled())
+
+    const feed = queryClient.getQueryData<{
+      pages: { items: { id: string; likes: number }[] }[]
+    }>(feedKey)
+    expect(feed?.pages[0]?.items).toEqual([
+      { id: '1', likes: seeded.likes + 1 },
+      { id: '2', likes: 10 },
+    ])
+    expect(queryClient.getQueryData(topKey)).toEqual([
+      { id: '1', likes: seeded.likes + 1 },
+    ])
+    expect(queryClient.getQueryState(feedKey)?.isInvalidated).toBe(false)
   })
 
   it('remembers the vote after a reload', async () => {

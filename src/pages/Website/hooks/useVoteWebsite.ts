@@ -1,7 +1,14 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import type { Page, Website } from '@nosnocabo/contract'
+import {
+  type InfiniteData,
+  type QueryClient,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query'
 import { v1Api } from '@/api/api'
 import { turnstileHeaders } from '@/api/turnstile'
 import type { IApiError } from '@/interfaces/IApiError'
+import type { IWebsite } from '@/interfaces/IWebsite'
 import type {
   IVoteValue,
   IWebsitePage,
@@ -18,6 +25,37 @@ import {
 type VoteInput = {
   value: IVoteValue
   turnstileToken: string | null
+}
+
+function withLikes<T extends { id: string; likes?: number }>(
+  website: T,
+  websiteId: string,
+  likes: number
+) {
+  return website.id === websiteId ? { ...website, likes } : website
+}
+
+// The feed and the top list are cached; patching them avoids a refetch when going back.
+function updateCachedLikes(
+  queryClient: QueryClient,
+  websiteId: string,
+  likes: number
+) {
+  queryClient.setQueriesData<InfiniteData<Page<Website>>>(
+    { queryKey: ['websites', 'list'] },
+    (feed) =>
+      feed && {
+        ...feed,
+        pages: feed.pages.map((page) => ({
+          ...page,
+          items: page.items.map((item) => withLikes(item, websiteId, likes)),
+        })),
+      }
+  )
+  queryClient.setQueriesData<IWebsite[]>(
+    { queryKey: ['websites', 'top'] },
+    (top) => top?.map((website) => withLikes(website, websiteId, likes))
+  )
 }
 
 export function useVoteWebsite(websiteId: string) {
@@ -42,6 +80,7 @@ export function useVoteWebsite(websiteId: string) {
         websitePageKey(websiteId),
         (page) => page && { ...page, stats }
       )
+      updateCachedLikes(queryClient, websiteId, stats.likes)
     },
     onSettled: (_stats, _error, { value }) => {
       if (getPendingVote(websiteId) === value) clearPendingVote(websiteId)
