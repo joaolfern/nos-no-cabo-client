@@ -9,6 +9,7 @@ import type { IWebsite } from '@/interfaces/IWebsite'
 import { visitUrl } from '@/utils/visitUrl/visitUrl'
 import { getPrimaryKeyword } from '@/pages/Feed/utils/getPrimaryKeyword'
 import { formatCompactNumber } from '@/utils/formatCompactNumber/formatCompactNumber'
+import { useShownLikes } from '@/pages/Website/hooks/useShownLikes'
 import { VerificationStatus } from '@/pages/WidgetEditor/components/VerificationStatus/VerificationStatus'
 import styles from './FeedCard.module.scss'
 import { getCategoryLabel } from '@/pages/Feed/constants/categories'
@@ -34,6 +35,7 @@ function FeedCardInner({
   aside,
 }: FeedCardProps) {
   const primaryKeyword = getPrimaryKeyword(website, highlightKeywordId)
+  const shownLikes = useShownLikes()
   const otherKeywordsCount = website.keywords.length - 1
 
   return (
@@ -97,7 +99,7 @@ function FeedCardInner({
           {!aside && variant === 'detailed' && !readOnly && (
             <span className={styles.likes} title='Curtidas'>
               <LuThumbsUp aria-hidden={true} />
-              {formatCompactNumber(website.likes ?? 0)}
+              {formatCompactNumber(shownLikes(website))}
             </span>
           )}
         </div>

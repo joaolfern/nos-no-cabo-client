@@ -86,7 +86,7 @@ describe('WebsiteVotes', () => {
     )
   })
 
-  it('updates the like count in the cached feed and top list', async () => {
+  it('updates the net likes in the cached feed and top list', async () => {
     const feedKey = ['websites', 'list', { sort: 'novos' }]
     const topKey = ['websites', 'top', 5]
     const cachedSite = (id: string) => ({ id, likes: 10 })
@@ -103,12 +103,13 @@ describe('WebsiteVotes', () => {
     const feed = queryClient.getQueryData<{
       pages: { items: { id: string; likes: number }[] }[]
     }>(feedKey)
+    const netLikes = seeded.likes + 1 - seeded.dislikes
     expect(feed?.pages[0]?.items).toEqual([
-      { id: '1', likes: seeded.likes + 1 },
+      { id: '1', likes: netLikes },
       { id: '2', likes: 10 },
     ])
     expect(queryClient.getQueryData(topKey)).toEqual([
-      { id: '1', likes: seeded.likes + 1 },
+      { id: '1', likes: netLikes },
     ])
     expect(queryClient.getQueryState(feedKey)?.isInvalidated).toBe(false)
   })

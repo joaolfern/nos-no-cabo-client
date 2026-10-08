@@ -9,6 +9,7 @@ import type { FeedPendingItem } from '@/pages/Feed/components/FeedCardList/FeedC
 import { getPrimaryKeyword } from '@/pages/Feed/utils/getPrimaryKeyword'
 import { visitUrl } from '@/utils/visitUrl/visitUrl'
 import { formatCompactNumber } from '@/utils/formatCompactNumber/formatCompactNumber'
+import { useShownLikes } from '@/pages/Website/hooks/useShownLikes'
 import { VerificationStatus } from '@/pages/WidgetEditor/components/VerificationStatus/VerificationStatus'
 import styles from './FeedTable.module.scss'
 import { getCategoryLabel } from '@/pages/Feed/constants/categories'
@@ -31,6 +32,7 @@ export function FeedTable({
   highlightKeywordId,
 }: FeedTableProps) {
   const showLikes = variant === 'detailed'
+  const shownLikes = useShownLikes()
   const navigate = useNavigate()
 
   // The whole row opens the site; links and buttons inside it keep their own action.
@@ -118,7 +120,7 @@ export function FeedTable({
                   </td>
                   {showLikes && (
                     <td className={styles.likes}>
-                      {formatCompactNumber(website.likes ?? 0)}
+                      {formatCompactNumber(shownLikes(website))}
                     </td>
                   )}
                   <td className={styles.visit}>

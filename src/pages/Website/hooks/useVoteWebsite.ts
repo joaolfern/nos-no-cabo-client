@@ -39,7 +39,7 @@ function withLikes<T extends { id: string; likes?: number }>(
 function updateCachedLikes(
   queryClient: QueryClient,
   websiteId: string,
-  likes: number
+  netLikes: number
 ) {
   queryClient.setQueriesData<InfiniteData<Page<Website>>>(
     { queryKey: ['websites', 'list'] },
@@ -48,13 +48,13 @@ function updateCachedLikes(
         ...feed,
         pages: feed.pages.map((page) => ({
           ...page,
-          items: page.items.map((item) => withLikes(item, websiteId, likes)),
+          items: page.items.map((item) => withLikes(item, websiteId, netLikes)),
         })),
       }
   )
   queryClient.setQueriesData<IWebsite[]>(
     { queryKey: ['websites', 'top'] },
-    (top) => top?.map((website) => withLikes(website, websiteId, likes))
+    (top) => top?.map((website) => withLikes(website, websiteId, netLikes))
   )
 }
 
@@ -80,7 +80,7 @@ export function useVoteWebsite(websiteId: string) {
         websitePageKey(websiteId),
         (page) => page && { ...page, stats }
       )
-      updateCachedLikes(queryClient, websiteId, stats.likes)
+      updateCachedLikes(queryClient, websiteId, stats.likes - stats.dislikes)
     },
     onSettled: (_stats, _error, { value }) => {
       if (getPendingVote(websiteId) === value) clearPendingVote(websiteId)

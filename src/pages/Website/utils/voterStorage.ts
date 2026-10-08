@@ -5,6 +5,8 @@ const VOTES_KEY = 'nnc-votes'
 const PENDING_VOTES_KEY = 'nnc-pending-votes'
 
 let sessionVoterId: string | undefined
+let votesVersion = 0
+const listeners = new Set<() => void>()
 
 type VoteMap = Record<string, IVoteValue>
 
@@ -22,7 +24,18 @@ function writeVoteMap(key: string, votes: VoteMap) {
   } catch {
     return
   }
+  votesVersion += 1
+  listeners.forEach((listener) => listener())
 }
+
+export function subscribeToVotes(onChange: () => void) {
+  listeners.add(onChange)
+  return () => {
+    listeners.delete(onChange)
+  }
+}
+
+export const getVotesVersion = () => votesVersion
 
 // Without storage the id lasts until the page reloads, which is still one vote per visit.
 export function getVoterId() {
@@ -64,4 +77,11 @@ export function clearPendingVote(websiteId: string) {
   const votes = readVoteMap(PENDING_VOTES_KEY)
   delete votes[websiteId]
   writeVoteMap(PENDING_VOTES_KEY, votes)
+}
+
+// Cached net likes already count the saved vote; swap it for one still waiting on Turnstile.
+export function withPendingVote(websiteId: string, netLikes: number) {
+  const pending = getPendingVote(websiteId)
+  if (pending === null) return netLikes
+  return netLikes - getStoredVote(websiteId) + pending
 }
