@@ -1,11 +1,11 @@
-import { Fragment } from 'react'
+import { Fragment, type ReactNode } from 'react'
 import { LuArrowLeft } from 'react-icons/lu'
 import { Button } from '@/components/Button/Button'
 import { Link } from '@/components/Link/Link'
 import { Typography } from '@/components/Typography/Typography'
 import styles from './PageTrail.module.scss'
 
-export type Crumb = { label: string; to?: string }
+export type Crumb = { label: ReactNode; to?: string }
 
 type PageTrailProps = {
   backTo: string
@@ -37,7 +37,7 @@ export function PageTrail({ backTo, crumbs }: PageTrailProps) {
           const isCurrent = index === crumbs.length - 1
 
           return (
-            <Fragment key={`${label}-${index}`}>
+            <Fragment key={index}>
               {index > 0 && <span aria-hidden>/</span>}
               {to && !isCurrent ? (
                 <Link to={to}>{label}</Link>

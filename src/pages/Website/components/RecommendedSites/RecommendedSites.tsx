@@ -1,14 +1,13 @@
 import { useMemo, useState } from 'react'
 import { useTopWebsitesData } from '@/hooks/useDataHooks'
-import { Typography } from '@/components/Typography/Typography'
-import { Link } from '@/components/Link/Link'
-import { ViewToggle } from '@/pages/Feed/components/ViewToggle/ViewToggle'
 import { FeedCardList } from '@/pages/Feed/components/FeedCardList/FeedCardList'
-import type { IWebsite } from '@/interfaces/IWebsite'
 import type { FeedView } from '@/interfaces/IFeedView'
+import { RecommendedSitesHeader } from './RecommendedSitesHeader'
+import {
+  RECOMMENDED_SITES_LIMIT,
+  getRecommendedWebsites,
+} from './recommendedSites'
 import styles from './RecommendedSites.module.scss'
-
-const RECOMMENDED_SITES_LIMIT = 6
 
 interface RecommendedSitesProps {
   websiteId: string
@@ -27,17 +26,7 @@ export function RecommendedSites({ websiteId }: RecommendedSitesProps) {
 
   return (
     <section className={styles.container}>
-      <div className={styles.header}>
-        <Typography as='h2' variant='titleSm' className={styles.sectionTitle}>
-          Sites recomendados
-        </Typography>
-        <div className={styles.headerActions}>
-          <Link className={styles.seeAll} to='/websites'>
-            Ver todos
-          </Link>
-          <ViewToggle value={view} onChange={setView} />
-        </div>
-      </div>
+      <RecommendedSitesHeader view={view} onViewChange={setView} />
       <FeedCardList
         data={websites}
         isLoading={isLoading}
@@ -47,18 +36,4 @@ export function RecommendedSites({ websiteId }: RecommendedSitesProps) {
       />
     </section>
   )
-}
-
-function getRecommendedWebsites(
-  websites: IWebsite[],
-  currentWebsiteId: string
-): IWebsite[] {
-  const result: IWebsite[] = []
-  for (const website of websites) {
-    if (website.id !== currentWebsiteId) {
-      result.push(website)
-      if (result.length === RECOMMENDED_SITES_LIMIT) break
-    }
-  }
-  return result
 }

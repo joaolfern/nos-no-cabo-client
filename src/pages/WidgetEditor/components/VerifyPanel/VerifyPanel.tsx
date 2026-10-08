@@ -3,7 +3,7 @@ import { Link } from '@/components/Link/Link'
 import { LoadingDots } from '@/components/LoadingDots/LoadingDots'
 import { useMessage } from '@/contexts/useMessage'
 import { useVerifyWebsite } from '@/pages/WidgetEditor/hooks/useVerifyWebsite'
-import { verifyFailureMessage } from './verifyMessages'
+import { VERIFY_PANEL_INTRO, verifyFailureMessage } from './verifyMessages'
 import styles from './VerifyPanel.module.scss'
 
 type VerifyPanelProps = {
@@ -32,10 +32,7 @@ export function VerifyPanel({ websiteId, websiteName }: VerifyPanelProps) {
 
   return (
     <section className={styles.panel} aria-label='Verificação do site'>
-      <p className={styles.text}>
-        Cuida deste site? Com o selo instalado, ele ganha o ícone de verificado
-        e sobe nas listas.
-      </p>
+      <p className={styles.text}>{VERIFY_PANEL_INTRO}</p>
       <div className={styles.actions}>
         <Button asChild={true} variant='outline' small={true}>
           <Link to={`/websites/${websiteId}/selo`}>Adicionar o selo</Link>

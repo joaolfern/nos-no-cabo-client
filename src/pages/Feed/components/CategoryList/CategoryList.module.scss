@@ -1,6 +1,7 @@
 @use '@/styles/tokens/spacing.scss' as *;
 @use '@/styles/tokens/border.scss' as *;
 @use '@/styles/tokens/animations.scss' as *;
+@use '@/styles/tokens/mixins.scss' as *;
 
 .list {
   display: flex;
@@ -103,4 +104,29 @@
 .overflowTrigger > .row {
   flex: 1;
   min-width: 0;
+}
+
+.iconBone {
+  @include bone-block;
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  border-radius: $radius-sm;
+}
+
+.labelBone {
+  @include bone-block;
+  flex: none;
+  width: 45%;
+  height: 0.75rem;
+  margin-right: auto;
+}
+
+.countBone {
+  min-width: 1.375rem;
+  padding: 0.0625rem 0.4375rem;
+  border-radius: $radius-full;
+  background: var(--color-raised);
+  color: transparent;
+  font-size: 0.75rem;
 }

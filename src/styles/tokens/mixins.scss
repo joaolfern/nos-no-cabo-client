@@ -35,3 +35,20 @@
     }
   }
 }
+
+// Skeleton text: the real line box with a bar painted on each line, so swapping in the content keeps the height.
+@mixin bone-text {
+  color: transparent;
+  background: linear-gradient(
+      transparent 20%,
+      var(--color-raised) 20% 80%,
+      transparent 80%
+    )
+    0 0 / 100% 1lh repeat-y;
+  user-select: none;
+}
+
+@mixin bone-block {
+  border-radius: $radius-md;
+  background: var(--color-raised);
+}

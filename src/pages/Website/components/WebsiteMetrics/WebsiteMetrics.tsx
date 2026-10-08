@@ -5,9 +5,12 @@ import { useAdjacentWebsites } from '@/pages/Website/hooks/useAdjacentWebsites'
 import { useWebsiteStats } from '@/pages/Website/hooks/useWebsiteStats'
 import { buildWebsiteMetrics } from '@/pages/Website/utils/websiteMetrics'
 import type { IWebsite } from '@/interfaces/IWebsite'
+import type { IWebsiteStats } from '@/interfaces/IWebsiteStats'
 import styles from './WebsiteMetrics.module.scss'
 
 const COUNTER_DIGITS = 6
+
+type Neighbour = Pick<IWebsite, 'id' | 'name'> | null
 
 interface WebsiteMetricsProps {
   website: IWebsite
@@ -15,8 +18,36 @@ interface WebsiteMetricsProps {
 
 export function WebsiteMetrics({ website }: WebsiteMetricsProps) {
   const { data: stats } = useWebsiteStats(website.id)
-  const metrics = buildWebsiteMetrics(stats)
   const { previous, next, random, isLoading } = useAdjacentWebsites(website.id)
+
+  return (
+    <WebsiteMetricsView
+      stats={stats}
+      previous={previous}
+      next={next}
+      random={random}
+      isLoadingNeighbours={isLoading}
+    />
+  )
+}
+
+interface WebsiteMetricsViewProps {
+  stats: IWebsiteStats | null | undefined
+  previous: Neighbour
+  next: Neighbour
+  random: Neighbour
+  isLoadingNeighbours: boolean
+}
+
+// Without data it is the metrics' own skeleton: number bones and neighbour placeholders.
+export function WebsiteMetricsView({
+  stats,
+  previous,
+  next,
+  random,
+  isLoadingNeighbours: isLoading,
+}: WebsiteMetricsViewProps) {
+  const metrics = buildWebsiteMetrics(stats)
 
   return (
     <section className={styles.container}>
@@ -60,6 +91,7 @@ export function WebsiteMetrics({ website }: WebsiteMetricsProps) {
         ) : (
           <NavPlaceholder
             className={styles.navPrevious}
+            label='Anterior'
             isLoading={isLoading}
           />
         )}
@@ -89,19 +121,25 @@ export function WebsiteMetrics({ website }: WebsiteMetricsProps) {
             <LuChevronRight size='1rem' />
           </Link>
         ) : (
-          <NavPlaceholder className={styles.navNext} isLoading={isLoading} />
+          <NavPlaceholder
+            className={styles.navNext}
+            label='Próximo'
+            isLoading={isLoading}
+          />
         )}
       </nav>
     </section>
   )
 }
 
-// Same box as a nav link, so the row keeps its height while loading and when a slot is empty.
+// Same box as a nav link (label and name stack on phones), so the row keeps its height while loading and when a slot is empty.
 function NavPlaceholder({
   className,
+  label,
   isLoading,
 }: {
   className?: string
+  label?: string
   isLoading: boolean
 }) {
   return (
@@ -111,7 +149,16 @@ function NavPlaceholder({
       })}
       aria-hidden={true}
     >
-      <span className={styles.navBone}>Carregando vizinho</span>
+      {label ? (
+        <span className={styles.navText}>
+          <span className={clsx(styles.navMuted, styles.navBone)}>{label}</span>
+          <span className={clsx(styles.navName, styles.navBone)}>
+            Carregando vizinho
+          </span>
+        </span>
+      ) : (
+        <span className={styles.navBone}>Carregando vizinho</span>
+      )}
     </span>
   )
 }

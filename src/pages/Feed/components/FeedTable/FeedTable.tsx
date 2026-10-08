@@ -11,6 +11,7 @@ import { visitUrl } from '@/utils/visitUrl/visitUrl'
 import { formatCompactNumber } from '@/utils/formatCompactNumber/formatCompactNumber'
 import { useShownLikes } from '@/pages/Website/hooks/useShownLikes'
 import { VerificationStatus } from '@/pages/WidgetEditor/components/VerificationStatus/VerificationStatus'
+import { FeedTableHead, FeedTableSkeletonRow } from './FeedTableSkeleton'
 import styles from './FeedTable.module.scss'
 import { getCategoryLabel } from '@/pages/Feed/constants/categories'
 
@@ -44,17 +45,7 @@ export function FeedTable({
   return (
     <div className={styles.container}>
       <table className={styles.table} aria-busy={isLoading}>
-        <thead>
-          <tr>
-            <th className={styles.siteColumn}>Site</th>
-            <th>Descrição</th>
-            <th className={styles.categoryColumn}>Categoria</th>
-            {showLikes && <th className={styles.likesColumn}>Curtidas</th>}
-            <th className={styles.visitColumn}>
-              <span className={styles.srOnly}>Visitar</span>
-            </th>
-          </tr>
-        </thead>
+        <FeedTableHead showLikes={showLikes} />
         <tbody>
           {pending.map(({ website, tone, status }) => (
             <tr
@@ -83,7 +74,7 @@ export function FeedTable({
           ))}
           {isLoading
             ? Array.from({ length: skeletonCount }, (_, index) => (
-                <SkeletonRow key={index} showLikes={showLikes} />
+                <FeedTableSkeletonRow key={index} showLikes={showLikes} />
               ))
             : data.map((website) => (
                 <tr
@@ -139,28 +130,5 @@ export function FeedTable({
         </tbody>
       </table>
     </div>
-  )
-}
-
-function SkeletonRow({ showLikes }: { showLikes: boolean }) {
-  return (
-    <tr aria-hidden={true}>
-      <td>
-        <span className={styles.site}>
-          <span className={clsx(styles.thumb, styles.bone)} />
-          <span className={clsx(styles.boneText, styles.boneShort)}>
-            &nbsp;
-          </span>
-        </span>
-      </td>
-      <td>
-        <span className={styles.boneText}>&nbsp;</span>
-      </td>
-      <td>
-        <span className={clsx(styles.boneText, styles.boneShort)}>&nbsp;</span>
-      </td>
-      {showLikes && <td />}
-      <td />
-    </tr>
   )
 }

@@ -3,7 +3,7 @@ import { PageTrail } from '@/components/PageTrail/PageTrail'
 import { usePageMeta } from '@/hooks/usePageMeta'
 import { useParams } from 'react-router'
 import { useWebsiteDetails } from '@/pages/Website/hooks/useWebsiteDetails'
-import { WebsiteLoader } from '@/pages/Website/components/WebsiteLoader/WebsiteLoader'
+import { WebsiteSkeleton } from '@/pages/Website/components/WebsiteSkeleton/WebsiteSkeleton'
 import { WebsiteInfoCard } from '@/pages/Website/components/WebsiteInfoCard/WebsiteInfoCard'
 import { WebsiteMetrics } from '@/pages/Website/components/WebsiteMetrics/WebsiteMetrics'
 import { RecommendedSites } from '@/pages/Website/components/RecommendedSites/RecommendedSites'
@@ -22,7 +22,7 @@ export function WebsiteContent() {
     noIndex: isNotFound,
   })
 
-  if (isLoading) return <WebsiteLoader />
+  if (isLoading) return <WebsiteSkeleton />
 
   if (isNotFound) return <WebsiteNotFound />
 

@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { Navigate, Route } from 'react-router'
 import { NosNoCaboLayout } from '@/layouts/NosNoCaboLayout/NosNoCaboLayout'
 import {
@@ -9,13 +10,36 @@ import {
   Terms,
   NotFound,
 } from '@/providers/RouterProvider/lazyPages'
+import { FeedSkeleton } from '@/pages/Feed/components/FeedSkeleton/FeedSkeleton'
+import { WebsiteLayout } from '@/pages/Website/components/WebsiteLayout/WebsiteLayout'
+import { WebsiteSkeleton } from '@/pages/Website/components/WebsiteSkeleton/WebsiteSkeleton'
 
 export const appRoutes = (
   <>
     <Route Component={LandingPage} index />
     <Route Component={NosNoCaboLayout}>
-      <Route Component={Website} path='/website/:id' />
-      <Route Component={Feed} path='/websites' />
+      <Route
+        element={
+          <Suspense
+            fallback={
+              <WebsiteLayout>
+                <WebsiteSkeleton />
+              </WebsiteLayout>
+            }
+          >
+            <Website />
+          </Suspense>
+        }
+        path='/website/:id'
+      />
+      <Route
+        element={
+          <Suspense fallback={<FeedSkeleton />}>
+            <Feed />
+          </Suspense>
+        }
+        path='/websites'
+      />
     </Route>
     <Route element={<NosNoCaboLayout variant='focused' />}>
       <Route Component={SubmitWebsite} path='/websites/novo' />

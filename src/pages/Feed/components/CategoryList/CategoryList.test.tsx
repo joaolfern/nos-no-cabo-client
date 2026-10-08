@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { LuLayers } from 'react-icons/lu'
+import { CATEGORY_NAMES } from '@/pages/Feed/constants/categories'
 import { CategoryList } from './CategoryList'
 
 const options = [
@@ -112,6 +113,24 @@ describe('CategoryList', () => {
         'aria-pressed',
         'true'
       )
+    })
+  })
+
+  describe('while loading', () => {
+    const skeletonRows = () =>
+      document.querySelectorAll('nav > div[aria-hidden="true"]')
+
+    it('shows a row for "Todos" and every category when they all fit', () => {
+      setup({ loading: true, options: [] })
+
+      expect(skeletonRows()).toHaveLength(CATEGORY_NAMES.length + 1)
+      expect(screen.queryByRole('button')).not.toBeInTheDocument()
+    })
+
+    it('shows as many rows as the loaded list would fit', () => {
+      setup({ loading: true, options: [], maxRows: 5 })
+
+      expect(skeletonRows()).toHaveLength(5)
     })
   })
 })

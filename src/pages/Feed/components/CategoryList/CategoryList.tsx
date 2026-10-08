@@ -3,10 +3,10 @@ import clsx from 'clsx'
 import type { IconType } from 'react-icons'
 import { LuEllipsis } from 'react-icons/lu'
 import { Dropdown } from '@/components/Dropdown/Dropdown'
-import { Loading } from '@/components/Loading/Loading'
 import { Typography } from '@/components/Typography/Typography'
 import { ALL_CATEGORIES } from '@/pages/Feed/constants/categories'
 import { splitVisibleCategories } from '@/pages/Feed/utils/splitVisibleCategories'
+import { CategoryRowsSkeleton } from './CategoryRowsSkeleton'
 import styles from './CategoryList.module.scss'
 
 type CategoryOption = {
@@ -48,7 +48,7 @@ export function CategoryList({
         {search}
       </div>
       {loading ? (
-        <Loading />
+        <CategoryRowsSkeleton maxRows={maxRows} />
       ) : (
         <>
           <CategoryRow

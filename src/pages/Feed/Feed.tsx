@@ -6,8 +6,7 @@ import { FeedTopbar } from '@/pages/Feed/components/FeedTopbar/FeedTopbar'
 import { usePendingFeedItems } from '@/pages/SubmitWebsite/hooks/usePendingFeedItems'
 import { useFeedWebsites } from '@/pages/Feed/hooks/useFeedWebsites'
 import { useFilters } from '@/pages/Feed/hooks/useFilters'
-import { useLocalStorageState } from '@/hooks/useLocalStorageState'
-import { isFeedView } from '@/interfaces/IFeedView'
+import { useFeedView } from '@/pages/Feed/hooks/useFeedView'
 import styles from './Feed.module.scss'
 
 export function Feed() {
@@ -16,7 +15,7 @@ export function Feed() {
     useFeedWebsites()
   const { selectedKeywords, clearKeywords, clearSearch } = useFilters()
   const pendingItems = usePendingFeedItems()
-  const [view, setView] = useLocalStorageState('feed-view', 'grid', isFeedView)
+  const [view, setView] = useFeedView()
   const remaining = (total ?? 0) - websites.length
 
   function clearFilters() {

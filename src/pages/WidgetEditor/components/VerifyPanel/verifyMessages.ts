@@ -1,6 +1,9 @@
 import type { IApiError } from '@/interfaces/IApiError'
 import type { IVerificationResult } from '@/interfaces/IWebsite'
 
+export const VERIFY_PANEL_INTRO =
+  'Cuida deste site? Com o selo instalado, ele ganha o ícone de verificado e sobe nas listas.'
+
 export function verifyFailureMessage(
   result: IVerificationResult | undefined,
   error: IApiError | null
