@@ -1,7 +1,6 @@
 import { memo, useState, useEffect, useRef, useCallback } from 'react'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
-import Draggable from 'gsap/Draggable'
 import { WebsiteBubble } from '@/pages/Website/components/WebsiteBubble/WebsiteBubble'
 import type { WebsiteBubbleProps } from '@/pages/Website/components/WebsiteBubble/WebsiteBubble.types'
 import { useIsMobile } from '@/hooks/useIsMobile'
@@ -9,7 +8,7 @@ import type { BubbleTrajectoryConfig } from '../../LandingPage.types'
 import { BUBBLE_LANE_PADDING_PX } from '../../utils/getNextBubble'
 import styles from './BubblyItem.module.scss'
 
-gsap.registerPlugin(useGSAP, Draggable)
+gsap.registerPlugin(useGSAP)
 
 type BubblyItemProps = WebsiteBubbleProps & {
   trajectoryConfig: BubbleTrajectoryConfig
@@ -19,6 +18,14 @@ type BubblyItemProps = WebsiteBubbleProps & {
 }
 
 const BubbleItemsCache = new Map()
+
+// GSAP reads each bubble's transform on setup; once the page has painted, that read forces no layout.
+function afterFirstPaint(callback: () => void) {
+  let frame = requestAnimationFrame(() => {
+    frame = requestAnimationFrame(callback)
+  })
+  return () => cancelAnimationFrame(frame)
+}
 
 export const BubblyItem = memo(function BubblyItemInner({
   id,
@@ -57,107 +64,120 @@ export const BubblyItem = memo(function BubblyItemInner({
     (_, contextSafe) => {
       const floatEl = wrapperRef.current
       const tiltEl = tiltRef.current
-      if (!floatEl || !tiltEl) return
+      if (!floatEl || !tiltEl || !contextSafe) return
 
-      gsap.from(floatEl, {
-        opacity: 0,
-        duration: 0.6,
-        ease: 'back.out(1.7)',
-        delay: Math.random() * 0.5,
-      })
+      let stopFloating = () => {}
 
-      gsap.from(tiltEl, {
-        scale: 0.96,
-        duration: 0.6,
-        ease: 'back.out(1.7)',
-        delay: Math.random() * 0.5,
-      })
+      const startFloating = contextSafe(() => {
+        gsap.to(floatEl, {
+          opacity: 1,
+          duration: 0.6,
+          ease: 'back.out(1.7)',
+          delay: Math.random() * 0.5,
+        })
 
-      // Restore persisted position from previous mount
-      const savedPos = BubbleItemsCache.get(`${id}-position`) || { x: 0, y: 0 }
-      basePositionRef.current = savedPos
+        gsap.fromTo(
+          tiltEl,
+          { scale: 0.96 },
+          {
+            scale: 1,
+            duration: 0.6,
+            ease: 'back.out(1.7)',
+            delay: Math.random() * 0.5,
+          }
+        )
 
-      const depth = trajectoryConfig.floatDepth
-      const swayAmplitude = trajectoryConfig.wiggleOffset * depth
-      const driftAmplitude = trajectoryConfig.wiggleOffsetY * depth
-      const bobAmplitude = Math.max(1.2, trajectoryConfig.wiggleOffsetY * 0.55)
-      const phase = trajectoryConfig.floatPhase
-
-      const idSeed = Array.from(String(id)).reduce(
-        (acc, char) => acc + char.charCodeAt(0),
-        0
-      )
-      const seedA = ((idSeed % 17) + 3) / 10
-      const seedB = ((idSeed % 23) + 5) / 10
-      const seedC = ((idSeed % 29) + 7) / 10
-      const phaseState = {
-        t: phase * Math.PI * 2,
-      }
-      const baseCycleSeconds = Math.max(
-        5.6,
-        trajectoryConfig.wiggleDuration * 4.2
-      )
-      const angularVelocity = (Math.PI * 2) / baseCycleSeconds
-
-      const setX = gsap.quickSetter(floatEl, 'x', 'px')
-      const setY = gsap.quickSetter(floatEl, 'y', 'px')
-
-      rotateXSetRef.current = gsap.quickSetter(tiltEl, 'rotateX', 'deg') as (
-        value: number
-      ) => void
-      rotateYSetRef.current = gsap.quickSetter(tiltEl, 'rotateY', 'deg') as (
-        value: number
-      ) => void
-      gsap.set(tiltEl, { transformPerspective: 500 })
-
-      const tiltLerp = 0.15
-      const ticker: gsap.TickerCallback = () => {
-        const state = tiltStateRef.current
-        state.x += (state.targetX - state.x) * tiltLerp
-        state.y += (state.targetY - state.y) * tiltLerp
-        rotateXSetRef.current?.(state.x)
-        rotateYSetRef.current?.(state.y)
-      }
-      tiltTickerRef.current = ticker
-      gsap.ticker.add(ticker)
-
-      const getWaveOffsets = (t: number) => {
-        const slowWaveX = Math.sin(t * (0.55 + seedA * 0.08)) * swayAmplitude
-        const fastWaveX =
-          Math.sin(t * (1.05 + seedB * 0.08) + phase * 0.9) *
-          (swayAmplitude * 0.12)
-        const slowWaveY =
-          Math.cos(t * (0.42 + seedB * 0.07) + phase * 0.5) * driftAmplitude
-        const bobWaveY =
-          Math.sin(t * (0.82 + seedC * 0.07) + phase * 1.1) * bobAmplitude
-
-        return {
-          x: slowWaveX + fastWaveX,
-          y: slowWaveY + bobWaveY,
+        // Restore persisted position from previous mount
+        const savedPos = BubbleItemsCache.get(`${id}-position`) || {
+          x: 0,
+          y: 0,
         }
-      }
+        basePositionRef.current = savedPos
 
-      const applyFloat = () => {
-        if (statusRef.current === 'stationed') return
+        const depth = trajectoryConfig.floatDepth
+        const swayAmplitude = trajectoryConfig.wiggleOffset * depth
+        const driftAmplitude = trajectoryConfig.wiggleOffsetY * depth
+        const bobAmplitude = Math.max(
+          1.2,
+          trajectoryConfig.wiggleOffsetY * 0.55
+        )
+        const phase = trajectoryConfig.floatPhase
 
-        const waveOffsets = getWaveOffsets(phaseState.t)
-        const x = basePositionRef.current.x + waveOffsets.x
-        const y = basePositionRef.current.y + waveOffsets.y
+        const idSeed = Array.from(String(id)).reduce(
+          (acc, char) => acc + char.charCodeAt(0),
+          0
+        )
+        const seedA = ((idSeed % 17) + 3) / 10
+        const seedB = ((idSeed % 23) + 5) / 10
+        const seedC = ((idSeed % 29) + 7) / 10
+        const phaseState = {
+          t: phase * Math.PI * 2,
+        }
+        const baseCycleSeconds = Math.max(
+          5.6,
+          trajectoryConfig.wiggleDuration * 4.2
+        )
+        const angularVelocity = (Math.PI * 2) / baseCycleSeconds
 
-        setX(x)
-        setY(y)
-      }
+        const setX = gsap.quickSetter(floatEl, 'x', 'px')
+        const setY = gsap.quickSetter(floatEl, 'y', 'px')
 
-      const tickFloat = () => {
-        const deltaSeconds = gsap.ticker.deltaRatio(60) / 60
-        phaseState.t += angularVelocity * deltaSeconds
+        rotateXSetRef.current = gsap.quickSetter(tiltEl, 'rotateX', 'deg') as (
+          value: number
+        ) => void
+        rotateYSetRef.current = gsap.quickSetter(tiltEl, 'rotateY', 'deg') as (
+          value: number
+        ) => void
+        gsap.set(tiltEl, { transformPerspective: 500 })
+
+        const tiltLerp = 0.15
+        const ticker: gsap.TickerCallback = () => {
+          const state = tiltStateRef.current
+          state.x += (state.targetX - state.x) * tiltLerp
+          state.y += (state.targetY - state.y) * tiltLerp
+          rotateXSetRef.current?.(state.x)
+          rotateYSetRef.current?.(state.y)
+        }
+        tiltTickerRef.current = ticker
+        gsap.ticker.add(ticker)
+
+        const getWaveOffsets = (t: number) => {
+          const slowWaveX = Math.sin(t * (0.55 + seedA * 0.08)) * swayAmplitude
+          const fastWaveX =
+            Math.sin(t * (1.05 + seedB * 0.08) + phase * 0.9) *
+            (swayAmplitude * 0.12)
+          const slowWaveY =
+            Math.cos(t * (0.42 + seedB * 0.07) + phase * 0.5) * driftAmplitude
+          const bobWaveY =
+            Math.sin(t * (0.82 + seedC * 0.07) + phase * 1.1) * bobAmplitude
+
+          return {
+            x: slowWaveX + fastWaveX,
+            y: slowWaveY + bobWaveY,
+          }
+        }
+
+        const applyFloat = () => {
+          if (statusRef.current === 'stationed') return
+
+          const waveOffsets = getWaveOffsets(phaseState.t)
+          const x = basePositionRef.current.x + waveOffsets.x
+          const y = basePositionRef.current.y + waveOffsets.y
+
+          setX(x)
+          setY(y)
+        }
+
+        const tickFloat = () => {
+          const deltaSeconds = gsap.ticker.deltaRatio(60) / 60
+          phaseState.t += angularVelocity * deltaSeconds
+          applyFloat()
+        }
+
         applyFloat()
-      }
+        gsap.ticker.add(tickFloat)
+        stopFloating = () => gsap.ticker.remove(tickFloat)
 
-      applyFloat()
-      gsap.ticker.add(tickFloat)
-
-      if (contextSafe) {
         handleEnterRef.current = contextSafe(() => {
           leaveTimerRef.current?.kill()
           if (statusRef.current === 'idle') {
@@ -166,9 +186,7 @@ export const BubblyItem = memo(function BubblyItemInner({
             )
           }
         })
-      }
 
-      if (contextSafe) {
         handleLeaveRef.current = contextSafe(() => {
           enterTimerRef.current?.kill()
           leaveTimerRef.current = gsap.delayedCall(0.15, () => {
@@ -185,12 +203,15 @@ export const BubblyItem = memo(function BubblyItemInner({
             setStatus('idle')
           })
         })
-      }
+      })
+
+      const cancelStart = afterFirstPaint(startFloating)
 
       return () => {
+        cancelStart()
         leaveTimerRef.current?.kill()
         enterTimerRef.current?.kill()
-        gsap.ticker.remove(tickFloat)
+        stopFloating()
         if (tiltTickerRef.current) {
           gsap.ticker.remove(tiltTickerRef.current)
           tiltTickerRef.current = null

@@ -1,4 +1,5 @@
 import { useEffect, useRef, type RefObject } from 'react'
+import { observeSize } from '@/pages/LandingPage/utils/observeSize'
 import gsap from 'gsap'
 import type { BubbleInstance } from '../../LandingPage.types'
 import styles from './ConnectionLine.module.scss'
@@ -44,11 +45,15 @@ export function MobileConnectionLine({
       }
     }
 
-    updateContainerRect()
+    const stopObservingRect = observeSize(
+      containerRef.current,
+      updateContainerRect
+    )
     window.addEventListener('resize', updateContainerRect)
     window.addEventListener('scroll', updateContainerRect)
 
     return () => {
+      stopObservingRect()
       window.removeEventListener('resize', updateContainerRect)
       window.removeEventListener('scroll', updateContainerRect)
     }
@@ -72,7 +77,7 @@ export function MobileConnectionLine({
       }
     }
 
-    resizeCanvas()
+    const stopObservingCanvas = observeSize(containerRef.current, resizeCanvas)
     window.addEventListener('resize', resizeCanvas)
 
     const getBubbleCenters = (containerRect: DOMRect) => {
@@ -161,6 +166,7 @@ export function MobileConnectionLine({
 
     return () => {
       gsap.ticker.remove(drawFrame)
+      stopObservingCanvas()
       window.removeEventListener('resize', resizeCanvas)
       lastFrameTs.current = null
     }

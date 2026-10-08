@@ -1,4 +1,5 @@
 import { useEffect, useRef, type RefObject } from 'react'
+import { observeSize } from '@/pages/LandingPage/utils/observeSize'
 import gsap from 'gsap'
 import type { BubbleInstance } from '../../LandingPage.types'
 import styles from './ConnectionLine.module.scss'
@@ -64,7 +65,10 @@ export function DesktopConnectionLine({
       }
     }
 
-    updateContainerRect()
+    const stopObservingRect = observeSize(
+      containerRef.current,
+      updateContainerRect
+    )
     window.addEventListener('resize', updateContainerRect)
     window.addEventListener('scroll', updateContainerRect)
 
@@ -97,6 +101,7 @@ export function DesktopConnectionLine({
     window.addEventListener('mousemove', handleGlobalMouseMove)
 
     return () => {
+      stopObservingRect()
       window.removeEventListener('resize', updateContainerRect)
       window.removeEventListener('scroll', updateContainerRect)
       window.removeEventListener('mousemove', handleGlobalMouseMove)
@@ -121,7 +126,7 @@ export function DesktopConnectionLine({
       }
     }
 
-    resizeCanvas()
+    const stopObservingCanvas = observeSize(containerRef.current, resizeCanvas)
     window.addEventListener('resize', resizeCanvas)
 
     const drawFrame = () => {
@@ -430,6 +435,7 @@ export function DesktopConnectionLine({
 
     return () => {
       gsap.ticker.remove(drawFrame)
+      stopObservingCanvas()
       window.removeEventListener('resize', resizeCanvas)
       lastFrameTs.current = null
     }
