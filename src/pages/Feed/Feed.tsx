@@ -4,7 +4,7 @@ import { FeedCardList } from '@/pages/Feed/components/FeedCardList/FeedCardList'
 import { FeedLoadMore } from '@/pages/Feed/components/FeedLoadMore/FeedLoadMore'
 import { FeedTopbar } from '@/pages/Feed/components/FeedTopbar/FeedTopbar'
 import { usePendingFeedItems } from '@/pages/SubmitWebsite/hooks/usePendingFeedItems'
-import { useWebsites } from '@/pages/Feed/hooks/useWebsites'
+import { useFeedWebsites } from '@/pages/Feed/hooks/useFeedWebsites'
 import { useFilters } from '@/pages/Feed/hooks/useFilters'
 import { useLocalStorageState } from '@/hooks/useLocalStorageState'
 import { isFeedView } from '@/interfaces/IFeedView'
@@ -13,7 +13,7 @@ import styles from './Feed.module.scss'
 export function Feed() {
   usePageMeta({ title: 'Projetos', path: '/websites' })
   const { websites, total, isLoading, hasMore, loadMore, pageSize } =
-    useWebsites()
+    useFeedWebsites()
   const { selectedKeywords, clearKeywords, clearSearch } = useFilters()
   const pendingItems = usePendingFeedItems()
   const [view, setView] = useLocalStorageState('feed-view', 'grid', isFeedView)

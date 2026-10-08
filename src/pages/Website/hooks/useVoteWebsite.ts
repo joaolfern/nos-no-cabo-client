@@ -15,6 +15,7 @@ import type {
   IWebsiteStats,
 } from '@/interfaces/IWebsiteStats'
 import { websitePageKey } from '@/hooks/useDataHooks'
+import { FEED_LIST_KEY } from '@/pages/Feed/utils/feedCache'
 import {
   clearPendingVote,
   getPendingVote,
@@ -42,7 +43,7 @@ function updateCachedLikes(
   netLikes: number
 ) {
   queryClient.setQueriesData<InfiniteData<Page<Website>>>(
-    { queryKey: ['websites', 'list'] },
+    { queryKey: FEED_LIST_KEY },
     (feed) =>
       feed && {
         ...feed,

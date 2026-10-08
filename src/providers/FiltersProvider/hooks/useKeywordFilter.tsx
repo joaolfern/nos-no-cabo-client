@@ -11,7 +11,10 @@ export const CATEGORY_SEARCH_PARAM = 'categoria'
 
 export function useKeywordFilter() {
   const [searchParams, setSearchParams] = useSearchParams()
-  const { data: categories, isLoading: keywordIsLoading } = useCategoriesData()
+  // Reads what the feed fetched (useFeedWebsites), so other pages don't request categories.
+  const { data: categories, isPending: keywordIsLoading } = useCategoriesData({
+    enabled: false,
+  })
   const keywords = useMemo<IKeyword[] | undefined>(
     () => categories?.items.map(({ slug }) => ({ id: slug, name: slug })),
     [categories]

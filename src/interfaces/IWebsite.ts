@@ -37,18 +37,6 @@ export interface IWebsite {
   likes?: number
 }
 
-export interface IWebsitesContext {
-  websites: IWebsite[]
-  total: number | undefined
-  isLoading: boolean
-  error: Error | null
-  hasMore: boolean
-  isLoadingMore: boolean
-  loadMore: () => void
-  pageSize: number
-  getWebsiteById: (id: string) => IWebsite | undefined
-}
-
 export interface IKeyword {
   id: string
   name: string

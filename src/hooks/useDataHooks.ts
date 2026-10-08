@@ -30,8 +30,9 @@ export function useWebsiteDetailsData(id: string) {
   })
 }
 
-export function useCategoriesData() {
+export function useCategoriesData({ enabled = true } = {}) {
   return useQuery({
+    enabled,
     queryKey: ['websites', 'categories'],
     queryFn: () =>
       v1Api.get<CategoryList>('categories').then((res) => res.data),

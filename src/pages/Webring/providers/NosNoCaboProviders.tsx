@@ -1,5 +1,4 @@
 import { FiltersProvider } from '@/providers/FiltersProvider/FiltersProvider'
-import { WebsitesProvider } from '@/providers/WebsitesProvider/WebsitesProvider'
 import { SortProvider } from '@/providers/SortProvider/SortProvider'
 
 type NosNoCaboProvidersProps = {
@@ -9,9 +8,7 @@ type NosNoCaboProvidersProps = {
 export function NosNoCaboProviders({ children }: NosNoCaboProvidersProps) {
   return (
     <SortProvider>
-      <FiltersProvider>
-        <WebsitesProvider>{children}</WebsitesProvider>
-      </FiltersProvider>
+      <FiltersProvider>{children}</FiltersProvider>
     </SortProvider>
   )
 }

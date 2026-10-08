@@ -1,10 +1,20 @@
 import { act, renderHook, waitFor } from '@testing-library/react'
+import { http, HttpResponse } from 'msw'
+import { server } from '@/__mocks__/node'
+import { V1_API_URL } from '@/config/env'
+import { useCategoriesData } from '@/hooks/useDataHooks'
 import { Providers } from '@/providers'
 import { useFilters } from '@/pages/Feed/hooks/useFilters'
 
+// The feed fetches the categories; the filters only read them.
+function useFiltersOnFeed() {
+  useCategoriesData()
+  return useFilters()
+}
+
 function renderFilters(url = '/') {
   window.history.replaceState(null, '', url)
-  return renderHook(() => useFilters(), { wrapper: Providers })
+  return renderHook(() => useFiltersOnFeed(), { wrapper: Providers })
 }
 
 function categoryInUrl() {
@@ -64,5 +74,22 @@ describe('useKeywordFilter', () => {
         'Outros',
       ]
     )
+  })
+
+  it('does not request categories outside the feed', async () => {
+    const requested = vi.fn()
+    server.use(
+      http.get(`${V1_API_URL}/categories`, () => {
+        requested()
+        return HttpResponse.json({ total: 0, items: [] })
+      })
+    )
+    window.history.replaceState(null, '', '/')
+    const { result } = renderHook(() => useFilters(), { wrapper: Providers })
+
+    await new Promise((resolve) => setTimeout(resolve, 50))
+
+    expect(requested).not.toHaveBeenCalled()
+    expect(result.current.keywordOptions).toEqual([])
   })
 })
