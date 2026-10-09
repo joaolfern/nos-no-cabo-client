@@ -1,0 +1,65 @@
+@startuml 14-seq-submit-moderation
+!include ../../_style.iuml
+title Nós no Cabo v1 — Submission and background moderation
+
+participant "SPA" as spa
+participant "gateway" as gw
+participant "catalog" as catalog
+participant "Turnstile" as ts <<external>>
+database "catalog D1" as db
+queue "moderation-jobs" as q
+participant "moderation\n(private)" as mod <<private>>
+participant "Workers AI" as ai <<external>>
+participant "Email Routing" as mail <<external>>
+
+spa -> gw : POST /v1/websites {submission}\n+ cf-turnstile-response
+gw -> catalog : forward
+catalog -> ts : siteverify(token)
+ts --> catalog : ok
+catalog -> catalog : validate, normalize url
+catalog -> db : url_normalized exists?
+alt duplicate (not rejected)
+  catalog --> spa : 409 {code: duplicate, existingId}
+else new, or a rejected row (replaced)
+  catalog -> db : insert website (status = checking)
+  catalog -> q : send {websiteId}
+  alt send fails
+    catalog -> db : review_flag = model_error
+    catalog -> mail : moderation alert
+  end
+  catalog --> spa : 202 Website (checking)
+end
+
+== Background (seconds to minutes) ==
+q -> mod : deliver {websiteId}
+mod -> catalog : getForModeration(id)
+alt no longer checking
+  mod -> q : ack
+else
+  mod -> catalog : takeDailyQuota (250 checks per UTC day)
+  alt budget used up
+    mod -> catalog : deferModeration(id)\n(moderation_backlog)
+  else
+    mod -> ai : classify the site's text
+    mod -> catalog : applyModeration(publish | reject | hold)
+    catalog -> db : status, moderation_results, short_code\n(one batch, only while checking)
+  end
+end
+
+note over q, mod
+  Errors retry up to 3 times, then go to moderation-jobs-dlq,
+  whose consumer holds the site for review (model_error).
+  Cron 5 0 * * * drains the backlog with takeModerationBacklog.
+end note
+
+== After a decision ==
+catalog -> mail : moderation alert\n(signed Reply-To for review)
+catalog -> catalog : Web Push to the submitter\n(see 17-seq-web-push)
+
+note over spa, gw
+  The SPA never waits for moderation: it keeps a local draft
+  and checks GET /v1/websites/status?ids=
+  (see frontend/21-seq-submit-optimistic).
+end note
+
+@enduml

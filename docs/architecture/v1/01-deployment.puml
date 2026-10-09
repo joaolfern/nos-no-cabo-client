@@ -1,0 +1,79 @@
+@startuml 01-deployment
+!include ../_style.iuml
+skinparam linetype polyline
+skinparam nodesep 40
+skinparam ranksep 70
+title Nós no Cabo v1 — Deployment (Cloudflare, free plan)
+
+node "Browser" as browser {
+  component "React SPA" as spa
+  component "localStorage\ndrafts, voter id,\nterms acceptance" as ls
+  component "sw.js\n(Web Push)" as sw
+}
+
+rectangle "Cloudflare" as cf {
+  node "Workers" as workers {
+    component "nosnocabo\nstatic assets (nos-client)\nnosnocabo.com.br" as site
+    component "nnc-gateway\napi.nosnocabo.com.br" as gw
+    component "nnc-router\nnosnocabo.com.br/ring/*, /r/*" as router
+    component "nnc-catalog\n(no public URL)" as catalog
+    component "nnc-verification\n(no public URL)" as verification
+    component "nnc-metrics\n(no public URL)" as metrics
+    component "nnc-moderation\n(private repo)" as moderation <<private>>
+  }
+  package "Cron Triggers" {
+    component "cron 41 * * * *\npush sweep" as cronCatalog <<cron>>
+    component "cron 17 * * * *\nrecheck 20 sites" as cronVerification <<cron>>
+    component "cron 23 */3 * * *\nrank_score + likes" as cronMetrics <<cron>>
+    component "cron 5 0 * * *\ndrain AI backlog" as cronModeration <<cron>>
+  }
+  database "D1\nnnc-catalog" as d1catalog
+  database "D1\nnnc-metrics" as d1metrics
+  queue "Queue\nmoderation-jobs" as q
+  queue "Queue\nmoderation-jobs-dlq" as dlq
+  component "Workers AI" as ai <<external>>
+  component "Turnstile" as ts <<external>>
+  component "Email Routing" as mail <<external>>
+}
+
+component "Push services\n(FCM, Mozilla, Apple)" as pushsvc <<external>>
+
+browser --> site : HTTPS
+spa ..> ls
+spa --> gw : /v1/*
+gw --> catalog : service binding\n(/v1/* default)
+gw --> verification : service binding\n(POST …/verify)
+gw --> metrics : service binding\n(stats, votes)
+router --> catalog : CatalogRpc
+router --> metrics : MetricsRpc.recordClick
+verification --> catalog : CatalogRpc
+metrics --> catalog : CatalogRpc
+moderation --> catalog : CatalogRpc
+catalog --> d1catalog
+metrics --> d1metrics
+catalog --> q : send {websiteId}
+q --> moderation
+moderation --> dlq : after 3 attempts
+dlq --> moderation
+moderation --> ai
+catalog --> ts : siteverify
+metrics --> ts : siteverify
+catalog --> mail : send_email
+mail --> catalog : email() reply handler
+catalog --> pushsvc : VAPID-signed push
+pushsvc --> sw
+cronCatalog --> catalog
+cronVerification --> verification
+cronMetrics --> metrics
+cronModeration --> moderation
+
+note bottom of cf
+  <b>Environments:</b> only the <i>-staging</i> Workers, D1s and queues exist, and they serve
+  the live domain. CI (nos-sr workers.yml) deploys catalog → metrics → verification →
+  router → gateway on push to main and applies D1 migrations; moderation and the
+  static site (pnpm run deploy:web) are deployed by hand. No KV.
+  <b>Free plan:</b> 5 cron triggers (4 used), 100k D1 rows written/day,
+  10k Workers AI neurons/day (moderation caps itself at 250 checks/day).
+end note
+
+@enduml

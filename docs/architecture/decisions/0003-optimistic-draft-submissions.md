@@ -40,4 +40,4 @@ Other visitors must not see unchecked content.
 - This replaces the current optimistic update in `useRegisterWebsite`. That update pushed a fake
   website into the `['websites']` cache, which disappeared on the next refetch.
 
-Diagram: [`target/frontend/21-seq-submit-optimistic`](../target/frontend/21-seq-submit-optimistic.puml).
+Diagram: [`v1/frontend/21-seq-submit-optimistic`](../v1/frontend/21-seq-submit-optimistic.puml).

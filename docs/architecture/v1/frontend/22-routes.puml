@@ -1,0 +1,41 @@
+@startuml 22-routes
+!include ../../_style.iuml
+title Nós no Cabo v1 — nos-client route map
+
+rectangle "/  (index)\nLandingPage + SiteFooter" as landing
+
+rectangle "NosNoCaboLayout (wide)\nTopbar: Logo · SearchFeed · 'Adicionar um site' · SiteFooter" as layout {
+  rectangle "/websites\nFeed\ndrafts first, then 'Melhores'" as feed
+  rectangle "/website/:id\nWebsite\n✓/? badge · VerifyPanel · votes · stats" as website
+}
+
+rectangle "NosNoCaboLayout (focused)\nnon-sticky topbar · PageTrail · SiteFooter" as focused {
+  rectangle "/websites/novo\nSubmitWebsite" as submit
+  rectangle "/websites/:id/selo\nWidgetEditor" as widget
+  rectangle "/termos\nTerms" as terms
+}
+
+rectangle "/ring/*  ·  /r/*\nNavigate to /\n(only if the router fails open)" as ringFallback
+rectangle "*\nNotFound" as notFound
+rectangle "router Worker\n/r/:code → member site" as router <<external>>
+
+landing --> submit : "Adicionar um site"
+landing --> feed : "Conferir sites"
+layout --> submit : topbar link
+submit --> feed : on save (toast)
+feed --> website : card click
+feed --> widget : "?" badge → modal\n"Sou responsável"
+website --> widget : "Adicionar o selo"
+website --> router : "Visitar site"
+widget --> terms : consent (modal)
+layout --> terms : footer
+ringFallback --> landing
+notFound --> landing
+
+note bottom of focused
+  Every page is lazy-loaded and sets its own meta tags
+  (usePageMeta). Forms are normal pages: linkable,
+  refreshable, and "Voltar" goes back to /websites.
+end note
+
+@enduml

@@ -1,0 +1,40 @@
+@startuml 12-website-lifecycle
+!include ../../_style.iuml
+title Nós no Cabo v1 — Website lifecycle
+
+state "Moderation status" as moderationStatus {
+  [*] --> checking : POST /v1/websites\n(202 Accepted)
+  checking --> published : content check: safe
+  checking --> rejected : content check: unsafe
+  checking --> checking : AI budget used up\n(moderation_backlog, retried at 00:05 UTC)
+  checking --> checking : held for review\n(review_flag: model_error | unreachable)
+  published --> published : reported\n(review_flag: reported; never hidden automatically)
+  checking --> published : review: dismiss
+  published --> published : review: dismiss\n(reports deleted)
+  checking --> rejected : review: ban [reason]
+  published --> rejected : review: ban [reason]
+  rejected --> checking : same URL submitted again\n(the row is replaced)
+}
+
+state "Verification (only while published)" as verification {
+  [*] --> unverified
+  unverified --> verified : widget found\n(on request or hourly recheck)
+  verified --> unverified : widget missing on\n2 rechecks in a row
+}
+
+note right of moderationStatus
+  <b>Visibility</b>
+  • checking: only the submitter, as a local draft
+  • published: public, listed, in the ring
+  • rejected: not listed; the submitter's draft shows the reason
+  <b>Review</b>: replying to the alert email (dismiss | ban)
+  or the review script in the private moderation repo.
+end note
+
+note right of verification
+  "Melhores" order: rank_score from recent clicks,
+  total clicks and verification (ADR 0004).
+  The ring puts verified sites first.
+end note
+
+@enduml

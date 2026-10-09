@@ -1,0 +1,94 @@
+@startuml 37-activity-submission
+!include ../../_style.iuml
+title Nós no Cabo v1 — Activity diagram: submitting a site
+
+|Submitter (SPA)|
+start
+:Paste the URL;
+:Fetch the preview\n(GET /v1/websites/preview);
+if (Duplicate?) then (yes)
+  :Show "already listed" with a link;
+  stop
+else (no)
+endif
+:Edit name, description, colour;
+:Pick 1–3 categories;
+:Solve Turnstile;
+:Send POST /v1/websites;
+
+|catalog|
+:Validate the Turnstile token;
+if (Token valid and submission valid?) then (no)
+  |Submitter (SPA)|
+  :Show the error;
+  stop
+else (yes)
+endif
+|catalog|
+:Normalize the URL;
+if (Listed and not rejected?) then (yes)
+  |Submitter (SPA)|
+  :409: show the existing site;
+  stop
+else (no)
+endif
+|catalog|
+:Insert the website as checking\n(replacing a rejected row);
+fork
+  :Send {websiteId} to moderation-jobs;
+fork again
+  :Answer 202 Website;
+  |Submitter (SPA)|
+  :Store the draft in localStorage;
+  :Toast and go to /websites;
+end fork
+
+|moderation|
+:Receive the job;
+if (Still checking?) then (no)
+  stop
+else (yes)
+endif
+if (AI budget left today?) then (no)
+  :Add to moderation_backlog;
+  :Wait for 00:05 UTC; <<timeEvent>>
+  :Take from the backlog;
+else (yes)
+endif
+:Classify the text with Workers AI;
+if (Verdict) then (safe)
+  :applyModeration(publish);
+elseif (unsafe) then
+  :applyModeration(reject, unsafe);
+else (error after 3 tries)
+  :applyModeration(hold, model_error);
+endif
+
+|catalog|
+:Write status and result in one batch;
+:Email the alert with a signed Reply-To;
+if (Held?) then (yes)
+  |Reviewer|
+  :Read the alert;
+  if (Reply) then (dismiss)
+    |catalog|
+    :Publish;
+  else (ban)
+    |catalog|
+    :Reject with the reason;
+  endif
+else (no)
+endif
+|catalog|
+:Push to the submitter's subscriptions;
+
+|Submitter (SPA)|
+:Notification or next status check;
+if (Published?) then (yes)
+  :Drop the draft; the card comes from the list;
+else (no)
+  :Show the rejected card with the reason;
+endif
+stop
+
+@enduml

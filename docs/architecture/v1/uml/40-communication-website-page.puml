@@ -1,0 +1,34 @@
+@startuml 40-communication-website-page
+!include ../../_style.iuml
+skinparam linetype polyline
+skinparam ranksep 90
+skinparam nodesep 90
+title Nós no Cabo v1 — Communication diagram: opening a website page and visiting the site
+
+object ":Visitor" as visitor <<actor>>
+object ":WebsitePage" as page
+object ":QueryClient" as query
+object ":gateway" as gateway
+object ":catalog" as catalog
+object ":metrics" as metrics
+object ":router" as router
+object ":MemberSite" as member
+
+visitor -right- page : "1: open /website/:id →\n6: click Visitar site →"
+page -right- query : "2: websitePageQuery(id) →"
+query -right- gateway : "3: GET /v1/websites/:id/page →"
+gateway -- catalog : "3.1a: GET /websites/:id →\n3.1b: GET /websites/:id/neighbours →"
+gateway -- metrics : "3.1c: GET /websites/:id/stats →"
+visitor -- router : "6.1: GET /r/:code →"
+router -- catalog : "6.2: [snapshot stale] getRingVersion() →"
+router -- member : "6.3: ← 302 Location"
+router -- metrics : "6.4: recordClick(click) →"
+
+note bottom of gateway
+  3.1a–c run concurrently (Promise.all).
+  4: the gateway answers {website, neighbours, stats | null}.
+  5: the page renders from the cache
+  (staleTime 60 s, no refetch on focus).
+end note
+
+@enduml

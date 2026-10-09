@@ -1,0 +1,49 @@
+@startuml 16-seq-clicks-ranking
+!include ../../_style.iuml
+title Nós no Cabo v1 — Clicks, votes and ranking (ADR 0004, 0006)
+
+actor "Visitor" as visitor
+participant "SPA" as spa
+participant "router" as router
+participant "metrics" as metrics
+database "metrics D1" as mdb
+participant "catalog" as catalog
+participant "cron\n23 */3 * * *" as cron <<cron>>
+
+== A click ==
+visitor -> router : GET /r/:code ("Visitar site", short link)\nor /ring/:id/next|prev|random (widget)
+router -> router : look up the in-memory ring snapshot
+router --> visitor : 302 → site url (no-store, noindex)
+router -> metrics : waitUntil: MetricsRpc.recordClick\n{websiteId, sourceId?, ip, userAgent}
+note right of metrics
+  Skips empty or bot user-agents (crawlers,
+  link previews). visitor_hash =
+  SHA-256(VISITOR_SALT : day : IP /64 : UA).
+  HEAD requests and home redirects aren't counted.
+end note
+metrics -> mdb : INSERT OR IGNORE visits (click on the target,\nreferral on sourceId for ring links)
+mdb -> mdb : triggers: daily_stats, site_totals
+
+== A vote ==
+visitor -> spa : up / down vote
+spa -> metrics : POST /v1/websites/:id/votes\n{voterId, value} + Turnstile (via gateway)
+metrics -> catalog : isPublished(id)
+metrics -> mdb : upsert votes (voter_hash) → triggers update site_totals
+metrics -> catalog : setMetrics([{id, likes: likes − dislikes}])
+metrics --> spa : WebsiteStats
+
+== Every 3 hours ==
+cron -> metrics : pushRanks
+metrics -> catalog : getRankInputs() (published ids, verified)
+metrics -> mdb : clicks_30d, clicks_total, net likes
+metrics -> metrics : score = 3·ln(1+clicks_30d) + ln(1+clicks)\n+ 2·verified
+metrics -> catalog : setMetrics(changed values only,\nchunks of 100)
+metrics -> mdb : delete old visits
+
+note over spa, router
+  Every visit link goes through the router.
+  If /ring/* or /r/* ever reach the SPA,
+  it sends the visitor home.
+end note
+
+@enduml

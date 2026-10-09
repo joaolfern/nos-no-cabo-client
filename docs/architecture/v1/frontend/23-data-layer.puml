@@ -1,0 +1,63 @@
+@startuml 23-data-layer
+!include ../../_style.iuml
+skinparam linetype polyline
+left to right direction
+title Nós no Cabo v1 — nos-client data layer
+
+package "Queries (TanStack Query: staleTime 60 s, no refetch on focus)" {
+  component "useFeedWebsites\n['websites','list',params]" as qFeed
+  component "useCategoriesData\n['websites','categories']" as qCategories
+  component "websitePageQuery\n['websites','page',id]\ndetails · neighbours · stats" as qPage
+  component "useTopWebsitesData\n['websites','top',limit]" as qTop
+  component "useRingBubbles\n(snapshot, refresh when stale)" as qRing
+  component "useWebsitePreview\n['websitePreview',normalizedUrl]" as qPreview
+  component "usePendingStatusPolling\n['websiteStatuses',ids]" as qStatus
+  component "useSubmittedWebsite\n['submittedWebsite',id]" as qSubmitted
+}
+
+package "Mutations (Turnstile token where needed)" {
+  component "useSubmitWebsite" as mSubmit
+  component "useVoteWebsite\n(optimistic likes in feed and top caches)" as mVote
+  component "useReportWebsite" as mReport
+  component "useVerifyWebsite" as mVerify
+  component "usePushSubscription" as mPush
+}
+
+package "/v1 through v1Api (axios, VITE_V1_API_URL; errors → IApiError)" as v1 {
+  component "GET /websites" as eList
+  component "GET /categories" as eCategories
+  component "GET /websites/:id/page" as ePage
+  component "GET /websites/preview" as ePreview
+  component "GET /websites/status" as eStatus
+  component "GET /websites/:id" as eGet
+  component "POST /websites" as eCreate
+  component "POST /websites/:id/votes" as eVote
+  component "POST /websites/:id/reports" as eReport
+  component "POST /websites/:id/verify" as eVerify
+  component "POST /websites/:id/subscriptions" as eSubscribe
+}
+
+component "MSW (src/~__mocks~__/handlers.ts)\nsame contract, in-memory store;\non unless VITE_ENABLE_MOCKS=false" as msw
+
+qFeed --> eList
+qTop --> eList
+qRing --> eList
+qCategories --> eCategories
+qPage --> ePage
+qPreview --> ePreview
+qStatus --> eStatus
+qSubmitted --> eGet
+mSubmit --> eCreate
+mVote --> eVote
+mReport --> eReport
+mVerify --> eVerify
+mPush --> eSubscribe
+msw ..> v1 : intercepts in dev and tests
+
+note bottom of v1
+  Every query about published sites starts with 'websites',
+  so one invalidation (after submit, verify or a published
+  draft) refreshes them all.
+end note
+
+@enduml

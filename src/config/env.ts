@@ -12,6 +12,8 @@ export const NOS_NO_CABO_URL =
 export const GITHUB_URL =
   import.meta.env.VITE_GITHUB_URL ||
   'https://github.com/joaolfern/nos-no-cabo-client'
+export const DOCS_URL =
+  import.meta.env.VITE_DOCS_URL || 'https://docs.nosnocabo.com.br'
 export const TWITTER_URL = import.meta.env.VITE_TWITTER_URL as
   string | undefined
 export const CONTACT_EMAIL = import.meta.env.VITE_CONTACT_EMAIL as

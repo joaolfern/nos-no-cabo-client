@@ -1,0 +1,53 @@
+@startuml 00-system-context
+!include ../_style.iuml
+left to right direction
+skinparam linetype polyline
+skinparam ranksep 110
+title Nós no Cabo v1 — System context
+
+actor "Visitor" as visitor
+actor "Submitter\n(anyone)" as submitter
+actor "Site owner" as owner
+actor "Reviewer\n(project owner)" as reviewer
+
+rectangle "nos-client\nReact SPA\nnosnocabo.com.br" as spa
+rectangle "API gateway\napi.nosnocabo.com.br/v1" as gateway
+rectangle "Router\nnosnocabo.com.br/ring/*, /r/*" as router
+rectangle "Services\ncatalog · moderation\nverification · metrics" as services
+rectangle "Cloudflare Turnstile\n(bot check)" as turnstile <<external>>
+rectangle "Workers AI\n(content check)" as ai <<external>>
+rectangle "Email Routing\nalertas@nosnocabo.com.br" as email <<external>>
+rectangle "Browser push services\n(Web Push)" as push <<external>>
+rectangle "Member websites\n(optional webring widget)" as members <<external>>
+
+visitor --> spa : browse, search,\nvote, report
+visitor --> router : Visitar site,\nshort links
+submitter --> spa : submit any site
+owner --> members : installs widget
+owner --> spa : Verificar
+members --> router : widget links\n/ring/:id/next|prev|random
+
+spa --> gateway : REST /v1
+spa --> turnstile : token on every write
+gateway --> services : service bindings
+router --> services : RPC: ring, record click
+router --> members : 302
+services --> turnstile : siteverify
+services --> members : scrape metadata,\ncheck widget
+services --> ai : classify text
+services --> email : alerts
+email --> reviewer : new site, report
+reviewer --> email : reply "dismiss" | "ban"
+services --> push : decision for the submitter
+push --> submitter : notification
+
+note right of services
+  <b>Community-driven</b>: submissions need no account.
+  A site is public only after the content check passes.
+  <b>Verified</b> = the widget is on the site. Recent clicks,
+  total clicks and verification rank "Melhores" (ADR 0004).
+  No per-IP limits: Turnstile, a daily AI budget,
+  moderation and review protect the writes.
+end note
+
+@enduml

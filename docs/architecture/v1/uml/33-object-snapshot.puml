@@ -1,0 +1,84 @@
+@startuml 33-object-snapshot
+!include ../../_style.iuml
+skinparam linetype polyline
+title Nós no Cabo v1 — Object diagram: one moment on 2026-10-08
+
+object "diario:Website" as diario {
+  id = "01J9Z…K4"
+  url = "https://diario.dev"
+  status = published
+  shortCode = "d7k2"
+  verifiedAt = 2026-10-06T14:02Z
+  rankScore = 14.6
+  likes = 12
+  reviewFlag = reported
+}
+
+object "educacao:Category" as educacao {
+  slug = "educacao"
+  publishedCount = 31
+}
+
+object "comunidades:Category" as comunidades {
+  slug = "comunidades"
+  publishedCount = 18
+}
+
+object ":Report" as report {
+  reason = broken
+  comment = "Página fora do ar"
+}
+
+object ":SiteTotals" as totals {
+  clicks = 410
+  referrals = 37
+  likes = 14
+  dislikes = 2
+}
+
+object ":DailyStats" as today {
+  day = "2026-10-08"
+  clicks = 9
+  referrals = 2
+}
+
+object "novo:Website" as novo {
+  id = "01JA1…7Q"
+  url = "https://novo.app"
+  status = checking
+  shortCode = null
+  reviewFlag = null
+}
+
+object ":PushSubscription" as sub {
+  endpoint = "https://fcm.googleapis.com/…"
+}
+
+object "draft:IPendingSubmission" as draft {
+  id = "01JA1…7Q"
+  status = checking
+  submittedAt = 2026-10-08T15:40Z
+  pushSubscribed = true
+}
+
+object ":RingSnapshot" as snapshot {
+  version = 128
+  sites = [diario, …]
+  checkedAt = 15:41:03Z
+}
+
+diario -- educacao
+diario -- comunidades
+diario *-- report
+diario .. totals : id
+totals o-- today
+novo *-- sub
+draft ..> novo : tracks (localStorage\nin the submitter's browser)
+snapshot o-- diario : ring member
+
+note bottom of diario
+  The report set review_flag = reported, but the site
+  stays published until the reviewer answers.
+end note
+
+@enduml

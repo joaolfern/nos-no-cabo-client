@@ -1,0 +1,43 @@
+@startuml 17-seq-web-push
+!include ../../_style.iuml
+title Nós no Cabo v1 — Web Push for submitters who left
+
+actor Submitter
+participant "SPA\nusePushSubscription" as spa
+participant "sw.js" as sw
+participant "catalog" as catalog
+database "catalog D1" as db
+participant "Push service" as push <<external>>
+participant "cron\n41 * * * *" as cron <<cron>>
+
+== Subscribe ==
+Submitter -> spa : grants notification permission\n(bell on a draft card)
+spa -> sw : register /sw.js
+spa -> push : pushManager.subscribe(VITE_VAPID_PUBLIC_KEY)
+loop each checking draft, once
+  spa -> catalog : POST /v1/websites/:id/subscriptions\n(PushSubscription.toJSON())
+  catalog -> db : insert push_subscriptions\n(only while checking, ≤ 5 per site,\nknown push service endpoints only)
+  catalog --> spa : 204
+end
+
+== Decision ==
+alt moderation (applyModeration) or an email review reply
+  catalog -> db : claim subscriptions of the site
+else review script (writes D1 directly)
+  cron -> catalog : sweepPushes
+  catalog -> db : claim subscriptions of decided sites;\ndelete those older than 7 days
+end
+catalog -> push : RFC 8291 encrypted payload,\nRFC 8292 VAPID JWT (WebCrypto)
+note right: best effort: a claimed subscription is\ndeleted even if its push fails
+push -> sw : push event
+sw -> Submitter : notification "{name} foi publicado"\nor "{name} não foi aceito"
+Submitter -> sw : click
+sw -> spa : openWindow(/website/:id or /websites)
+
+note over spa
+  Off while MSW mocks are on (MSW owns the root scope)
+  or without VITE_VAPID_PUBLIC_KEY. In-tab status
+  checks stay as the fallback. No VAPID keys = no sending.
+end note
+
+@enduml

@@ -1,5 +1,4 @@
-' Shared look for every current-state diagram.
-' Elements tagged <<issue>> / <<mocked>> / <<dead>> carry migration-relevant state.
+' Shared look for every diagram.
 
 skinparam shadowing false
 skinparam roundCorner 8
@@ -14,43 +13,6 @@ skinparam note {
   BorderColor #C9B458
 }
 
-skinparam rectangle<<issue>> {
-  BackgroundColor #FDECEA
-  BorderColor #C62828
-}
-skinparam component<<issue>> {
-  BackgroundColor #FDECEA
-  BorderColor #C62828
-}
-skinparam class<<issue>> {
-  BackgroundColor #FDECEA
-  BorderColor #C62828
-}
-
-skinparam component<<mocked>> {
-  BackgroundColor #EDE7F6
-  BorderColor #5E35B1
-}
-skinparam rectangle<<mocked>> {
-  BackgroundColor #EDE7F6
-  BorderColor #5E35B1
-}
-skinparam class<<mocked>> {
-  BackgroundColor #EDE7F6
-  BorderColor #5E35B1
-}
-
-skinparam component<<dead>> {
-  BackgroundColor #EEEEEE
-  BorderColor #9E9E9E
-  FontColor #757575
-}
-skinparam rectangle<<dead>> {
-  BackgroundColor #EEEEEE
-  BorderColor #9E9E9E
-  FontColor #757575
-}
-
 skinparam component<<external>> {
   BackgroundColor #E3F2FD
   BorderColor #1565C0
@@ -59,27 +21,27 @@ skinparam rectangle<<external>> {
   BackgroundColor #E3F2FD
   BorderColor #1565C0
 }
+skinparam participant<<external>> {
+  BackgroundColor #E3F2FD
+  BorderColor #1565C0
+}
 
-!define ISSUE_NOTE #FDECEA
+' Code in the private moderation repo: drawn as a black box.
+skinparam component<<private>> {
+  BackgroundColor #EEEEEE
+  BorderColor #616161
+  BorderStyle dashed
+}
+skinparam participant<<private>> {
+  BackgroundColor #EEEEEE
+  BorderColor #616161
+}
 
-' Target-state additions
-skinparam component<<new>> {
-  BackgroundColor #E8F5E9
-  BorderColor #2E7D32
+skinparam component<<cron>> {
+  BackgroundColor #FFF3E0
+  BorderColor #EF6C00
 }
-skinparam rectangle<<new>> {
-  BackgroundColor #E8F5E9
-  BorderColor #2E7D32
-}
-skinparam class<<new>> {
-  BackgroundColor #E8F5E9
-  BorderColor #2E7D32
-}
-skinparam database<<new>> {
-  BackgroundColor #E8F5E9
-  BorderColor #2E7D32
-}
-skinparam queue<<new>> {
-  BackgroundColor #E8F5E9
-  BorderColor #2E7D32
+skinparam participant<<cron>> {
+  BackgroundColor #FFF3E0
+  BorderColor #EF6C00
 }

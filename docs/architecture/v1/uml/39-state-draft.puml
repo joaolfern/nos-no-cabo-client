@@ -1,0 +1,45 @@
+@startuml 39-state-draft
+!include ../../_style.iuml
+title Nós no Cabo v1 — State machine: a submission draft in the browser
+
+state "Draft (nnc-pending-submissions)" as Draft {
+  [*] --> Checking : 202 Website {status: checking}
+
+  state Checking {
+    [*] --> ActiveChecks
+    state "Active checks" as ActiveChecks : every 15 s while the tab is visible
+    state "Return checks" as ReturnChecks : on page load or tab focus,\nat most once a minute
+    ActiveChecks --> ReturnChecks : after 2 min\n[submittedAt + 2 min]
+  }
+
+  Checking --> Rejected : status check → rejected\n/ keep reason
+  Checking --> [*] : status check → published\n/ drop draft, invalidate ['websites']
+  Checking --> [*] : [now − submittedAt ≥ 7 days]\n/ expire
+  Rejected --> [*] : "Dispensar" / remove
+  Rejected --> [*] : [now − submittedAt ≥ 7 days]\n/ expire
+
+  state Rejected : shows "Conteúdo não permitido",\n"Site inacessível" or\n"Não foi possível verificar"
+
+  --
+
+  state "Push subscription" as Push {
+    [*] --> NotSubscribed
+    NotSubscribed --> Subscribed : [permission granted ∧ VAPID key ∧ no MSW]\n/ POST …/subscriptions
+    Subscribed : pushSubscribed = true
+  }
+}
+
+state "Notification permission (browser-wide)" as Permission {
+  [*] --> Default
+  Default --> Granted : bell clicked / requestPermission()
+  Default --> Denied : bell clicked / requestPermission()
+  state Default : bell shown on draft cards
+  state Granted : notifies every draft
+}
+
+note right of Draft
+  Stored only in this browser. Another device or
+  a private window never sees it (ADR 0003).
+end note
+
+@enduml

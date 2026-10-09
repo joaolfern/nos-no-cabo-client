@@ -1,0 +1,39 @@
+@startuml 42-timing-submission
+!include ../../_style.iuml
+title Nós no Cabo v1 — Timing diagram: a submitter who leaves early (seconds since submit)
+
+robust "Website.status (catalog)" as STATUS
+binary "Tab open" as TAB
+concise "Status checks (SPA)" as POLL
+concise "Push subscription" as PUSH
+robust "Draft (localStorage)" as DRAFT
+
+@0
+STATUS is checking
+TAB is high
+POLL is "every 15 s"
+PUSH is none
+DRAFT is checking
+
+@5
+PUSH is stored
+
+@90
+TAB is low
+POLL is stopped
+
+@150
+STATUS is published
+PUSH is "sent, deleted"
+
+@165
+PUSH is none
+
+@0 <-> @90 : checks every 15 s (the active window would last 2 min)
+@90 <-> @150 : nothing polls
+
+highlight 150 to 165 #FFF3E0 : notification shown by sw.js
+
+note bottom of DRAFT : still "checking" here; the next visit's status\ncheck drops it (or it expires after 7 days)
+
+@enduml

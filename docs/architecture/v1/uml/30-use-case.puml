@@ -1,0 +1,80 @@
+@startuml 30-use-case
+!include ../../_style.iuml
+left to right direction
+skinparam linetype polyline
+skinparam packageStyle rectangle
+title Nós no Cabo v1 — Use case diagram
+
+actor Visitor
+actor Submitter
+actor "Site owner" as Owner
+actor Reviewer
+actor "Clock\n(Cron Triggers)" as Clock
+actor "Workers AI" as AI
+actor "Turnstile" as Turnstile
+
+Submitter -|> Visitor
+Owner -|> Visitor
+
+rectangle "Nós no Cabo (nos-client + gateway + catalog)" {
+  usecase "Browse the feed" as UC_Browse
+  usecase "Search and filter\nby category" as UC_Search
+  usecase "Sort the feed\n(Melhores, Recentes,\nCurtidos, A–Z)" as UC_Sort
+  usecase "Open a website page" as UC_Page
+  usecase "Vote up or down" as UC_Vote
+  usecase "Report a site" as UC_Report
+  usecase "Submit a site" as UC_Submit
+  usecase "Get a submission\nnotification" as UC_Notify
+  usecase "Pass the bot check" as UC_Bot
+  usecase "Configure and copy\nthe widget" as UC_Widget
+  usecase "Accept the terms" as UC_Terms
+  usecase "Verify the widget" as UC_Verify
+}
+
+rectangle "Router" {
+  usecase "Visit a site\n(/r/:code)" as UC_Visit
+  usecase "Follow a ring link\n(/ring/:id/…)" as UC_Ring
+  usecase "Record a click" as UC_Click
+}
+
+rectangle "Background services" {
+  usecase "Moderate a submission" as UC_Moderate
+  usecase "Review by email\n(dismiss | ban)" as UC_Review
+  usecase "Recheck verified sites" as UC_Recheck
+  usecase "Rank sites\n(rank_score, likes)" as UC_Rank
+  usecase "Drain the AI backlog" as UC_Backlog
+}
+
+Visitor --> UC_Browse
+Visitor --> UC_Page
+Visitor --> UC_Vote
+Visitor --> UC_Report
+Visitor --> UC_Visit
+Visitor --> UC_Ring
+Submitter --> UC_Submit
+Submitter --> UC_Notify
+Owner --> UC_Widget
+Owner --> UC_Verify
+Reviewer --> UC_Review
+
+UC_Search .> UC_Browse : <<extend>>
+UC_Sort .> UC_Browse : <<extend>>
+UC_Submit ..> UC_Bot : <<include>>
+UC_Vote ..> UC_Bot : <<include>>
+UC_Report ..> UC_Bot : <<include>>
+UC_Bot -- Turnstile
+UC_Notify .> UC_Submit : <<extend>>\n(permission granted)
+UC_Widget ..> UC_Terms : <<include>>
+UC_Verify .> UC_Widget : <<extend>>
+UC_Visit ..> UC_Click : <<include>>
+UC_Ring ..> UC_Click : <<include>>
+UC_Submit ..> UC_Moderate : <<include>>
+UC_Moderate -- AI
+UC_Report ..> UC_Review : <<include>>
+
+Clock --> UC_Recheck
+Clock --> UC_Rank
+Clock --> UC_Backlog
+UC_Backlog ..> UC_Moderate : <<include>>
+
+@enduml

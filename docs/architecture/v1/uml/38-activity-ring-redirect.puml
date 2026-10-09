@@ -1,0 +1,60 @@
+@startuml 38-activity-ring-redirect
+!include ../../_style.iuml
+title Nós no Cabo v1 — Activity diagram: the router answering a link
+
+start
+:Receive GET /ring/:id/:direction or /r/:code;
+
+partition "Get the ring (createRingCache)" {
+  if (Snapshot checked less than 60 s ago?) then (yes)
+  else (no)
+    :CatalogRpc.getRingVersion();
+    if (Catalog reachable?) then (no)
+      :Keep the stale snapshot,\nmark it checked;
+    else (yes)
+      if (Version changed or no snapshot?) then (yes)
+        :CatalogRpc.getRing();
+      else (no)
+      endif
+      :Store the snapshot with checkedAt = now;
+    endif
+  endif
+}
+
+if (Route) then (/r/:code)
+  :Find the site with this short code;
+else (/ring/:id/:direction)
+  if (Direction valid?) then (no)
+    :404;
+    stop
+  else (yes)
+  endif
+  if (Another site in the ring?) then (no)
+    :No target;
+  elseif (direction = random) then (yes)
+    :Pick uniformly among the other sites;
+  elseif (:id in the ring?) then (yes)
+    :Take the next or previous site,\nwrapping around;
+  else (no)
+    :next → first site, prev → last site;
+  endif
+  :sourceId = :id only if it is a ring member;
+endif
+
+if (Target found?) then (no)
+  :302 to HOME_URL;
+  stop
+else (yes)
+endif
+
+fork
+  :302 to the target url\n(no-store, noindex);
+fork again
+  if (GET request?) then (yes)
+    :waitUntil: MetricsRpc.recordClick\n{websiteId, sourceId?, ip, userAgent};
+  else (HEAD)
+  endif
+end fork
+stop
+
+@enduml

@@ -59,9 +59,9 @@ Lembre-se de utilizar a mesma senha da env do back-end (`VITE_ADMIN_PASSWORD`).
 
 ### 📊 Arquitetura da Aplicação
 
-<img width="762" height="372" alt="Frame 30@2x" src="https://github.com/user-attachments/assets/c6e3910c-11a3-402f-983e-46bb20d14f1f" />
-
-O diagram acima ilustra os principais módulos e integrações da aplicação.
+Os diagramas da arquitetura atual (v1, Cloudflare Workers) e da primeira versão (v0) estão em
+[`docs/architecture/`](docs/architecture/README.md) e, com um mapa interativo, em
+[docs.nosnocabo.com.br](https://docs.nosnocabo.com.br).
 
 ---
 

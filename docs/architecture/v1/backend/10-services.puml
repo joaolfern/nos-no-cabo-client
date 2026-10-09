@@ -1,0 +1,82 @@
+@startuml 10-services
+!include ../../_style.iuml
+skinparam linetype polyline
+title Nós no Cabo v1 — Backend services and data ownership
+
+package "gateway (api.nosnocabo.com.br)" {
+  component "CORS on /v1/*\nALLOWED_ORIGINS + *.nosnocabo.pages.dev\nno rate limits" as cors
+  component "GET /v1/websites/:id/page\ncomposed: website + neighbours + stats\n(stats null if metrics fails)" as page
+}
+
+package "catalog (owns catalog D1)" {
+  component "websites\nlist · get · status · preview · create\nneighbours · reports · subscriptions" as websites
+  component "categories\n(11 slugs, docs/categories.md)" as categories
+  component "scraper\nHTMLRewriter: title, description,\nfavicon, theme color" as scraper
+  component "alerts + email() handler\nsigned Reply-To alertas+<id>.<sig>@\nreply: dismiss | ban [reason]" as alerts
+  component "Web Push (RFC 8291/8292,\nWebCrypto, no library)" as push
+  component "cron 41 * * * *\npush decisions from review,\ndrop subscriptions > 7 days" as pushCron <<cron>>
+  component "CatalogRpc\ngetForModeration · applyModeration\ntakeDailyQuota · dailyQuotaUsed\ndeferModeration · takeModerationBacklog\ngetRing · getRingVersion\ngetVerificationTarget · claimVerificationCheck\nrecordVerification · dueForRecheck\ngetRankInputs · setMetrics · isPublished" as rpc
+}
+
+package "moderation (private repo)" {
+  component "queue consumer\nmoderation-jobs (+ DLQ)" as consumer <<private>>
+  component "content check\nWorkers AI, 250 checks/day" as classifier <<private>>
+  component "cron 5 0 * * *\ndrain the backlog" as backlogCron <<cron>>
+}
+
+package "verification" {
+  component "POST /v1/websites/:id/verify\n1 check per site per minute" as verifyNow
+  component "cron 17 * * * *\n20 due sites per run;\n2 misses remove the badge" as recheck <<cron>>
+  component "detectWidget\ndata-nnc-widget=<id>\n+ link to HOME_HOSTS" as detector
+}
+
+package "router (nosnocabo.com.br/ring/*, /r/*)" {
+  component "ring snapshot\nin memory, version checked\nevery 60 s, stale on error" as snapshot
+  component "GET /ring/:id/prev|next|random\nGET /r/:code\n302, falls back to HOME_URL" as redirects
+}
+
+package "metrics (owns metrics D1; ADR 0006)" {
+  component "MetricsRpc.recordClick\ncookieless daily visitor hash,\nbots skipped" as recordClick
+  component "GET /v1/websites/:id/stats\nPOST /v1/websites/:id/votes (Turnstile)" as stats
+  component "cron 23 */3 * * *\npushRanks: rank_score + net likes,\nchanged values only; drop old visits" as rollups <<cron>>
+}
+
+queue "moderation-jobs" as q
+
+cors --> websites
+cors --> categories
+cors --> verifyNow
+cors --> stats
+page --> websites
+page --> stats
+
+websites --> scraper
+websites --> q : enqueue on create
+websites --> alerts : report alert
+q --> consumer
+consumer --> classifier
+consumer --> rpc : quota, defer,\napplyModeration
+backlogCron --> rpc : takeModerationBacklog
+rpc --> push : on publish / reject
+rpc --> alerts : moderation alert
+alerts --> push : after a review reply
+pushCron --> push
+
+verifyNow --> detector
+recheck --> detector
+verifyNow --> rpc : claim, record
+recheck --> rpc : dueForRecheck, record
+
+snapshot --> rpc : getRingVersion,\ngetRing
+redirects --> snapshot
+redirects --> recordClick : waitUntil
+rollups --> rpc : getRankInputs,\nsetMetrics
+stats --> rpc : isPublished,\nsetMetrics(likes)
+
+note bottom of rpc
+  Only catalog writes the catalog database. Other Workers
+  call CatalogRpc over service bindings; the gateway forwards
+  nothing but /v1, so the RPC is never public.
+end note
+
+@enduml

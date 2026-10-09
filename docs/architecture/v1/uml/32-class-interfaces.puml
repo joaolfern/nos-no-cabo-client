@@ -1,0 +1,148 @@
+@startuml 32-class-interfaces
+!include ../../_style.iuml
+skinparam linetype ortho
+hide empty members
+title Nós no Cabo v1 — Class diagram: service interfaces and contract types
+
+package "cloudflare:workers" {
+  abstract class "WorkerEntrypoint<Env>" as WorkerEntrypoint {
+    # env : Env
+    # ctx : ExecutionContext
+  }
+}
+
+package "catalog" {
+  interface CatalogRpc <<RpcEntrypoint>> {
+    + getForModeration(id) : WebsiteForModeration [0..1]
+    + applyModeration(id, result : ModerationResult) : Boolean
+    + takeDailyQuota(name, limit) : Boolean
+    + dailyQuotaUsed(name) : Integer
+    + deferModeration(id) : void
+    + takeModerationBacklog(limit) : String [*]
+    + getRing() : Ring
+    + getRingVersion() : Integer
+    + getVerificationTarget(id) : VerificationTarget [0..1]
+    + claimVerificationCheck(id) : Boolean
+    + recordVerification(id, found : Boolean, kind : VerificationKind) : void
+    + dueForRecheck(limit) : VerificationTarget [*]
+    + getRankInputs() : RankInput [*]
+    + setMetrics(updates : MetricsUpdate [*]) : void
+    + isPublished(id) : Boolean
+  }
+  class CatalogRpcEntrypoint
+  class ModerationResult {
+    + decision : publish | reject | hold
+    + reason : RejectionReason [0..1]
+    + flag : ReviewFlag [0..1]
+    + verdict : safe | unsafe | error
+    + categoriesFlagged : String [*]
+    + model : String
+  }
+  class Ring {
+    + version : Integer
+    + sites : RingSite [*]
+  }
+  class RingSite {
+    + id : String
+    + url : String
+    + shortCode : String [0..1]
+  }
+  class RankInput {
+    + id : String
+    + verified : Boolean
+    + rankScore : Real
+    + likes : Integer
+  }
+  class MetricsUpdate {
+    + id : String
+    + rankScore : Real [0..1]
+    + likes : Integer [0..1]
+  }
+}
+
+package "metrics" {
+  interface MetricsRpc <<RpcEntrypoint>> {
+    + recordClick(click : Click) : void
+  }
+  class MetricsRpcEntrypoint
+  class Click {
+    + websiteId : String
+    + sourceId : String [0..1]
+    + ip : String
+    + userAgent : String
+  }
+}
+
+package "@nosnocabo/contract" {
+  class Website
+  class WebsiteSubmission {
+    + url, name, description
+    + color, faviconUrl, repo [0..1]
+    + categories : CategorySlug [1..3]
+  }
+  class "Page" as Page<T> {
+    + items : T [*]
+    + nextCursor : String [0..1]
+    + total : Integer
+  }
+  class WebsitePage {
+    + website : Website
+    + neighbours : WebsiteNeighbours
+    + stats : WebsiteStats [0..1]
+  }
+  class WebsiteNeighbours {
+    + previous, next, random : Website [0..1]
+  }
+  class WebsiteStats {
+    + clicks, clicks30d, referrals : Integer
+    + likes, dislikes : Integer
+  }
+  class VerificationResult {
+    + verified : Boolean
+    + verifiedAt : String [0..1]
+    + reason : widget_not_found | unreachable [0..1]
+  }
+  class ApiErrorResponse {
+    + error.code : ApiErrorCode
+    + error.message : String
+    + error.existingId : String [0..1]
+  }
+}
+
+package "nos-client" {
+  class IPendingSubmission {
+    + id, url, name, description : String
+    + color, faviconUrl : String [0..1]
+    + categories : String [*]
+    + status : checking | rejected
+    + rejectionReason : RejectionReason [0..1]
+    + submittedAt : String
+    + pushSubscribed : Boolean [0..1]
+  }
+  class v1Api <<axios instance>>
+}
+
+WorkerEntrypoint <|-- CatalogRpcEntrypoint
+WorkerEntrypoint <|-- MetricsRpcEntrypoint
+CatalogRpc <|.. CatalogRpcEntrypoint
+MetricsRpc <|.. MetricsRpcEntrypoint
+CatalogRpc ..> ModerationResult
+CatalogRpc ..> Ring
+Ring *-- RingSite
+CatalogRpc ..> RankInput
+CatalogRpc ..> MetricsUpdate
+MetricsRpc ..> Click
+
+WebsitePage *-- Website
+WebsitePage *-- WebsiteNeighbours
+WebsitePage *-- WebsiteStats
+WebsiteNeighbours o-- Website
+Page o-- Website : <<bind>> T -> Website
+
+v1Api ..> WebsitePage : <<use>>
+v1Api ..> WebsiteSubmission : <<use>>
+v1Api ..> VerificationResult : <<use>>
+v1Api ..> ApiErrorResponse : <<use>>
+IPendingSubmission ..> Website : <<derive>>\n(from the 202 response)
+
+@enduml

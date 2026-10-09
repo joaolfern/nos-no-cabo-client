@@ -1,0 +1,92 @@
+@startuml 34-package
+!include ../../_style.iuml
+skinparam linetype polyline
+skinparam packageStyle folder
+title Nós no Cabo v1 — Package diagram
+
+package "nos-sr (pnpm workspace)" as sr {
+  package "packages" {
+    package "@nosnocabo/contract\n(npm, zod schemas)" as contract
+    package "@nosnocabo/ip\n(ipKey: IPv6 /64)" as ip
+  }
+  package "services" {
+    package "gateway" as gateway
+    package "catalog" as catalog
+    package "verification" as verification
+    package "router" as router
+    package "metrics" as metrics
+    package "moderation\n(private submodule)" as moderation
+  }
+}
+
+package "nos-client (src/)" as client {
+  package "providers\n(router, query, theme)" as providers
+  package "layouts" {
+    package "AppLayout" as appLayout
+    package "NosNoCaboLayout" as nncLayout
+  }
+  package "pages" {
+    package "LandingPage" as landing
+    package "Feed" as feed
+    package "Website" as website
+    package "Webring" as webring
+    package "SubmitWebsite" as submit
+    package "WidgetEditor" as widget
+    package "Terms" as terms
+    package "NotFound" as notFound
+  }
+  package "global" {
+    package "api" as api
+    package "hooks" as hooks
+    package "components" as components
+    package "utils" as utils
+    package "interfaces" as interfaces
+    package "config" as config
+  }
+  package "~__mocks~__\n(MSW)" as mocks
+}
+
+gateway ..> contract : <<import>>
+catalog ..> contract : <<import>>
+catalog ..> ip : <<import>>
+metrics ..> contract : <<import>>
+metrics ..> ip : <<import>>
+verification ..> contract : <<import>>
+metrics ..> catalog : <<use>>\n(CatalogRpc types)
+verification ..> catalog : <<use>>\n(CatalogRpc types)
+router ..> catalog : <<use>>\n(CatalogRpc types)
+router ..> metrics : <<use>>\n(MetricsRpc types)
+moderation ..> catalog : <<use>>\n(CatalogRpc types)
+
+api ..> contract : <<import>>\n(npm ^0.4)
+interfaces ..> contract : <<import>>
+mocks ..> contract : <<import>>
+
+providers ..> pages : <<import>>
+providers ..> nncLayout : <<import>>
+nncLayout ..> appLayout : <<import>>
+nncLayout ..> terms : <<import>>
+nncLayout ..> feed : <<import>>\n(search)
+landing ..> nncLayout : <<import>>
+landing ..> website : <<import>>
+feed ..> submit : <<import>>\n(drafts)
+feed ..> website : <<import>>
+feed ..> widget : <<import>>\n(badge)
+submit ..> feed : <<import>>\n(FeedCard preview)
+webring ..> feed : <<import>>
+website ..> nncLayout : <<import>>
+website ..> feed : <<import>>
+website ..> webring : <<import>>
+website ..> widget : <<import>>\n(VerifyPanel)
+widget ..> terms : <<import>>
+hooks ..> feed : <<import>>\n(fromApiWebsite)
+mocks ..> feed : <<import>>
+pages ..> global : <<import>>
+
+note bottom of hooks
+  Global folders should not import a feature:
+  @/hooks/useDataHooks importing Feed's
+  fromApiWebsite is a colocation leak to fix.
+end note
+
+@enduml

@@ -36,3 +36,7 @@ ds-bundle/
 .playwright-mcp
 # rendered architecture diagrams (npm run docs:diagrams)
 out/
+
+# docs site: rendered at build time
+docs/site/public/diagrams
+docs/site/public/v0.png

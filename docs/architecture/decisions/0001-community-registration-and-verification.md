@@ -41,6 +41,6 @@ Requiring the badge up front also blocked submissions.
 - A community-report flow (published → rejected) is left for later. The lifecycle diagram
   reserves the transition.
 
-Diagrams: [`target/00-system-context`](../target/00-system-context.puml),
-[`target/backend/12-website-lifecycle`](../target/backend/12-website-lifecycle.puml),
-[`target/backend/15-seq-verification`](../target/backend/15-seq-verification.puml).
+Diagrams: [`v1/00-system-context`](../v1/00-system-context.puml),
+[`v1/backend/12-website-lifecycle`](../v1/backend/12-website-lifecycle.puml),
+[`v1/backend/15-seq-verification`](../v1/backend/15-seq-verification.puml).

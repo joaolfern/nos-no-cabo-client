@@ -1,0 +1,44 @@
+@startuml 18-seq-report-review
+!include ../../_style.iuml
+title Nós no Cabo v1 — Reports and review by email
+
+actor Visitor
+participant "SPA\nReportDialog" as spa
+participant "catalog" as catalog
+database "catalog D1" as db
+participant "Email Routing" as mail <<external>>
+actor "Reviewer" as reviewer
+
+== Report ==
+Visitor -> spa : "Notificar problema"\n(reason, optional comment)
+spa -> catalog : POST /v1/websites/:id/reports\n+ Turnstile (via gateway)
+catalog -> db : insert reports (one per reporter_ip_hash),\nreview_flag = reported
+catalog -> mail : report alert from ALERT_FROM to ALERT_TO,\nReply-To alertas+<id>.<HMAC>@nosnocabo.com.br
+catalog --> spa : 202
+note right of db
+  A report never hides the site:
+  it stays published until reviewed.
+end note
+
+== Review ==
+mail -> reviewer : alert email
+reviewer -> mail : reply, first line:\n"dismiss" | "ban [unsafe|unreachable|error]"
+mail -> catalog : email() handler
+catalog -> catalog : accept only mail from ALERT_TO\nwith a valid signed Reply-To
+alt dismiss
+  catalog -> db : published, review_flag = NULL,\nreports deleted (publishes a held site)
+else ban
+  catalog -> db : rejected with the reason
+end
+catalog -> catalog : push to the submitter, if subscribed
+catalog -> mail : confirmation reply
+mail -> reviewer : confirmation
+
+note over catalog
+  Moderation alerts (new site published, rejected
+  or held) use the same signed Reply-To, so a held
+  site is reviewed the same way. The review script in
+  the private moderation repo does the same over D1.
+end note
+
+@enduml

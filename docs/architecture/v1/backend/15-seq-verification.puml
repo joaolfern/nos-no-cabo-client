@@ -1,0 +1,44 @@
+@startuml 15-seq-verification
+!include ../../_style.iuml
+title Nós no Cabo v1 — Widget verification
+
+actor "Site owner" as owner
+participant "SPA\n/website/:id" as spa
+participant "gateway" as gw
+participant "verification" as ver
+participant "Member site" as site <<external>>
+participant "catalog" as catalog
+participant "cron\n17 * * * *" as cron <<cron>>
+
+== On request ==
+owner -> site : paste widget snippet\n(from /websites/:id/selo)
+owner -> spa : "Verificar"
+spa -> gw : POST /v1/websites/:id/verify
+gw -> ver : VERIFICATION service binding
+ver -> catalog : getVerificationTarget(id)\n(404 unless published)
+ver -> catalog : claimVerificationCheck(id)\n(atomic, 1 per site per minute; else 429)
+ver -> site : GET website.url (first 1 MB)
+ver -> ver : detectWidget: element with data-nnc-widget="<id>"\ncontaining a link to HOME_HOSTS
+alt widget found
+  ver -> catalog : recordVerification(id, true, manual)
+  ver --> spa : {verified: true, verifiedAt}
+else not found / unreachable
+  ver --> spa : {verified: false, reason}\n(a manual check only grants the badge)
+end
+
+== Hourly recheck ==
+cron -> ver : scheduled()
+ver -> catalog : dueForRecheck(20): verified sites not\nchecked in 20 h, oldest first
+loop each site
+  ver -> site : GET url
+  ver -> catalog : recordVerification(id, found, recheck)
+  note right: found: misses = 0\nmissed: misses + 1; at 2, verified_at = NULL
+end
+
+note right of ver
+  data-nnc-widget carries the website id, so a
+  snippet copied to another site never verifies.
+  Checking server-side means a browser cannot fake it.
+end note
+
+@enduml

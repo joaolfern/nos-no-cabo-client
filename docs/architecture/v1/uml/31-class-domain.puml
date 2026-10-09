@@ -1,0 +1,163 @@
+@startuml 31-class-domain
+!include ../../_style.iuml
+skinparam linetype ortho
+hide empty members
+title Nós no Cabo v1 — Class diagram: domain model
+
+package "catalog" {
+  class Website {
+    + id : ULID {readOnly}
+    + url : URL
+    + urlNormalized : String {unique}
+    + name : String [3..80 chars]
+    + description : String [0..280 chars]
+    + color : HexColor [0..1]
+    + faviconUrl : URL [0..1]
+    + repo : URL [0..1]
+    + shortCode : String [0..1] {unique}
+    + status : WebsiteStatus
+    + rejectionReason : RejectionReason [0..1]
+    + reviewFlag : ReviewFlag [0..1]
+    + submittedAt : Timestamp
+    + publishedAt : Timestamp [0..1]
+    + verifiedAt : Timestamp [0..1]
+    + lastVerificationCheckAt : Timestamp [0..1]
+    + verificationMisses : Integer
+    + rankScore : Real
+    + likes : Integer
+    - submitterIpHash : String
+    + /categorySlugs : CategorySlug [1..3]
+    + /ringGroup : Integer
+    --
+    + isVerified() : Boolean
+  }
+
+  class Category {
+    + slug : CategorySlug {id}
+    + position : Integer
+    + /publishedCount : Integer
+  }
+
+  class Report {
+    + id : Integer
+    + reason : ReportReason
+    + comment : String [0..1] [0..500 chars]
+    - reporterIpHash : String
+    + createdAt : Timestamp
+  }
+
+  class ModerationResult {
+    + id : Integer
+    + verdict : Verdict
+    + categoriesFlagged : String [*]
+    + model : String
+    + checkedAt : Timestamp
+  }
+
+  class BacklogEntry {
+    + deferredAt : Timestamp
+  }
+
+  class PushSubscription {
+    + endpoint : URL {id}
+    + p256dh : String
+    + auth : String
+    + createdAt : Timestamp
+  }
+
+  class Counter {
+    + name : String {id}
+    + value : Integer
+  }
+}
+
+package "metrics" {
+  class Visit {
+    + day : Date
+    - visitorHash : String
+    + kind : VisitKind
+  }
+
+  class DailyStats {
+    + day : Date
+    + clicks : Integer
+    + referrals : Integer
+  }
+
+  class SiteTotals {
+    + clicks : Integer
+    + referrals : Integer
+    + likes : Integer
+    + dislikes : Integer
+    + /net : Integer = likes − dislikes
+  }
+
+  class Vote {
+    - voterHash : String
+    + value : VoteValue
+    + updatedAt : Timestamp
+  }
+}
+
+package "enumerations" {
+  enum WebsiteStatus {
+    checking
+    published
+    rejected
+  }
+  enum RejectionReason {
+    unsafe
+    unreachable
+    error
+  }
+  enum ReviewFlag {
+    model_error
+    unreachable
+    reported
+  }
+  enum ReportReason {
+    inappropriate
+    spam
+    broken
+    impersonation
+    other
+  }
+  enum Verdict {
+    safe
+    unsafe
+    error
+  }
+  enum VisitKind {
+    click
+    referral
+  }
+  enum VoteValue {
+    up = 1
+    down = -1
+  }
+}
+
+Website "*" -- "1..3" Category : categories
+Website *-- "0..*" Report : reports
+Website *-- "0..*" ModerationResult : checks
+Website *-- "0..1" BacklogEntry : backlog entry
+Website *-- "0..5" PushSubscription : push subscriptions
+
+Website "1" .. "0..1" SiteTotals : by id\n(cross-service)
+SiteTotals "1" o-- "0..*" DailyStats : daily stats
+DailyStats "1" -- "0..*" Visit : deduped visits
+SiteTotals "1" -- "0..*" Vote : votes
+
+note right of Website
+  {rankScore and likes are pushed by metrics;
+   only the catalog writes them}
+  {status = published implies shortCode and publishedAt}
+  {verifiedAt set only while published}
+end note
+
+note top of Counter
+  published_websites, ring_version and one
+  "moderation-ai:<UTC day>" row per day (AI budget)
+end note
+
+@enduml

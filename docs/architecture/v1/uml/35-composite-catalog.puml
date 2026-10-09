@@ -1,0 +1,65 @@
+@startuml 35-composite-catalog
+!include ../../_style.iuml
+skinparam linetype polyline
+title Nós no Cabo v1 — Composite structure: the catalog Worker
+
+component "catalog : Worker" as catalog {
+  portin "fetch" as pFetch
+  portin "rpc" as pRpc
+  portin "scheduled" as pCron
+  portin "email" as pEmail
+  portout "DB" as pDb
+  portout "MODERATION_QUEUE" as pQueue
+  portout "ALERT_EMAIL" as pMail
+  portout "outbound fetch" as pOut
+
+  component "app : Hono\nbasePath /v1" as app
+  component "websites : Router\nroutes/websites.ts" as routes
+  component "rpc : CatalogRpc\nWorkerEntrypoint" as rpc
+  component "replies : ReviewReplies\nlib/reviewReplies.ts" as replies
+  component "sweep : PushSweep\nlib/pushNotifications.ts" as sweep
+
+  component "queries [10] : DbModule\ndb/websites · ring · moderation · quota\nreports · review · push · verification · metrics · cursor" as db
+  component "scraper : Scraper\nHTMLRewriter" as scraper
+  component "turnstile : TurnstileClient" as turnstile
+  component "alerts : Alerts\nsigned Reply-To" as alerts
+  component "push : WebPush\nRFC 8291 / 8292" as webpush
+}
+
+pFetch --> app
+app --> routes
+pRpc --> rpc
+pCron --> sweep
+pEmail --> replies
+
+routes --> db
+routes --> scraper
+routes --> turnstile
+routes --> alerts
+routes --> pQueue
+rpc --> db
+rpc --> webpush
+rpc --> alerts
+replies --> db
+replies --> webpush
+sweep --> db
+sweep --> webpush
+
+db --> pDb
+alerts --> pMail
+scraper --> pOut
+turnstile --> pOut
+webpush --> pOut
+
+note right of catalog
+  Ports are the Worker's handlers and bindings:
+  • fetch: HTTP /v1 from the gateway
+  • rpc: CatalogRpc for moderation, verification,
+    router and metrics
+  • scheduled: cron 41 * * * *
+  • email: replies to alert emails
+  D1 is reached only through the DB port;
+  no other Worker has a catalog D1 binding.
+end note
+
+@enduml

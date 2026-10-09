@@ -1,7 +1,7 @@
 import type { IconType } from 'react-icons'
-import { FaGithub, FaTwitter } from 'react-icons/fa6'
+import { FaBookOpen, FaGithub, FaTwitter } from 'react-icons/fa6'
 import { MdOutlineMail } from 'react-icons/md'
-import { CONTACT_EMAIL, GITHUB_URL, TWITTER_URL } from '@/config/env'
+import { CONTACT_EMAIL, DOCS_URL, GITHUB_URL, TWITTER_URL } from '@/config/env'
 
 export type SocialLink = {
   label: string
@@ -12,6 +12,7 @@ export type SocialLink = {
 // Links without a configured target are left out instead of pointing nowhere.
 export const SOCIAL_LINKS: SocialLink[] = [
   { label: 'GitHub', href: GITHUB_URL, Icon: FaGithub },
+  { label: 'Documentação', href: DOCS_URL, Icon: FaBookOpen },
   { label: 'Twitter', href: TWITTER_URL ?? '', Icon: FaTwitter },
   {
     label: 'Contato por e-mail',

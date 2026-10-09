@@ -1,0 +1,89 @@
+@startuml 20-modules
+!include ../../_style.iuml
+skinparam linetype polyline
+left to right direction
+title Nós no Cabo v1 — nos-client feature modules
+
+package "src/pages/LandingPage/  (/)" as landingPkg {
+  component "ring bubbles\ndata/ringSnapshot.json (baked at deploy)\n+ useRingBubbles (refresh when stale)" as landing
+}
+
+package "src/pages/Feed/  (/websites)" as feed {
+  component "useFeedWebsites\ninfinite query, server sort,\ncategoria + q" as feedQuery
+  component "FeedCardList · FeedCard · FeedTable\nFeedFilters · FeedSort · ViewToggle\n+ pending prop (drafts first)" as card
+}
+
+package "src/pages/Website/  (/website/:id)" as website {
+  component "WebsiteInfoCard · WebsiteMetrics\nWebsiteVotes · RecommendedSites" as websiteUi
+  component "useWebsiteDetails · useAdjacentWebsites\nuseWebsiteStats (one /page request)\nuseVoteWebsite · useShownLikes" as websiteHooks
+}
+
+package "src/pages/Webring/" as webring {
+  component "VisitButton · ReportButton/ReportDialog\nuseReportWebsite" as webringUi
+}
+
+package "src/pages/SubmitWebsite/  (/websites/novo)" as submit {
+  component "SubmitForm · UrlField · WebsitePreviewCard\nCategoryPicker · DraftStatus" as submitUi
+  component "useWebsitePreview · useSubmitWebsite\nuseSubmissionFields" as submitHooks
+  component "usePendingSubmissions\nlocalStorage 'nnc-pending-submissions'" as store
+  component "usePendingStatusPolling\n15 s for 2 min, then on load/focus" as polling
+  component "usePendingFeedItems\ndrafts → feed items" as pendingItems
+  component "usePushSubscription\n+ public/sw.js" as pushSub
+}
+
+package "src/pages/WidgetEditor/  (/websites/:id/selo)" as widget {
+  component "WidgetEditor\npresets, live preview, terms consent" as editor
+  component "buildWidgetSnippet\nscoped HTML, data-nnc-widget=id,\nring links on RING_BASE_URL" as snippet
+  component "VerificationStatus + UnverifiedModal\n(✓ or ? badge)" as status
+  component "VerifyPanel · useVerifyWebsite" as verify
+}
+
+package "src/pages/Terms/  (/termos)" as terms {
+  component "TermsContent · TermsModal\nuseTermsAcceptance (versioned)" as termsContent
+}
+
+package "global" {
+  component "@/hooks/useDataHooks\n/page, categories, top sites" as dataHooks
+  component "@/api/api.ts v1Api\n+ toApiError, turnstile" as api
+  component "@nosnocabo/contract\n(types, normalizeUrl)" as contract <<external>>
+  component "@/utils/visitUrl\n→ RING_BASE_URL/r/<code>" as visitUrl
+  component "@/hooks: useLocalStorageJson,\nuseNotificationPermission, usePageMeta" as globalHooks
+  component "@/components: Button, Input, Modal,\nDialog, TurnstileField, LoadingDots…" as ui
+  component "NosNoCaboLayout (wide | focused)\nTopbar · SearchFeed · SiteFooter" as layout
+}
+
+landing --> api
+feedQuery --> api
+feedQuery --> card
+card -[#C62828]-> pendingItems : drafts
+card -[#C62828]-> status
+card -[#C62828]-> webringUi
+websiteHooks --> dataHooks
+websiteUi -[#C62828]-> status
+websiteUi -[#C62828]-> verify
+websiteUi -[#C62828]-> webringUi
+webringUi --> visitUrl
+webringUi --> api
+submitUi --> submitHooks
+submitHooks --> api
+submitHooks --> store : add draft on 202
+pendingItems --> polling
+pendingItems --> store
+polling --> api
+pushSub --> api
+store --> globalHooks
+status --> editor : "Sou responsável"
+editor --> snippet
+editor -[#C62828]-> termsContent : consent
+layout --> termsContent : /termos
+dataHooks --> api
+api --> contract
+
+note top of feed
+  Cross-feature imports (red) are deliberate:
+  SubmitWebsite owns drafts, WidgetEditor owns
+  verification, Webring owns visit and report,
+  Terms owns the terms text.
+end note
+
+@enduml

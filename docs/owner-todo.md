@@ -94,6 +94,15 @@ applied). Staging reads, search and ring/short links checked.
       `joaolfern/nos-no-cabo-server`, workflow `workers.yml`). Releases then publish from a
       `contract-vX.Y.Z` tag.
 
+## Docs site `docs.nosnocabo.com.br` (in this order)
+
+- [ ] Review the reworked `docs/architecture/` (v0 + v1; `current/` and `target/` are gone) and
+  commit it with `docs/site/`, `wrangler.docs.jsonc` and the d3 dev dependencies.
+- [ ] `pnpm deploy:docs` (needs Docker for the diagrams and a `wrangler login`). The first
+  deploy creates the `nosnocabo-docs` Worker and the `docs.nosnocabo.com.br` custom domain
+  and its DNS record.
+- [ ] Open https://docs.nosnocabo.com.br and check the map, a flow and the Diagrams tab.
+
 ## Domain `nosnocabo.com.br` (bought 2026-10-05)
 
 The domain runs on the current stack (the `*-staging` Workers, D1 and queues): the site on

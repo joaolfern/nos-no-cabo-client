@@ -1,0 +1,65 @@
+@startuml 36-profile
+!include ../../_style.iuml
+hide empty members
+skinparam linetype ortho
+title Nós no Cabo v1 — Profile diagram: the stereotypes these diagrams use
+
+package "NosNoCabo" <<profile>> {
+  class Worker <<stereotype>> {
+    name : String
+    route : String [0..*]
+    workersDev : Boolean
+  }
+  class Cron <<stereotype>> {
+    schedule : String
+  }
+  class RpcEntrypoint <<stereotype>> {
+    binding : String
+  }
+  class D1 <<stereotype>> {
+    databaseName : String
+    migrations : Integer
+  }
+  class Queue <<stereotype>> {
+    retries : Integer = 3
+    deadLetterQueue : String [0..1]
+  }
+  class external <<stereotype>>
+  class private <<stereotype>> {
+    repository : String
+  }
+}
+
+package "UML" <<metamodel>> {
+  class Component <<metaclass>>
+  class Interface <<metaclass>>
+  class Artifact <<metaclass>>
+  class Node <<metaclass>>
+}
+
+Component <|-[thickness=2]- Worker : <<extension>>
+Component <|-[thickness=2]- Cron : <<extension>>
+Component <|-[thickness=2]- external : <<extension>>
+Component <|-[thickness=2]- private : <<extension>>
+Interface <|-[thickness=2]- RpcEntrypoint : <<extension>>
+Artifact <|-[thickness=2]- D1 : <<extension>>
+Node <|-[thickness=2]- Queue : <<extension>>
+
+note bottom of external
+  Drawn blue in _style.iuml: Turnstile,
+  Workers AI, Email Routing, push services,
+  member sites.
+end note
+
+note bottom of private
+  Drawn grey and dashed: the moderation
+  Worker, whose code is not public.
+end note
+
+note bottom of Cron
+  Drawn orange. Instances: 41 * * * * (catalog),
+  17 * * * * (verification), 23 */3 * * * (metrics),
+  5 0 * * * (moderation).
+end note
+
+@enduml

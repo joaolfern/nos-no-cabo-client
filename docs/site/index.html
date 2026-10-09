@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nós no Cabo architecture</title>
+    <meta
+      name="description"
+      content="How Nós no Cabo runs: an interactive map of its Cloudflare Workers, plus every architecture diagram."
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="masthead">
+      <a class="brand" href="#map">
+        <svg class="brand-knot" viewBox="0 0 32 32" aria-hidden="true">
+          <path
+            d="M2 16 H9 C13 16 13 8 17 8 C22 8 22 24 17 24 C13 24 13 16 9 16"
+          />
+          <path d="M17 16 H30" />
+        </svg>
+        <span>Nós no Cabo <span class="brand-sub">architecture</span></span>
+      </a>
+      <nav class="tabs" aria-label="Views">
+        <a href="#map" data-view="map">Map</a>
+        <a href="#diagrams" data-view="diagrams">Diagrams</a>
+        <a href="#v0" data-view="v0">v0</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="view view-map" data-view="map">
+        <aside class="rail">
+          <h1>How Nós no Cabo v1 runs</h1>
+          <p class="lede">
+            One React app and six Cloudflare Workers. Pick a flow to follow a
+            request through the system, or select any part of the map.
+          </p>
+          <div class="flows" aria-label="Flows"></div>
+          <div class="player" hidden>
+            <p class="player-summary"></p>
+            <ol class="player-steps"></ol>
+            <div class="player-controls">
+              <button type="button" data-action="prev">Previous</button>
+              <button type="button" data-action="play">Play</button>
+              <button type="button" data-action="next">Next</button>
+            </div>
+            <p class="player-links">
+              <a class="player-diagram" target="_blank" rel="noopener"
+                >Open the detailed diagram</a
+              >
+              <button type="button" class="link-button" data-action="close">
+                Show the whole map
+              </button>
+            </p>
+          </div>
+          <ul class="legend" aria-label="Cable types"></ul>
+        </aside>
+        <div class="stage">
+          <div class="map-host"></div>
+          <button type="button" class="reset-view">Reset zoom</button>
+          <aside class="detail" hidden aria-live="polite">
+            <button
+              type="button"
+              class="detail-close"
+              aria-label="Close details"
+            >
+              ×
+            </button>
+            <h2 class="detail-title"></h2>
+            <p class="detail-sub"></p>
+            <p class="detail-summary"></p>
+            <ul class="detail-facts"></ul>
+            <p class="detail-cron"></p>
+            <a class="detail-diagram" target="_blank" rel="noopener"
+              >Open the detailed diagram</a
+            >
+          </aside>
+        </div>
+      </section>
+
+      <section class="view view-diagrams" data-view="diagrams" hidden>
+        <div class="prose">
+          <h1>Diagrams</h1>
+          <p>
+            The detailed PlantUML diagrams of v1, rendered from
+            <code>docs/architecture/v1</code>. Open one to see it full size.
+          </p>
+        </div>
+        <div class="gallery"></div>
+      </section>
+
+      <section class="view view-v0" data-view="v0" hidden>
+        <div class="prose">
+          <h1>v0</h1>
+          <p>
+            The first version: the front end and a Flask API, each in a Docker
+            container, with Postgres. It was replaced by v1 on Cloudflare
+            Workers in October 2026.
+          </p>
+        </div>
+        <figure class="v0-figure">
+          <img
+            src="v0.png"
+            alt="v0: the front end and the API in Docker containers, talking REST, with Postgres behind the API"
+            width="1524"
+            height="744"
+          />
+        </figure>
+      </section>
+    </main>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

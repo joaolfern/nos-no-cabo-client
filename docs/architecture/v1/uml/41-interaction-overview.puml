@@ -1,0 +1,60 @@
+@startuml 41-interaction-overview
+!include ../../_style.iuml
+title Nós no Cabo v1 — Interaction overview: the life of a listed site
+
+start
+:ref
+**14-seq-submit-moderation**
+submit, queue, content check;
+:ref
+**21-seq-submit-optimistic**
+local draft and status checks;
+if (Decision) then (rejected)
+  :ref
+  **17-seq-web-push**
+  "não foi aceito";
+  stop
+elseif (held) then
+  :ref
+  **18-seq-report-review**
+  review by email reply;
+  if (Reply) then (ban)
+    :ref
+    **17-seq-web-push**
+    "não foi aceito";
+    stop
+  else (dismiss)
+  endif
+else (published)
+endif
+:ref
+**17-seq-web-push**
+"foi publicado";
+fork
+  repeat
+    :ref
+    **16-seq-clicks-ranking**
+    clicks, referrals and votes;
+  repeat while (listed?) is (yes)
+fork again
+  :ref
+  **15-seq-verification**
+  owner verifies, hourly recheck;
+fork again
+  :ref
+  **16-seq-clicks-ranking**
+  rank_score every 3 hours;
+fork again
+  :ref
+  **18-seq-report-review**
+  reports flag the site;
+end fork
+if (Reviewer bans?) then (yes)
+  :Rejected, leaves the feed and the ring;
+  stop
+else (no)
+  :Stays listed;
+  stop
+endif
+
+@enduml

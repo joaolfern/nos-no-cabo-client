@@ -5,7 +5,7 @@ The form is rebuilt from scratch for the community-driven flow described in
 [ADR 0003](../architecture/decisions/0003-optimistic-draft-submissions.md). The backend (`/v1`,
 [ADR 0002](../architecture/decisions/0002-cloudflare-platform.md)) does not exist yet, so the
 frontend is built against MSW mocks that follow the target contract
-([`13-api-contract`](../architecture/target/backend/13-api-contract.puml)).
+([`13-api-contract`](../architecture/v1/backend/13-api-contract.puml)).
 
 ## Current status and next steps (2026-10-07)
 
@@ -131,8 +131,8 @@ keep it current.
 
 ## Target structure
 
-See [`20-form-modules`](../architecture/target/frontend/20-form-modules.puml) and
-[`22-routes`](../architecture/target/frontend/22-routes.puml).
+See [`20-modules`](../architecture/v1/frontend/20-modules.puml) and
+[`22-routes`](../architecture/v1/frontend/22-routes.puml).
 
 ```
 src/pages/SubmitWebsite/
