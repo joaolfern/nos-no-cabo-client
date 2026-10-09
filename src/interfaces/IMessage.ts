@@ -1,7 +1,14 @@
 export type MessageTone = 'info' | 'success' | 'error'
 
+export interface IMessageAction {
+  label: string
+  onPress: () => void
+}
+
 export interface IMessageOptions {
   tone?: MessageTone
+  action?: IMessageAction
+  persistent?: boolean
 }
 
 export interface MessageContextProps {
@@ -20,8 +27,5 @@ export interface IMessageItem {
   id: string
   tone: MessageTone
   onDismiss?: () => void
-  action?: {
-    label: string
-    onPress: () => void
-  }
+  action?: IMessageAction
 }

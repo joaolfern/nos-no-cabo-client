@@ -36,8 +36,15 @@ export function MessageProvider({ children }: IMessageProviderProps) {
 
       dispatch({
         type: 'show',
-        item: { visible: true, label, id, tone: options?.tone ?? 'info' },
+        item: {
+          visible: true,
+          label,
+          id,
+          tone: options?.tone ?? 'info',
+          action: options?.action,
+        },
       })
+      if (options?.persistent) return id
 
       const timer = setTimeout(() => {
         hideMessage(id)
@@ -75,6 +82,7 @@ export function MessageProvider({ children }: IMessageProviderProps) {
               label={item.label}
               tone={item.tone}
               visible={item.visible}
+              action={item.action}
               onDismiss={() => hideMessage(item.id)}
               onLeft={() => removeMessage(item.id)}
             />

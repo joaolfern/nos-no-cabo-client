@@ -19,6 +19,22 @@ function endAnimation(element: HTMLElement) {
   })
 }
 
+function UpdateButton({ onPress }: { onPress: () => void }) {
+  const { showMessage } = useMessage()
+  return (
+    <button
+      onClick={() =>
+        showMessage('Nova versão disponível.', {
+          persistent: true,
+          action: { label: 'Atualizar', onPress },
+        })
+      }
+    >
+      Avisar
+    </button>
+  )
+}
+
 function renderProvider() {
   return render(
     <MessageProvider>
@@ -48,5 +64,23 @@ describe('MessageProvider', () => {
     endAnimation(message)
 
     expect(screen.queryByText('Site publicado.')).not.toBeInTheDocument()
+  })
+
+  it('keeps a persistent message up and runs its action', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const onPress = vi.fn()
+    render(
+      <MessageProvider>
+        <UpdateButton onPress={onPress} />
+      </MessageProvider>
+    )
+
+    await userEvent.click(screen.getByRole('button', { name: 'Avisar' }))
+    act(() => vi.advanceTimersByTime(10_000))
+    await userEvent.click(screen.getByRole('button', { name: 'Atualizar' }))
+
+    expect(screen.getByText('Nova versão disponível.')).toBeInTheDocument()
+    expect(onPress).toHaveBeenCalledOnce()
+    vi.useRealTimers()
   })
 })
