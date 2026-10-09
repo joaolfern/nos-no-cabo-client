@@ -4,6 +4,11 @@ import { QueryClient } from '@tanstack/react-query'
 // returning from a "Visitar site" tab reuse what's already loaded.
 export const queryClient = new QueryClient({
   defaultOptions: {
-    queries: { staleTime: 60_000, refetchOnWindowFocus: false },
+    // offlineFirst still sends the request while offline, so the service worker's API cache can answer it.
+    queries: {
+      staleTime: 60_000,
+      refetchOnWindowFocus: false,
+      networkMode: 'offlineFirst',
+    },
   },
 })

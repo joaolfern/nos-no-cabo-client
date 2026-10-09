@@ -88,6 +88,13 @@ Prefer applying clean code concepts instead of comments: express intent through 
 - Read env values through `src/config/env.ts`; don't use `import.meta.env` directly in feature code.
 - When adding an endpoint, add a matching MSW handler in `src/__mocks__/handlers.ts` (with data in `src/__mocks__/data/`) so the app keeps working with `VITE_ENABLE_MOCKS`.
 
+## PWA & service worker
+
+- `vite-plugin-pwa` (injectManifest) builds `src/sw/sw.ts` to `/sw.js`: precache, API GET caching (`nnc-api`), fonts, and the Web Push handlers. It has its own `tsconfig.sw.json` (WebWorker lib).
+- The navigation fallback must never cover `/ring/*` or `/r/*`: the router Worker answers them.
+- Never cache live endpoints (`websites/status`, `websites/preview`) or non-GET requests.
+- It registers only when `VITE_ENABLE_MOCKS=false` (MSW owns the scope otherwise), so test it with `pnpm build && pnpm start`. Icons come from `pnpm pwa:icons` (`pwa-assets.config.ts`).
+
 ## Git safety
 
 Do **not** run `git commit` or `git push` automatically — save/format files and leave commit execution to the user. Husky runs `lint-staged` (oxlint + Prettier) on commit.

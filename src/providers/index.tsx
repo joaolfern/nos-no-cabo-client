@@ -5,6 +5,7 @@ import { NosNoCaboProviders } from '@/pages/Webring/providers/NosNoCaboProviders
 import { ThemeProvider } from '@/providers/ThemeProvider/ThemeProvider'
 import { RouterProvider } from '@/providers/RouterProvider/RouterProvider'
 import { MessageProvider } from '@/providers/MessageProvider/MessageProvider'
+import { ServiceWorkerUpdatePrompt } from '@/components/ServiceWorkerUpdatePrompt/ServiceWorkerUpdatePrompt'
 
 type ProvidersProps = {
   children: React.ReactNode
@@ -15,6 +16,7 @@ export function AppProviders({ children }: ProvidersProps) {
   return (
     <ThemeProvider>
       <MessageProvider>
+        <ServiceWorkerUpdatePrompt />
         <ErrorBoundary>
           <QueryProvider>
             <IconProvider>

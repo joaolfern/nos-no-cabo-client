@@ -28,7 +28,7 @@ package "src/pages/SubmitWebsite/  (/websites/novo)" as submit {
   component "usePendingSubmissions\nlocalStorage 'nnc-pending-submissions'" as store
   component "usePendingStatusPolling\n15 s for 2 min, then on load/focus" as polling
   component "usePendingFeedItems\ndrafts → feed items" as pendingItems
-  component "usePushSubscription\n+ public/sw.js" as pushSub
+  component "usePushSubscription\n+ src/sw/sw.ts" as pushSub
 }
 
 package "src/pages/WidgetEditor/  (/websites/:id/selo)" as widget {
