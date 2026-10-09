@@ -1,0 +1,14 @@
+@use '@/styles/tokens/mixins.scss' as *;
+
+.bone {
+  @include bone-text;
+}
+
+.heading {
+  @include bone-text;
+  width: 40%;
+}
+
+.contact {
+  width: 16rem;
+}

@@ -1,0 +1,45 @@
+@use '@/styles/tokens/spacing.scss' as *;
+@use '@/styles/tokens/border.scss' as *;
+@use '@/styles/tokens/mixins.scss' as *;
+
+// Keeps the real control's box (border included) but paints it as a bone.
+.bone {
+  display: block;
+  border-color: transparent;
+  background: var(--color-raised);
+  color: transparent;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+// A <legend> is a block; the span standing in for it must be too.
+.legend {
+  display: block;
+}
+
+// Same height as the real three-row textarea.
+.textarea {
+  height: calc(3lh + 2 * #{$spacing-xs} + 2 * #{$border-width-base});
+}
+
+.chip {
+  border-color: transparent;
+  background: var(--color-raised);
+  color: transparent;
+  cursor: default;
+
+  svg {
+    visibility: hidden;
+  }
+}
+
+.turnstile {
+  width: 300px;
+  max-width: 100%;
+  height: 65px;
+  border-radius: $radius-md;
+}
+
+.button {
+  display: inline-block;
+}

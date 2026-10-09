@@ -24,6 +24,11 @@
   max-width: 40rem;
 }
 
+// Two lines reserved: the site name arrives after the page and almost always wraps the sentence.
+.headerText {
+  min-height: 2lh;
+}
+
 .back {
   color: var(--color-primary-400);
 }

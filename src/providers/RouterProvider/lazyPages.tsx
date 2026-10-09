@@ -27,8 +27,3 @@ export const WidgetEditor = lazy(() =>
 export const Terms = lazy(() =>
   import('@/pages/Terms/Terms').then((module) => ({ default: module.Terms }))
 )
-export const NotFound = lazy(() =>
-  import('@/pages/NotFound/NotFound').then((module) => ({
-    default: module.NotFound,
-  }))
-)

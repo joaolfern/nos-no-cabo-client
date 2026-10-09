@@ -4,7 +4,6 @@ import { useMemo, useState, type ReactNode } from 'react'
 import { useParams } from 'react-router'
 import { LuCodeXml } from 'react-icons/lu'
 import { Link } from '@/components/Link/Link'
-import { PageTrail, type Crumb } from '@/components/PageTrail/PageTrail'
 import { Typography } from '@/components/Typography/Typography'
 import { NOS_NO_CABO_URL, RING_BASE_URL } from '@/config/env'
 import { ChoiceChip } from '@/components/ChoiceChip/ChoiceChip'
@@ -13,8 +12,14 @@ import { PreviewStage } from '@/pages/WidgetEditor/components/PreviewStage/Previ
 import { SnippetCode } from '@/pages/WidgetEditor/components/SnippetCode/SnippetCode'
 import { TermsConsent } from '@/pages/WidgetEditor/components/TermsConsent/TermsConsent'
 import { useTermsAcceptance } from '@/pages/Terms/hooks/useTermsAcceptance'
+import { WidgetEditorHeader } from '@/pages/WidgetEditor/components/WidgetEditorHeader/WidgetEditorHeader'
+import { WidgetEditorTrail } from '@/pages/WidgetEditor/components/WidgetEditorTrail/WidgetEditorTrail'
 import { WidgetRender } from '@/pages/WidgetEditor/components/WidgetRender/WidgetRender'
-import type { ISubmittedWebsite } from '@/interfaces/IWebsite'
+import {
+  DEFAULT_SITE_NAME,
+  OPTION_LABELS,
+  SHOW_HIDE,
+} from '@/pages/WidgetEditor/utils/optionLabels'
 import { useSubmittedWebsite } from '@/pages/WidgetEditor/hooks/useSubmittedWebsite'
 import { buildWidgetSnippet } from '@/pages/WidgetEditor/utils/buildWidgetSnippet'
 import {
@@ -40,11 +45,6 @@ const THUMB_SCALE: Record<Exclude<WidgetPreset, 'personalizado'>, number> = {
 }
 
 const TERMS_CONSENT_ID = 'widget-terms-consent'
-
-const SHOW_HIDE = [
-  { value: true, label: 'Mostrar' },
-  { value: false, label: 'Ocultar' },
-]
 
 function OptionGroup({
   label,
@@ -105,23 +105,6 @@ function ModelThumb({
   )
 }
 
-function trailCrumbs(id: string, website?: ISubmittedWebsite): Crumb[] {
-  const siteCrumb: Crumb[] = website
-    ? [
-        {
-          label: website.name,
-          to: website.status === 'published' ? `/website/${id}` : undefined,
-        },
-      ]
-    : []
-
-  return [
-    { label: 'Projetos', to: '/websites' },
-    ...siteCrumb,
-    { label: 'Selo' },
-  ]
-}
-
 export function WidgetEditor() {
   const { id = '' } = useParams<{ id: string }>()
   const website = useSubmittedWebsite(id)
@@ -166,25 +149,17 @@ export function WidgetEditor() {
     )
   }
 
-  const siteName = website.data?.name ?? 'o site'
+  const siteName = website.data?.name ?? DEFAULT_SITE_NAME
 
   return (
     <div className={styles.page}>
-      <PageTrail backTo='/websites' crumbs={trailCrumbs(id, website.data)} />
-      <header className={styles.header}>
-        <Typography as='h1' variant='titleSm'>
-          Adicione o selo ao seu site
-        </Typography>
-        <Typography as='p' variant='bodyMd' color='muted'>
-          Com o selo no site, {siteName} ganha o ícone de verificado e aparece
-          primeiro nas listas.
-        </Typography>
-      </header>
+      <WidgetEditorTrail websiteId={id} website={website.data} />
+      <WidgetEditorHeader siteName={siteName} />
 
       <div className={styles.layout}>
         <div className={styles.controls}>
           <fieldset className={styles.group}>
-            <legend className={styles.legend}>Modelo</legend>
+            <legend className={styles.legend}>{OPTION_LABELS.model}</legend>
             <div className={styles.models}>
               {WIDGET_PRESETS.map(({ id: presetId, label }) => (
                 <ChoiceChip
@@ -207,7 +182,7 @@ export function WidgetEditor() {
           </fieldset>
 
           {preset.supportsStyle && (
-            <OptionGroup label='Tema'>
+            <OptionGroup label={OPTION_LABELS.theme}>
               {WIDGET_THEMES.map(({ id: theme, label }) => (
                 <ChoiceChip
                   key={theme}
@@ -222,7 +197,7 @@ export function WidgetEditor() {
           )}
 
           {preset.supportsLogo && (
-            <OptionGroup label='Logo'>
+            <OptionGroup label={OPTION_LABELS.logo}>
               {WIDGET_LOGOS.map(({ id: logo, label }) => (
                 <ChoiceChip
                   key={logo}
@@ -237,7 +212,10 @@ export function WidgetEditor() {
           )}
 
           {preset.supportsLogo && (
-            <OptionGroup label='Cor do logo' disabled={options.logo !== 'cor'}>
+            <OptionGroup
+              label={OPTION_LABELS.accent}
+              disabled={options.logo !== 'cor'}
+            >
               {(Object.keys(WIDGET_ACCENTS) as WidgetAccent[]).map((accent) => (
                 <ChoiceChip
                   key={accent}
@@ -264,7 +242,7 @@ export function WidgetEditor() {
           )}
 
           {preset.supportsRandom && (
-            <OptionGroup label='Aleatório'>
+            <OptionGroup label={OPTION_LABELS.random}>
               {SHOW_HIDE.map(({ value, label }) => (
                 <ChoiceChip
                   key={label}
@@ -279,7 +257,7 @@ export function WidgetEditor() {
           )}
 
           {preset.supportsNav && (
-            <OptionGroup label='Anterior e Próximo'>
+            <OptionGroup label={OPTION_LABELS.nav}>
               {SHOW_HIDE.map(({ value, label }) => (
                 <ChoiceChip
                   key={label}

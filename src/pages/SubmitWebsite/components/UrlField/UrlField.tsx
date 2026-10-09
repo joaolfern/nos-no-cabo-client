@@ -4,7 +4,10 @@ import { Link } from '@/components/Link/Link'
 import type { IApiError } from '@/interfaces/IApiError'
 import { Field } from '@/components/Field/Field'
 import { fieldMessageId } from '@/components/Field/fieldMessageId'
-import { FIELD_IDS } from '@/pages/SubmitWebsite/utils/submissionForm'
+import {
+  FIELD_IDS,
+  FIELD_LABELS,
+} from '@/pages/SubmitWebsite/utils/submissionForm'
 import styles from './UrlField.module.scss'
 
 type UrlFieldProps = {
@@ -58,7 +61,7 @@ export function UrlField({
   return (
     <Field
       id={FIELD_IDS.url}
-      label='Endereço do site'
+      label={FIELD_LABELS.url}
       hint={hint}
       error={error}
     >

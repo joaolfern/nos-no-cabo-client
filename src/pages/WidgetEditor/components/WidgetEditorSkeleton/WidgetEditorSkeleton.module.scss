@@ -1,0 +1,57 @@
+@use '@/styles/tokens/border.scss' as *;
+@use '@/styles/tokens/mixins.scss' as *;
+
+// A <legend> is a block; the span standing in for it must be too.
+.legend {
+  display: block;
+}
+
+// Keeps the real chip's box but paints it as a bone.
+.chip {
+  border-color: transparent;
+  background: var(--color-raised);
+  color: transparent;
+  box-shadow: none;
+  cursor: default;
+
+  * {
+    visibility: hidden;
+  }
+}
+
+.thumb {
+  background: var(--color-surface);
+}
+
+.text {
+  @include bone-text;
+}
+
+.agreement {
+  width: 16rem;
+}
+
+.hint {
+  width: 60%;
+}
+
+.segment {
+  width: 10rem;
+  height: calc(1.875rem + 2 * #{$border-width-base});
+  border-color: transparent;
+  background: var(--color-raised);
+}
+
+// The default model's preview measured in the browser: the host's padding, three lines and the widget.
+.host {
+  display: block;
+  height: 203px;
+  background: var(--color-raised);
+  opacity: 0.5;
+}
+
+// The code bar: its two buttons set the height.
+.snippetBar {
+  display: block;
+  height: 44px;
+}

@@ -6,6 +6,7 @@ import {
 import { fieldMessageId } from '@/components/Field/fieldMessageId'
 import {
   FIELD_IDS,
+  FIELD_LABELS,
   MAX_CATEGORIES,
 } from '@/pages/SubmitWebsite/utils/submissionForm'
 import { CategoryChip } from './CategoryChip'
@@ -37,7 +38,8 @@ export function CategoryPicker({
       aria-describedby={fieldMessageId(FIELD_IDS.categories)}
     >
       <legend className={styles.legend}>
-        Categorias <span className={styles.limit}>(até {MAX_CATEGORIES})</span>
+        {FIELD_LABELS.categories}{' '}
+        <span className={styles.limit}>(até {MAX_CATEGORIES})</span>
       </legend>
       <div className={styles.options}>
         {CATEGORY_NAMES.map((name) => {

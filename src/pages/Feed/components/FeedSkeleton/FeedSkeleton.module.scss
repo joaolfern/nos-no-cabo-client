@@ -1,7 +1,7 @@
 @use '@/styles/tokens/border.scss' as *;
 @use '@/styles/tokens/mixins.scss' as *;
 
-// Measured sizes of FeedSort, the phone category filter and the category search box.
+// Measured sizes of FeedSort, the phone category filter and the category search box (kept as empty space).
 .sort {
   @include bone-block;
   width: 6.5625rem;
@@ -15,7 +15,6 @@
 }
 
 .search {
-  @include bone-block;
   display: block;
   height: 2.375rem;
 }

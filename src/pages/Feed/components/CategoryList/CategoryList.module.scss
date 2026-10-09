@@ -106,6 +106,10 @@
   min-width: 0;
 }
 
+.reservedRow {
+  visibility: hidden;
+}
+
 .iconBone {
   @include bone-block;
   flex: none;

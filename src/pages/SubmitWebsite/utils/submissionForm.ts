@@ -24,6 +24,14 @@ export const FIELD_IDS: Record<keyof SubmissionFormValues, string> = {
   categories: 'submit-categories',
 }
 
+export const FIELD_LABELS: Record<keyof SubmissionFormValues, string> = {
+  url: 'Endereço do site',
+  name: 'Nome',
+  description: 'Descrição',
+  color: 'Cor do site',
+  categories: 'Categorias',
+}
+
 export type SubmissionFormErrors = Partial<
   Record<keyof SubmissionFormValues, string>
 >

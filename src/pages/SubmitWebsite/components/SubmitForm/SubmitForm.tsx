@@ -3,7 +3,6 @@ import { useSearchParams } from 'react-router'
 import { Button } from '@/components/Button/Button'
 import { Input } from '@/components/Input/Input'
 import { Textarea } from '@/components/Textarea/Textarea'
-import { Typography } from '@/components/Typography/Typography'
 import { TURNSTILE_SITE_KEY } from '@/config/env'
 import { useNotificationPermission } from '@/hooks/useNotificationPermission'
 import type { IApiError } from '@/interfaces/IApiError'
@@ -14,6 +13,7 @@ import { fieldMessageId } from '@/components/Field/fieldMessageId'
 import { TurnstileField } from '@/components/TurnstileField/TurnstileField'
 import { UrlField } from '@/pages/SubmitWebsite/components/UrlField/UrlField'
 import { WebsitePreviewCard } from '@/pages/SubmitWebsite/components/WebsitePreviewCard/WebsitePreviewCard'
+import { SubmitFormHeader } from '@/pages/SubmitWebsite/components/SubmitForm/SubmitFormHeader'
 import { useSubmissionFields } from '@/pages/SubmitWebsite/hooks/useSubmissionFields'
 import { useSubmitWebsite } from '@/pages/SubmitWebsite/hooks/useSubmitWebsite'
 import { useWebsitePreview } from '@/pages/SubmitWebsite/hooks/useWebsitePreview'
@@ -21,6 +21,7 @@ import {
   DEFAULT_COLOR,
   DESCRIPTION_MAX_LENGTH,
   FIELD_IDS,
+  FIELD_LABELS,
   NAME_MAX_LENGTH,
   toHexColor,
   toSubmission,
@@ -110,15 +111,7 @@ export function SubmitForm({ onSubmitted }: SubmitFormProps) {
 
   return (
     <div className={styles.layout}>
-      <header className={styles.header}>
-        <Typography as='h1' variant='titleSm'>
-          Adicionar um site
-        </Typography>
-        <Typography as='p' variant='bodyMd' color='muted'>
-          Mais um nó na rede. Adicione um projeto brasileiro de tecnologia e
-          ajude mais gente a chegar até ele.
-        </Typography>
-      </header>
+      <SubmitFormHeader />
 
       <div className={styles.preview}>
         <WebsitePreviewCard
@@ -147,7 +140,7 @@ export function SubmitForm({ onSubmitted }: SubmitFormProps) {
 
         <Field
           id={FIELD_IDS.name}
-          label='Nome'
+          label={FIELD_LABELS.name}
           error={errors.name}
           hint={`${values.name.length}/${NAME_MAX_LENGTH}`}
         >
@@ -164,7 +157,7 @@ export function SubmitForm({ onSubmitted }: SubmitFormProps) {
 
         <Field
           id={FIELD_IDS.description}
-          label='Descrição'
+          label={FIELD_LABELS.description}
           error={errors.description}
           hint={`${values.description.length}/${DESCRIPTION_MAX_LENGTH}`}
         >
@@ -182,7 +175,7 @@ export function SubmitForm({ onSubmitted }: SubmitFormProps) {
 
         <Field
           id={FIELD_IDS.color}
-          label='Cor do site'
+          label={FIELD_LABELS.color}
           error={errors.color}
           hint='Usada nos destaques da página do site.'
         >

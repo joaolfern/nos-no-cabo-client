@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router'
 import { usePageMeta } from '@/hooks/usePageMeta'
-import { PageTrail } from '@/components/PageTrail/PageTrail'
 import { useMessage } from '@/contexts/useMessage'
 import type { ISubmittedWebsite } from '@/interfaces/IWebsite'
 import { SubmitForm } from '@/pages/SubmitWebsite/components/SubmitForm/SubmitForm'
+import { SubmitWebsiteTrail } from '@/pages/SubmitWebsite/components/SubmitWebsiteTrail/SubmitWebsiteTrail'
 import styles from './SubmitWebsite.module.scss'
 
 export function SubmitWebsite() {
@@ -28,13 +28,7 @@ export function SubmitWebsite() {
 
   return (
     <div className={styles.page}>
-      <PageTrail
-        backTo='/websites'
-        crumbs={[
-          { label: 'Projetos', to: '/websites' },
-          { label: 'Adicionar um site' },
-        ]}
-      />
+      <SubmitWebsiteTrail />
       <SubmitForm onSubmitted={handleSubmitted} />
     </div>
   )
