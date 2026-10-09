@@ -28,5 +28,8 @@ export function useSubmissionFields(
     setEdits((current) => ({ ...current, [field]: value }))
   }, [])
 
-  return { values, editField, setCategories }
+  const isDirty =
+    url.trim() !== '' || Object.keys(edits).length > 0 || categories.length > 0
+
+  return { values, isDirty, editField, setCategories }
 }

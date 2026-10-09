@@ -6,4 +6,6 @@ export type DialogProps = {
   title: string
   onConfirm: () => void
   onCancel: () => void
+  confirmLabel?: string
+  cancelLabel?: string
 }

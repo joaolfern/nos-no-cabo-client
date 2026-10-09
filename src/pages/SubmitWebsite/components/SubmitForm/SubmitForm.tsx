@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { useSearchParams } from 'react-router'
 import { Button } from '@/components/Button/Button'
+import { Dialog } from '@/components/Dialog/Dialog'
 import { Input } from '@/components/Input/Input'
 import { Textarea } from '@/components/Textarea/Textarea'
+import { Typography } from '@/components/Typography/Typography'
 import { TURNSTILE_SITE_KEY } from '@/config/env'
 import { useNotificationPermission } from '@/hooks/useNotificationPermission'
 import type { IApiError } from '@/interfaces/IApiError'
@@ -14,6 +16,7 @@ import { TurnstileField } from '@/components/TurnstileField/TurnstileField'
 import { UrlField } from '@/pages/SubmitWebsite/components/UrlField/UrlField'
 import { WebsitePreviewCard } from '@/pages/SubmitWebsite/components/WebsitePreviewCard/WebsitePreviewCard'
 import { SubmitFormHeader } from '@/pages/SubmitWebsite/components/SubmitForm/SubmitFormHeader'
+import { useLeaveFormPrompt } from '@/pages/SubmitWebsite/hooks/useLeaveFormPrompt'
 import { useSubmissionFields } from '@/pages/SubmitWebsite/hooks/useSubmissionFields'
 import { useSubmitWebsite } from '@/pages/SubmitWebsite/hooks/useSubmitWebsite'
 import { useWebsitePreview } from '@/pages/SubmitWebsite/hooks/useWebsitePreview'
@@ -60,7 +63,7 @@ export function SubmitForm({ onSubmitted }: SubmitFormProps) {
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
 
   const preview = useWebsitePreview(url)
-  const { values, editField, setCategories } = useSubmissionFields(
+  const { values, isDirty, editField, setCategories } = useSubmissionFields(
     url,
     preview.data
   )
@@ -71,6 +74,7 @@ export function SubmitForm({ onSubmitted }: SubmitFormProps) {
     isPending: isSubmitting,
   } = useSubmitWebsite()
   const { permission, requestPermission } = useNotificationPermission()
+  const leaveBlocker = useLeaveFormPrompt(isDirty)
 
   const errors = hasTriedSubmit ? validateSubmission(values) : {}
   const isDuplicate =
@@ -224,6 +228,20 @@ export function SubmitForm({ onSubmitted }: SubmitFormProps) {
               : null)}
         </p>
       </form>
+
+      <Dialog
+        isOpen={leaveBlocker.state === 'blocked'}
+        title='Sair sem enviar o site?'
+        confirmLabel='Sair'
+        cancelLabel='Continuar editando'
+        onConfirm={() => leaveBlocker.proceed?.()}
+        onCancel={() => leaveBlocker.reset?.()}
+        onClose={() => leaveBlocker.reset?.()}
+      >
+        <Typography as='p' variant='bodyMd' color='muted'>
+          O que você preencheu vai se perder.
+        </Typography>
+      </Dialog>
     </div>
   )
 }

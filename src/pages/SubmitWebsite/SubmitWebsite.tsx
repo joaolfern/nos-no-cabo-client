@@ -23,7 +23,7 @@ export function SubmitWebsite() {
         : 'Site enviado. Ele aparece para todo mundo assim que for aprovado.',
       { tone: 'success' }
     )
-    navigate('/websites')
+    navigate('/websites', { state: { submitted: true } })
   }
 
   return (

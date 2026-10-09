@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
-import { render } from '@/__tests__/utils.test'
+import { renderInDataRouter as render } from '@/__tests__/utils.test'
 import { server } from '@/__mocks__/node'
 import { V1_API_URL } from '@/config/env'
 import { resetMockSubmissions } from '@/__mocks__/data/submissions'
@@ -175,6 +175,43 @@ describe('SubmitWebsite', () => {
       )
     )
     expect(nameInput()).toHaveValue('Meu nome')
+  })
+
+  it('leaves the address field unfocused on load', async () => {
+    await render(<SubmitWebsite />)
+
+    expect(urlInput()).not.toHaveFocus()
+  })
+
+  it('asks before leaving a form with changes', async () => {
+    await render(<SubmitWebsite />)
+    await typeUrl('meu-projeto.dev')
+
+    await userEvent.click(screen.getByRole('link', { name: 'Voltar' }))
+    expect(
+      screen.getByRole('heading', { name: 'Sair sem enviar o site?' })
+    ).toBeInTheDocument()
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Continuar editando' })
+    )
+    expect(window.location.pathname).toBe('/websites/novo')
+    expect(urlInput()).toHaveValue('meu-projeto.dev')
+
+    await userEvent.click(screen.getByRole('link', { name: 'Voltar' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Sair' }))
+    expect(window.location.pathname).toBe('/websites')
+  })
+
+  it('leaves an untouched form without asking', async () => {
+    await render(<SubmitWebsite />)
+
+    await userEvent.click(screen.getByRole('link', { name: 'Voltar' }))
+
+    expect(window.location.pathname).toBe('/websites')
+    expect(
+      screen.queryByRole('heading', { name: 'Sair sem enviar o site?' })
+    ).not.toBeInTheDocument()
   })
 
   it('allows at most three categories', async () => {

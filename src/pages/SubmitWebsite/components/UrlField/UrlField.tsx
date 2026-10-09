@@ -71,7 +71,6 @@ export function UrlField({
         type='text'
         inputMode='url'
         autoComplete='url'
-        autoFocus={true}
         placeholder='exemplo.com.br'
         value={value}
         onChange={(event) => onChange(event.target.value)}

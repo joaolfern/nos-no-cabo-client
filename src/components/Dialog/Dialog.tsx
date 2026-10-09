@@ -14,6 +14,8 @@ export function Dialog({
   title,
   onCancel,
   onConfirm,
+  confirmLabel = 'Confirmar',
+  cancelLabel = 'Cancelar',
 }: DialogProps) {
   useEscape({ isOpen, onClose })
 
@@ -35,10 +37,10 @@ export function Dialog({
               className={styles.button}
               onClick={onCancel}
             >
-              Cancelar
+              {cancelLabel}
             </Button>
             <Button className={styles.button} onClick={onConfirm}>
-              Confirmar
+              {confirmLabel}
             </Button>
           </footer>
         </div>
