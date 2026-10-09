@@ -1,7 +1,7 @@
 import { v1Api } from '@/api/api'
 import { resetMockMetrics } from '@/__mocks__/data/metrics'
 import { getMockReports, resetMockReports } from '@/__mocks__/data/reports'
-import { resetMockSubmissions } from '@/__mocks__/data/submissions'
+import { mockPreview, resetMockSubmissions } from '@/__mocks__/data/submissions'
 import type { IApiError } from '@/interfaces/IApiError'
 import type { IWebsitePage, IWebsiteStats } from '@/interfaces/IWebsiteStats'
 import type {
@@ -192,5 +192,19 @@ describe('v1 mock handlers', () => {
     await expect(
       rejection(v1Api.get('websites/nada/page'))
     ).resolves.toMatchObject({ code: 'not_found', status: 404 })
+  })
+})
+
+describe('mockPreview', () => {
+  it("uses the page's meta description when there is one", () => {
+    expect(
+      mockPreview('https://site.dev', 'Descrição da página.')?.description
+    ).toBe('Descrição da página.')
+  })
+
+  it('falls back to the placeholder without one', () => {
+    expect(mockPreview('https://site.dev', null)?.description).toBe(
+      'Projeto independente publicado em site.dev.'
+    )
   })
 })

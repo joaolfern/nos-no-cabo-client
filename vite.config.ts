@@ -4,9 +4,15 @@ import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
 import path from 'path'
 import svgr from 'vite-plugin-svgr'
+import { pageMetaPlugin } from './scripts/vitePageMetaPlugin'
 
 export default defineConfig({
-  plugins: [react(), babel({ presets: [reactCompilerPreset()] }), svgr()],
+  plugins: [
+    react(),
+    babel({ presets: [reactCompilerPreset()] }),
+    svgr(),
+    pageMetaPlugin(),
+  ],
   resolve: {
     tsconfigPaths: true,
     alias: {

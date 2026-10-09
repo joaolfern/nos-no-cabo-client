@@ -28,6 +28,32 @@ import { http, HttpResponse } from 'msw'
 
 const V1 = V1_API_URL
 
+type ReadDescription = (url: string) => Promise<string | null>
+
+// The browser worker passes a reader for the real page's meta description; tests keep the placeholder.
+export function previewHandler(readDescription?: ReadDescription) {
+  return http.get(`${V1}/websites/preview`, async ({ request }) => {
+    const input = new URL(request.url).searchParams.get('url') ?? ''
+    const url = toAbsoluteUrl(input)
+    if (!url) return errorResponse(422, 'invalid', 'Endereço inválido.')
+
+    const existingId = findExistingWebsiteId(url)
+    if (existingId) return duplicateResponse(existingId)
+
+    const description = readDescription ? await readDescription(url) : null
+    const preview = mockPreview(url, description)
+    if (!preview) {
+      return errorResponse(
+        422,
+        'unreachable',
+        'Não conseguimos acessar esse endereço.'
+      )
+    }
+
+    return HttpResponse.json(preview)
+  })
+}
+
 function errorResponse(
   status: number,
   code: ApiErrorCode,
@@ -82,25 +108,7 @@ export const handlers = [
 
     return HttpResponse.json(neighbours)
   }),
-  http.get(`${V1}/websites/preview`, ({ request }) => {
-    const input = new URL(request.url).searchParams.get('url') ?? ''
-    const url = toAbsoluteUrl(input)
-    if (!url) return errorResponse(422, 'invalid', 'Endereço inválido.')
-
-    const existingId = findExistingWebsiteId(url)
-    if (existingId) return duplicateResponse(existingId)
-
-    const preview = mockPreview(url)
-    if (!preview) {
-      return errorResponse(
-        422,
-        'unreachable',
-        'Não conseguimos acessar esse endereço.'
-      )
-    }
-
-    return HttpResponse.json(preview)
-  }),
+  previewHandler(),
   http.post(`${V1}/websites`, async ({ request }) => {
     const body = (await request.json()) as IWebsiteSubmission
     if (!isValidSubmission(body)) {

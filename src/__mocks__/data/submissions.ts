@@ -133,7 +133,10 @@ export function getMockSubmittedWebsite(
   return published && fromPublishedWebsite(published)
 }
 
-export function mockPreview(url: string): IWebsitePreview | null {
+export function mockPreview(
+  url: string,
+  description?: string | null
+): IWebsitePreview | null {
   if (url.includes(UNREACHABLE_URL_MARKER)) return null
 
   const { hostname, origin } = new URL(url)
@@ -142,7 +145,8 @@ export function mockPreview(url: string): IWebsitePreview | null {
   return {
     url,
     name: siteName.charAt(0).toUpperCase() + siteName.slice(1),
-    description: `Projeto independente publicado em ${hostname}.`,
+    description:
+      description || `Projeto independente publicado em ${hostname}.`,
     color: '#4A90E2',
     faviconUrl: `${origin}/favicon.ico`,
   }
