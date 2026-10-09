@@ -15,6 +15,8 @@ export function Feed() {
     useFeedWebsites()
   const { selectedKeywords, clearKeywords, clearSearch } = useFilters()
   const pendingItems = usePendingFeedItems()
+  const pinnedIds = new Set(pendingItems.map((item) => item.website.id))
+  const feedWebsites = websites.filter((website) => !pinnedIds.has(website.id))
   const [view, setView] = useFeedView()
   const remaining = (total ?? 0) - websites.length
 
@@ -35,7 +37,7 @@ export function Feed() {
         <FeedCardList
           isLoading={isLoading}
           skeletonCount={pageSize}
-          data={websites}
+          data={feedWebsites}
           pending={pendingItems}
           view={view}
           highlightKeywordId={selectedKeywords[0]}

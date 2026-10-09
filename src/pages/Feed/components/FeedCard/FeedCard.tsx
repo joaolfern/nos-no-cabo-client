@@ -15,7 +15,7 @@ import styles from './FeedCard.module.scss'
 import { getCategoryLabel } from '@/pages/Feed/constants/categories'
 
 export type FeedCardVariant = 'compact' | 'detailed'
-export type FeedCardTone = 'draft' | 'rejected'
+export type FeedCardTone = 'draft' | 'rejected' | 'published'
 
 type FeedCardProps = {
   website: IWebsite

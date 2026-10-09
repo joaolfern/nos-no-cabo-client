@@ -25,7 +25,9 @@ export function VerifyPanel({ websiteId, websiteName }: VerifyPanelProps) {
     verifyWebsite(undefined, {
       onSuccess: ({ verified }) => {
         if (verified)
-          showMessage(`Selo encontrado. ${websiteName} agora é verificado.`)
+          showMessage(`Selo encontrado. ${websiteName} agora é verificado.`, {
+            tone: 'success',
+          })
       },
     })
   }

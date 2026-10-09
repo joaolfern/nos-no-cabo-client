@@ -47,21 +47,39 @@ export function FeedTable({
       <table className={styles.table} aria-busy={isLoading}>
         <FeedTableHead showLikes={showLikes} />
         <tbody>
-          {pending.map(({ website, tone, status }) => (
+          {pending.map(({ website, tone, readOnly, status }) => (
             <tr
               key={website.id}
-              className={clsx(styles.pendingRow, styles[tone])}
+              className={clsx(
+                styles.pendingRow,
+                styles[tone],
+                !readOnly && styles.linkRow
+              )}
               data-testid='feed-card'
+              onClick={
+                readOnly ? undefined : (event) => openRow(event, website.id)
+              }
             >
               <td>
-                <span className={styles.site}>
-                  <Image
-                    className={styles.thumb}
-                    src={website.faviconUrl}
-                    alt=''
-                  />
-                  <span className={styles.name}>{website.name}</span>
-                </span>
+                {readOnly ? (
+                  <span className={styles.site}>
+                    <Image
+                      className={styles.thumb}
+                      src={website.faviconUrl}
+                      alt=''
+                    />
+                    <span className={styles.name}>{website.name}</span>
+                  </span>
+                ) : (
+                  <Link className={styles.site} to={`/website/${website.id}`}>
+                    <Image
+                      className={styles.thumb}
+                      src={website.faviconUrl}
+                      alt=''
+                    />
+                    <span className={styles.name}>{website.name}</span>
+                  </Link>
+                )}
               </td>
               <td className={styles.description}>{website.description}</td>
               <td className={styles.category}>

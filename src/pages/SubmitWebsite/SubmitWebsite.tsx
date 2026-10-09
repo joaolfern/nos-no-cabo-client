@@ -20,7 +20,8 @@ export function SubmitWebsite() {
     showMessage(
       website.status === 'published'
         ? 'Site publicado.'
-        : 'Site enviado. Ele aparece para todo mundo assim que for aprovado.'
+        : 'Site enviado. Ele aparece para todo mundo assim que for aprovado.',
+      { tone: 'success' }
     )
     navigate('/websites')
   }

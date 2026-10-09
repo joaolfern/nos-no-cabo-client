@@ -64,7 +64,9 @@ export function WebsiteVotes({ websiteId }: WebsiteVotesProps) {
           onError: () => {
             pendingRef.current = null
             clearPendingVote(websiteId)
-            showMessage('Não foi possível registrar seu voto. Tente de novo.')
+            showMessage('Não foi possível registrar seu voto. Tente de novo.', {
+              tone: 'error',
+            })
           },
           onSettled: () => {
             isSendingRef.current = false

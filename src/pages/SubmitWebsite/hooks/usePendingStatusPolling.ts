@@ -4,9 +4,12 @@ import { v1Api } from '@/api/api'
 import { useNotificationPermission } from '@/hooks/useNotificationPermission'
 import type { IWebsiteStatus } from '@/interfaces/IWebsite'
 import { usePendingSubmissions } from '@/pages/SubmitWebsite/hooks/usePendingSubmissions'
+import { usePublishedThisSession } from '@/pages/SubmitWebsite/hooks/usePublishedThisSession'
+import { NOTIFICATION_IMAGES } from '@/pages/SubmitWebsite/utils/notificationImages'
 import {
   ACTIVE_CHECK_INTERVAL_MS,
   RETURN_CHECK_MIN_INTERVAL_MS,
+  draftToWebsite,
   isInActiveCheckWindow,
   reconcileDrafts,
   rejectionMessage,
@@ -35,6 +38,7 @@ function notifyOutcome(draft: IPendingSubmission, isPublished: boolean) {
       ? `${draft.name} foi publicado`
       : `${draft.name} não foi aceito`,
     {
+      ...NOTIFICATION_IMAGES,
       tag: `nnc-submission-${draft.id}`,
       body: isPublished
         ? 'Já aparece no feed do Nós no Cabo.'
@@ -47,6 +51,7 @@ function notifyOutcome(draft: IPendingSubmission, isPublished: boolean) {
 // 2 minutes, then only on page load or tab focus (at most once a minute).
 export function usePendingStatusPolling() {
   const { drafts, updateDrafts, removeDrafts } = usePendingSubmissions()
+  const { addPublished } = usePublishedThisSession()
   const queryClient = useQueryClient()
 
   const checking = useMemo(
@@ -80,6 +85,11 @@ export function usePendingStatusPolling() {
     const { published, rejected } = reconcileDrafts(checking, statuses)
 
     if (published.length > 0) {
+      addPublished(
+        published.map((draft) =>
+          draftToWebsite({ ...draft, status: 'published' })
+        )
+      )
       removeDrafts(published.map((draft) => draft.id))
       queryClient.invalidateQueries({ queryKey: ['websites'] })
     }
@@ -87,5 +97,12 @@ export function usePendingStatusPolling() {
 
     published.forEach((draft) => notifyOutcome(draft, true))
     rejected.forEach((draft) => notifyOutcome(draft, false))
-  }, [statuses, checking, removeDrafts, updateDrafts, queryClient])
+  }, [
+    statuses,
+    checking,
+    addPublished,
+    removeDrafts,
+    updateDrafts,
+    queryClient,
+  ])
 }

@@ -8,6 +8,8 @@ import {
 } from '@/__mocks__/data/submissions'
 import type { IWebsiteSubmission } from '@/interfaces/IWebsite'
 import { Feed } from '@/pages/Feed/Feed'
+import { clearPublishedThisSession } from '@/pages/SubmitWebsite/hooks/usePublishedThisSession'
+import { NOTIFICATION_IMAGES } from '@/pages/SubmitWebsite/utils/notificationImages'
 import {
   DRAFT_TTL_MS,
   PENDING_SUBMISSIONS_KEY,
@@ -56,6 +58,7 @@ async function firstCard() {
 beforeEach(() => {
   localStorage.clear()
   resetMockSubmissions()
+  clearPublishedThisSession()
 })
 
 afterEach(() => {
@@ -86,17 +89,38 @@ describe('Feed with pending submissions', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('turns the draft into a regular card in its ranked place', async () => {
+  it('keeps a just-published site first, linked, and only once', async () => {
     storeDrafts([draftFor({}, Date.now() - MOCK_REVIEW_DELAY_MS)])
 
     await render(<Feed />)
 
     await waitFor(() => expect(storedDrafts()).toEqual([]))
+    const card = await firstCard()
+    expect(within(card).getByText('Publicado')).toBeInTheDocument()
+    expect(
+      within(card).getByRole('link', { name: 'Meu rascunho' })
+    ).toBeInTheDocument()
+
     const loadMore = screen.queryByRole('button', { name: /Carregar mais/ })
     if (loadMore) await userEvent.click(loadMore)
-    const name = await screen.findByText('Meu rascunho')
-    const card = name.closest('[data-testid="feed-card"]') as HTMLElement
-    expect(within(card).queryByText('Em análise')).not.toBeInTheDocument()
+    await waitFor(() =>
+      expect(screen.getAllByText('Meu rascunho')).toHaveLength(1)
+    )
+  })
+
+  it('moves a just-published site back to its ranked place after a reload', async () => {
+    storeDrafts([draftFor({}, Date.now() - MOCK_REVIEW_DELAY_MS)])
+
+    const { unmount } = await render(<Feed />)
+    expect(await screen.findByText('Publicado')).toBeInTheDocument()
+    unmount()
+    clearPublishedThisSession()
+
+    await render(<Feed />)
+
+    expect(
+      within(await firstCard()).queryByText('Publicado')
+    ).not.toBeInTheDocument()
   })
 
   it('keeps a rejected draft with its reason until dismissed', async () => {
@@ -194,7 +218,10 @@ describe('Feed with pending submissions', () => {
     await waitFor(() =>
       expect(notificationSpy).toHaveBeenCalledWith(
         'Meu rascunho foi publicado',
-        expect.objectContaining({ tag: expect.stringContaining('nnc-') })
+        expect.objectContaining({
+          ...NOTIFICATION_IMAGES,
+          tag: expect.stringContaining('nnc-'),
+        })
       )
     )
   })

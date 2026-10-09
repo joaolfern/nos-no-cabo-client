@@ -13,6 +13,7 @@ import styles from './FeedCardList.module.scss'
 export type FeedPendingItem = {
   website: IWebsite
   tone: FeedCardTone
+  readOnly: boolean
   status: ReactNode
 }
 
@@ -58,12 +59,12 @@ export function FeedCardList({
 
   return (
     <section className={styles.grid} aria-busy={isLoading}>
-      {pending.map(({ website, tone, status }) => (
+      {pending.map(({ website, tone, readOnly, status }) => (
         <FeedCard
           key={website.id}
           website={website}
           variant={variant}
-          readOnly
+          readOnly={readOnly}
           tone={tone}
           aside={status}
         />

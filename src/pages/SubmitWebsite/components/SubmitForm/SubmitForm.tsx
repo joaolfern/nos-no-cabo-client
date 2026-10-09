@@ -5,6 +5,7 @@ import { Input } from '@/components/Input/Input'
 import { Textarea } from '@/components/Textarea/Textarea'
 import { Typography } from '@/components/Typography/Typography'
 import { TURNSTILE_SITE_KEY } from '@/config/env'
+import { useNotificationPermission } from '@/hooks/useNotificationPermission'
 import type { IApiError } from '@/interfaces/IApiError'
 import type { ISubmittedWebsite } from '@/interfaces/IWebsite'
 import { CategoryPicker } from '@/pages/SubmitWebsite/components/CategoryPicker/CategoryPicker'
@@ -68,6 +69,7 @@ export function SubmitForm({ onSubmitted }: SubmitFormProps) {
     error: submitFailure,
     isPending: isSubmitting,
   } = useSubmitWebsite()
+  const { permission, requestPermission } = useNotificationPermission()
 
   const errors = hasTriedSubmit ? validateSubmission(values) : {}
   const isDuplicate =
@@ -93,6 +95,9 @@ export function SubmitForm({ onSubmitted }: SubmitFormProps) {
       return
     }
     if (isDuplicate || needsTurnstile) return
+
+    // Browsers only show the prompt during the submit click, not after the request returns.
+    if (permission === 'default') requestPermission()
 
     submitWebsite(
       {

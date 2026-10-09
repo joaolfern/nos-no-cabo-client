@@ -6,7 +6,8 @@ self.addEventListener('push', (event) => {
     self.registration.showNotification(message.title, {
       body: message.body,
       tag: message.tag,
-      icon: '/logos/logo.png',
+      icon: '/logos/notification-icon-192.png',
+      badge: '/logos/notification-badge-96.png',
       data: { url: message.url },
     })
   )

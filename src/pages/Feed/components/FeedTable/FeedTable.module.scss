@@ -207,3 +207,31 @@ td.pendingStatus {
     color: var(--color-danger-700);
   }
 }
+
+.table tbody tr.published {
+  border-bottom-style: solid;
+
+  td {
+    background: color-mix(
+      in oklab,
+      var(--color-success-500) 6%,
+      var(--color-surface)
+    );
+  }
+
+  td:first-child {
+    box-shadow: inset 3px 0 0 var(--color-success-500);
+  }
+
+  &:hover td {
+    background: color-mix(
+      in oklab,
+      var(--color-success-500) 10%,
+      var(--color-surface)
+    );
+  }
+}
+
+.published td.pendingStatus {
+  color: var(--color-success-500);
+}

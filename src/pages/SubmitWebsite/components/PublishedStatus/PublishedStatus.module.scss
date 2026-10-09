@@ -1,0 +1,13 @@
+@use '@/styles/tokens/spacing.scss' as *;
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-xxxs;
+  color: var(--color-success-500);
+
+  svg {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+}

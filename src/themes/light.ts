@@ -29,6 +29,8 @@ export const LIGHT_THEME_VARIABLES: Record<ThemeVariables, string> = {
 
   'color-danger-100': '#ffeaea',
   'color-danger-700': '#e63946',
+  'color-success-100': '#e3f6ea',
+  'color-success-500': '#1f9d55',
 
   'color-border-400': '#e3e1e3',
 
@@ -38,6 +40,7 @@ export const LIGHT_THEME_VARIABLES: Record<ThemeVariables, string> = {
   'color-background-300': '#d5d2d5',
 
   'color-surface': '#fbfafb',
+  'color-surface-glass': '#fbfafbcc',
   'color-raised': '#efedef',
 
   'blur-background': '20px',

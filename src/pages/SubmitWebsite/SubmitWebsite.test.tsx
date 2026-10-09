@@ -45,6 +45,25 @@ describe('SubmitWebsite', () => {
     ])
   })
 
+  it('asks for notification permission when the site is submitted', async () => {
+    const requestPermission = vi.fn(async () => 'granted' as const)
+    Object.defineProperty(window, 'Notification', {
+      configurable: true,
+      value: { permission: 'default', requestPermission },
+    })
+    await render(<SubmitWebsite />)
+
+    await typeUrl('meu-projeto.dev')
+    await waitFor(() => expect(nameInput()).toHaveValue('Meu-projeto'))
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Educação' }))
+    expect(requestPermission).not.toHaveBeenCalled()
+
+    await userEvent.click(submitButton())
+
+    expect(requestPermission).toHaveBeenCalledTimes(1)
+    Reflect.deleteProperty(window, 'Notification')
+  })
+
   it('keeps no draft when the server publishes right away', async () => {
     server.use(
       http.post(`${V1_API_URL}/websites`, async ({ request }) => {

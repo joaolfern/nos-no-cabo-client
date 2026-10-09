@@ -3,7 +3,8 @@
 .list {
   display: flex;
   flex-direction: column;
-  gap: $spacing-sm;
+  align-items: center;
+  gap: $spacing-xs;
   position: fixed;
   top: $spacing-md;
   right: 50%;

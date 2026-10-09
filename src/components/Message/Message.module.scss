@@ -1,19 +1,136 @@
-@use '@/styles/tokens/mixins.scss' as *;
 @use '@/styles/tokens/spacing.scss' as *;
 @use '@/styles/tokens/border.scss' as *;
 @use '@/styles/tokens/shadow.scss' as *;
-@use '@/styles/tokens/typography.scss' as *;
+@use '@/styles/tokens/animations.scss' as *;
+
+@property --message-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
 
 .message {
-  @include card();
-  border-radius: $radius-md;
-  padding: $spacing-sm $spacing-md;
-  border: $border-width-base solid var(--color-border-400);
-  box-shadow: $shadow-sm;
+  position: relative;
   display: flex;
   align-items: center;
-  gap: $spacing-sm;
+  gap: $spacing-xs;
+  width: min(32rem, calc(100vw - 2 * #{$spacing-md}));
+  padding: $spacing-xs $spacing-xxs $spacing-xs $spacing-md;
+  border-radius: $radius-lg;
+  background: var(--color-surface-glass);
+  backdrop-filter: blur(var(--blur-background));
+  box-shadow: $shadow-popover;
+  animation: messageFadeIn 0.2s ease-out;
 
-  min-width: min(400px, 100%);
-  font-weight: $font-weight-semi-bold;
+  @include has-motion {
+    animation: messageEnter 0.2s ease-out;
+  }
+
+  // The logo's gradient as the border, masked down to a hairline that turns.
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: $border-width-base;
+    border-radius: inherit;
+    background: conic-gradient(
+      from var(--message-angle),
+      var(--color-primary-400),
+      var(--color-secondary-400),
+      var(--color-primary-400)
+    );
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+
+    @include has-motion {
+      animation: messageRing 3s linear infinite;
+    }
+  }
+}
+
+.leaving {
+  animation: messageFadeOut 0.15s ease-in forwards;
+
+  @include has-motion {
+    animation: messageLeave 0.15s ease-in forwards;
+  }
+}
+
+.icon {
+  flex: none;
+  width: 1.125rem;
+  height: 1.125rem;
+
+  .info & {
+    color: var(--color-accent-400);
+  }
+
+  .success & {
+    color: var(--color-success-500);
+  }
+
+  .error & {
+    color: var(--color-danger-700);
+  }
+}
+
+.label {
+  flex: 1;
+  min-width: 0;
+}
+
+.action {
+  flex: none;
+  color: var(--color-text-base);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.message .dismiss {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  color: var(--color-text-muted);
+
+  &:hover {
+    color: var(--color-text-base);
+  }
+}
+
+@keyframes messageRing {
+  to {
+    --message-angle: 360deg;
+  }
+}
+
+@keyframes messageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+  }
+}
+
+@keyframes messageLeave {
+  to {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+  }
+}
+
+@keyframes messageFadeIn {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes messageFadeOut {
+  to {
+    opacity: 0;
+  }
 }

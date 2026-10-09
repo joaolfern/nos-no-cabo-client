@@ -6,40 +6,42 @@ import { handleMessageQueueUpdate } from '@/providers/MessageProvider/utils/hand
 import { useCallback, useEffect, useReducer, useRef } from 'react'
 import styles from './MessageProvider.module.scss'
 
+const MESSAGE_DURATION_MS = 4000
+
 type IMessageProviderProps = {
   children: React.ReactNode
 }
 
 export function MessageProvider({ children }: IMessageProviderProps) {
-  const [messageQueue, setMessageQueue] = useReducer(
-    handleMessageQueueUpdate,
-    []
-  )
+  const [messageQueue, dispatch] = useReducer(handleMessageQueueUpdate, [])
 
   const timersRef = useRef<
     Array<{ id: string; timer: ReturnType<typeof setTimeout> }>
   >([])
 
   const hideMessage: MessageContextProps['hideMessage'] = useCallback((id) => {
-    setMessageQueue(id)
+    dispatch({ type: 'leave', id })
     timersRef.current = timersRef.current.filter((timer) => {
       return timer.id !== id
     })
   }, [])
 
+  const removeMessage = useCallback((id: string) => {
+    dispatch({ type: 'remove', id })
+  }, [])
+
   const showMessage: MessageContextProps['showMessage'] = useCallback(
-    (label) => {
+    (label, options) => {
       const id = label || Date.now().toString()
 
-      setMessageQueue({
-        visible: true,
-        label,
-        id,
+      dispatch({
+        type: 'show',
+        item: { visible: true, label, id, tone: options?.tone ?? 'info' },
       })
 
       const timer = setTimeout(() => {
         hideMessage(id)
-      }, 3000)
+      }, MESSAGE_DURATION_MS)
 
       timersRef.current.push({ id, timer })
 
@@ -61,22 +63,20 @@ export function MessageProvider({ children }: IMessageProviderProps) {
     hideMessage,
   }
 
-  const onDismiss = useCallback(() => {
-    hideMessage()
-  }, [hideMessage])
-
   return (
     <MessageContext.Provider value={value}>
       {children}
       <Portal container={document.body}>
-        <div className={styles.list}>
+        <div className={styles.list} role='status' aria-live='polite'>
           {messageQueue.map((item) => (
             <Message
               key={item.id}
               id={item.id}
-              onDismiss={onDismiss}
               label={item.label}
+              tone={item.tone}
               visible={item.visible}
+              onDismiss={() => hideMessage(item.id)}
+              onLeft={() => removeMessage(item.id)}
             />
           ))}
         </div>

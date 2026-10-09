@@ -13,6 +13,7 @@ export const DIMMED_THEME_VARIABLES: Record<ThemeVariables, string> = {
   'color-background-300': '#302f3d',
 
   'color-surface': '#171524',
+  'color-surface-glass': '#171524b8',
   'color-raised': '#252332',
 
   'color-text-base': '#f2f0f5',
