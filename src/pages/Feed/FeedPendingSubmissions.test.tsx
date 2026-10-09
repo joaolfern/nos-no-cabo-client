@@ -199,6 +199,34 @@ describe('Feed with pending submissions', () => {
     )
   })
 
+  it('notifies through the service worker where the constructor is illegal', async () => {
+    const showNotification = vi.fn(async () => {})
+    Object.defineProperty(window, 'Notification', {
+      configurable: true,
+      value: Object.assign(
+        vi.fn(function () {
+          throw new TypeError('Illegal constructor')
+        }),
+        { permission: 'granted' }
+      ),
+    })
+    Object.defineProperty(navigator, 'serviceWorker', {
+      configurable: true,
+      value: { getRegistration: async () => ({ showNotification }) },
+    })
+    storeDrafts([draftFor({}, Date.now() - MOCK_REVIEW_DELAY_MS)])
+
+    await render(<Feed />)
+
+    await waitFor(() =>
+      expect(showNotification).toHaveBeenCalledWith(
+        'Meu rascunho foi publicado',
+        expect.objectContaining({ tag: expect.stringContaining('nnc-') })
+      )
+    )
+    Reflect.deleteProperty(navigator, 'serviceWorker')
+  })
+
   it('subscribes checking drafts to push once, when permission is granted', async () => {
     Object.defineProperty(window, 'Notification', {
       configurable: true,

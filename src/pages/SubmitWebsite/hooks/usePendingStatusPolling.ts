@@ -13,13 +13,24 @@ import {
   type IPendingSubmission,
 } from '@/pages/SubmitWebsite/utils/pendingSubmissions'
 
+async function showNotification(title: string, options: NotificationOptions) {
+  const registration =
+    'serviceWorker' in navigator
+      ? await navigator.serviceWorker.getRegistration()
+      : undefined
+  // Mobile Chrome only allows notifications through a service worker.
+  if (registration) return registration.showNotification(title, options)
+
+  new Notification(title, options)
+}
+
 function notifyOutcome(draft: IPendingSubmission, isPublished: boolean) {
   if (!('Notification' in window) || Notification.permission !== 'granted') {
     return
   }
 
   // The tag makes a second tab or a repeated check replace, not duplicate, it.
-  new Notification(
+  showNotification(
     isPublished
       ? `${draft.name} foi publicado`
       : `${draft.name} não foi aceito`,
@@ -29,7 +40,7 @@ function notifyOutcome(draft: IPendingSubmission, isPublished: boolean) {
         ? 'Já aparece no feed do Nós no Cabo.'
         : rejectionMessage(draft.rejectionReason),
     }
-  )
+  ).catch(() => {})
 }
 
 // Checks every checking draft in one request: every 15 s during the first
