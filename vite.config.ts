@@ -59,7 +59,12 @@ export default defineConfig({
       injectManifest: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
         // browser-*.js is MSW's chunk (src/__mocks__/browser.ts), only loaded with mocks on.
-        globIgnores: ['mockServiceWorker.js', 'og.png', 'assets/browser-*.js'],
+        globIgnores: [
+          'mockServiceWorker.js',
+          'og.png',
+          'assets/browser-*.js',
+          'fonts/openSans/OpenSansItalic.woff2',
+        ],
       },
       devOptions: { enabled: false },
     }),
