@@ -11,6 +11,9 @@ export function Logo() {
           className={styles.image}
           src='/logos/logo.png'
           alt='Nós no cabo'
+          width={608}
+          height={410}
+          loading='eager'
         />
         <span>
           <Typography className={styles.subtitle} variant='titleSm'>
