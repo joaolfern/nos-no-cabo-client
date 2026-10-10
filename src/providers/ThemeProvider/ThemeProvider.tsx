@@ -6,6 +6,7 @@ import {
   isThemeMode,
   nextThemeMode,
   recordSeenMode,
+  themeColor,
 } from '@/themes/themeModes'
 import {
   useEffect,
@@ -54,8 +55,15 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     })
   }
 
+  function applyThemeColor(themeMode: IThemeContext['mode']) {
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', themeColor(themeMode))
+  }
+
   useLayoutEffect(() => {
     applyThemeVariables(mode)
+    applyThemeColor(mode)
     setDimmedUnlocked(recordSeenMode(mode))
   }, [mode])
 

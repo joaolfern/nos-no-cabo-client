@@ -12,6 +12,11 @@ export const THEME_VARIABLES: Record<
   light: LIGHT_THEME_VARIABLES,
 }
 
+// The browser/OS bar color (meta theme-color) for each mode: the app's page background.
+export function themeColor(mode: ThemeModes) {
+  return THEME_VARIABLES[mode]['color-background-100']
+}
+
 const DIMMED_UNLOCKED_KEY = 'dimmedThemeUnlocked'
 const SEEN_MODES_KEY = 'seenThemeModes'
 

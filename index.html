@@ -11,16 +11,29 @@
       crossorigin
     />
     <link rel="apple-touch-icon" href="/logos/apple-touch-icon-180x180.png" />
-    <meta
-      name="theme-color"
-      media="(prefers-color-scheme: light)"
-      content="#fbfafb"
-    />
-    <meta
-      name="theme-color"
-      media="(prefers-color-scheme: dark)"
-      content="#0C0D10"
-    />
+    <meta name="theme-color" content="#fbfafb" />
+    <script>
+      // Mirrors themeColor() in src/themes/themeModes.ts, so the bar matches the saved theme before React loads.
+      ;(function () {
+        var THEME_COLORS = {
+          light: '#fbfafb',
+          dark: '#0C0D10',
+          dimmed: '#050313',
+        }
+        var mode = null
+        try {
+          mode = localStorage.getItem('themeMode')
+        } catch (error) {}
+        if (!THEME_COLORS[mode]) {
+          mode = matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark'
+            : 'light'
+        }
+        document
+          .querySelector('meta[name="theme-color"]')
+          .setAttribute('content', THEME_COLORS[mode])
+      })()
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Nós no Cabo</title>
     <meta

@@ -15,7 +15,7 @@ export const PWA_MANIFEST: Partial<ManifestOptions> = {
   display: 'standalone',
   display_override: ['standalone', 'minimal-ui'],
   orientation: 'any',
-  background_color: '#fbfafb',
+  background_color: '#1a0d2e',
   theme_color: '#fbfafb',
   categories: ['education', 'social'],
   icons: [
