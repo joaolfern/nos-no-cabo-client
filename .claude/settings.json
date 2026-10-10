@@ -1,0 +1,17 @@
+{
+  "extraKnownMarketplaces": {
+    "agent-kit": {
+      "source": {
+        "source": "github",
+        "repo": "joaolfern/agent-kit"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "core@agent-kit": true,
+    "react@agent-kit": true,
+    "ui-craft@agent-kit": true,
+    "cloudflare@agent-kit": true,
+    "kit@agent-kit": true
+  }
+}

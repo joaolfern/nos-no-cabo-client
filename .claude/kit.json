@@ -1,0 +1,33 @@
+{
+  "name": "nosnocabo",
+  "title": "Nós no Cabo",
+  "description": "webring de projetos brasileiros de tecnologia (frontend; backend em ../nos-sr).",
+  "domain": "nosnocabo.com.br",
+  "uiLanguage": "pt-BR",
+  "contractPackage": "@nosnocabo/contract",
+  "agentsMd": true,
+  "marketplace": {
+    "source": "github",
+    "repo": "joaolfern/agent-kit"
+  },
+  "side": "web",
+  "modules": [
+    "core",
+    "js-tooling",
+    "react-spa",
+    "ui",
+    "pwa",
+    "cloudflare-spa"
+  ],
+  "examples": {
+    "feature": "src/pages/Feed/",
+    "queryHook": "src/pages/Feed/hooks/useFeedWebsites.ts",
+    "skeleton": "src/pages/Feed/components/FeedCard/FeedCardSkeleton.tsx"
+  },
+  "tokens": {
+    "page": "--color-background-100",
+    "surface": "--color-surface",
+    "raised": "--color-raised",
+    "border": "--color-border-400"
+  }
+}
