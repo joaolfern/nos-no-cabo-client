@@ -83,11 +83,20 @@
 }
 
 .action {
+  display: inline-flex;
   flex: none;
+  align-items: center;
+  gap: $spacing-xxxs;
   color: var(--color-text-base);
   font: inherit;
   text-decoration: underline;
   cursor: pointer;
+
+  &:disabled {
+    color: var(--color-text-muted);
+    text-decoration: none;
+    cursor: progress;
+  }
 }
 
 .message .dismiss {

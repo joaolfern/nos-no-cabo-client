@@ -9,7 +9,11 @@ export function ServiceWorkerUpdatePrompt() {
     registerServiceWorker((applyUpdate) =>
       showMessage('Nova versão disponível.', {
         persistent: true,
-        action: { label: 'Atualizar', onPress: applyUpdate },
+        action: {
+          label: 'Atualizar',
+          pendingLabel: 'Atualizando',
+          onPress: applyUpdate,
+        },
       })
     )
   }, [showMessage])

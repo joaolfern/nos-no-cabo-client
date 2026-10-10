@@ -2,7 +2,8 @@ export type MessageTone = 'info' | 'success' | 'error'
 
 export interface IMessageAction {
   label: string
-  onPress: () => void
+  pendingLabel?: string
+  onPress: () => void | Promise<unknown>
 }
 
 export interface IMessageOptions {

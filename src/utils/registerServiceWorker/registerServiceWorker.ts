@@ -1,7 +1,7 @@
 import { registerSW } from 'virtual:pwa-register'
 import { ENABLE_MOCKS } from '@/config/env'
 
-type OnUpdateReady = (applyUpdate: () => void) => void
+type OnUpdateReady = (applyUpdate: () => Promise<void>) => void
 
 let isRegistered = false
 

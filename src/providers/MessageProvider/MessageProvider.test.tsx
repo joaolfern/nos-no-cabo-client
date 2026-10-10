@@ -35,6 +35,30 @@ function UpdateButton({ onPress }: { onPress: () => void }) {
   )
 }
 
+function PendingButton({ onPress }: { onPress: () => Promise<unknown> }) {
+  const { showMessage } = useMessage()
+  return (
+    <button
+      onClick={() =>
+        showMessage('Nova versão disponível.', {
+          persistent: true,
+          action: { label: 'Atualizar', pendingLabel: 'Atualizando', onPress },
+        })
+      }
+    >
+      Avisar
+    </button>
+  )
+}
+
+function renderPending(onPress: () => Promise<unknown>) {
+  render(
+    <MessageProvider>
+      <PendingButton onPress={onPress} />
+    </MessageProvider>
+  )
+}
+
 function renderProvider() {
   return render(
     <MessageProvider>
@@ -82,5 +106,25 @@ describe('MessageProvider', () => {
     expect(screen.getByText('Nova versão disponível.')).toBeInTheDocument()
     expect(onPress).toHaveBeenCalledOnce()
     vi.useRealTimers()
+  })
+
+  it('shows the action as in progress until the work is done', async () => {
+    renderPending(() => new Promise(() => {}))
+
+    await userEvent.click(screen.getByRole('button', { name: 'Avisar' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Atualizar' }))
+
+    expect(screen.getByRole('button', { name: 'Atualizando' })).toBeDisabled()
+  })
+
+  it('lets the action be pressed again when it fails', async () => {
+    renderPending(() => Promise.reject(new Error('sem rede')))
+
+    await userEvent.click(screen.getByRole('button', { name: 'Avisar' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Atualizar' }))
+
+    expect(
+      await screen.findByRole('button', { name: 'Atualizar' })
+    ).toBeEnabled()
   })
 })
