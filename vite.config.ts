@@ -5,8 +5,9 @@ import babel from '@rolldown/plugin-babel'
 import path from 'path'
 import svgr from 'vite-plugin-svgr'
 import { VitePWA } from 'vite-plugin-pwa'
-import { pageMetaPlugin } from './scripts/vitePageMetaPlugin'
-import { PWA_MANIFEST } from './scripts/pwaManifest'
+import { pageMetaPlugin } from './scripts/vitePageMetaPlugin.ts'
+import { PWA_MANIFEST } from './scripts/pwaManifest.ts'
+import { pwaRegisterPlugin } from './scripts/vitePwaRegisterPlugin.ts'
 
 export default defineConfig({
   plugins: [
@@ -37,11 +38,12 @@ export default defineConfig({
       },
       devOptions: { enabled: false },
     }),
+    pwaRegisterPlugin(),
   ],
   resolve: {
     tsconfigPaths: true,
     alias: {
-      '@': path.resolve(__dirname, 'src'),
+      '@': path.resolve(import.meta.dirname, 'src'),
     },
   },
   css: {

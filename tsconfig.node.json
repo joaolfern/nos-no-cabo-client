@@ -24,6 +24,7 @@
   "include": [
     "vite.config.ts",
     "scripts/vitePageMetaPlugin.ts",
-    "scripts/pwaManifest.ts"
+    "scripts/pwaManifest.ts",
+    "scripts/vitePwaRegisterPlugin.ts"
   ]
 }
