@@ -20,6 +20,7 @@ import { useLeaveFormPrompt } from '@/pages/SubmitWebsite/hooks/useLeaveFormProm
 import { useSubmissionFields } from '@/pages/SubmitWebsite/hooks/useSubmissionFields'
 import { useSubmitWebsite } from '@/pages/SubmitWebsite/hooks/useSubmitWebsite'
 import { useWebsitePreview } from '@/pages/SubmitWebsite/hooks/useWebsitePreview'
+import { sharedUrl } from '@/pages/SubmitWebsite/utils/sharedUrl'
 import {
   DEFAULT_COLOR,
   DESCRIPTION_MAX_LENGTH,
@@ -58,7 +59,7 @@ function focusFirstError(errors: SubmissionFormErrors) {
 
 export function SubmitForm({ onSubmitted }: SubmitFormProps) {
   const [searchParams] = useSearchParams()
-  const [url, setUrl] = useState(() => searchParams.get('url') ?? '')
+  const [url, setUrl] = useState(() => sharedUrl(searchParams))
   const [hasTriedSubmit, setHasTriedSubmit] = useState(false)
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
 

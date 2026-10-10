@@ -107,6 +107,17 @@ describe('SubmitWebsite', () => {
     await waitFor(() => expect(nameInput()).toHaveValue('Meu-projeto'))
   })
 
+  it('starts from a link shared from another app', async () => {
+    window.history.pushState(
+      {},
+      '',
+      '/websites/novo?text=Olha%20https%3A%2F%2Fmeu-projeto.dev'
+    )
+    await render(<SubmitWebsite />)
+
+    expect(urlInput()).toHaveValue('https://meu-projeto.dev')
+  })
+
   it('links to the existing page and blocks a duplicate', async () => {
     await render(<SubmitWebsite />)
 
