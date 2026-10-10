@@ -6,6 +6,7 @@ import path from 'path'
 import svgr from 'vite-plugin-svgr'
 import { VitePWA } from 'vite-plugin-pwa'
 import { pageMetaPlugin } from './scripts/vitePageMetaPlugin'
+import { PWA_MANIFEST } from './scripts/pwaManifest'
 
 export default defineConfig({
   plugins: [
@@ -19,42 +20,7 @@ export default defineConfig({
       filename: 'sw.ts',
       injectRegister: false,
       registerType: 'prompt',
-      manifest: {
-        id: '/',
-        name: 'Nós no Cabo',
-        short_name: 'Nós no Cabo',
-        description:
-          'Webring de projetos brasileiros de tecnologia: descubra sites de educação, saúde, cidades e mais, e adicione o seu.',
-        lang: 'pt-BR',
-        start_url: '/websites',
-        scope: '/',
-        display: 'standalone',
-        background_color: '#fbfafb',
-        theme_color: '#fbfafb',
-        icons: [
-          {
-            src: '/logos/pwa-64x64.png',
-            sizes: '64x64',
-            type: 'image/png',
-          },
-          {
-            src: '/logos/pwa-192x192.png',
-            sizes: '192x192',
-            type: 'image/png',
-          },
-          {
-            src: '/logos/pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-          },
-          {
-            src: '/logos/maskable-icon-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'maskable',
-          },
-        ],
-      },
+      manifest: PWA_MANIFEST,
       includeManifestIcons: false,
       injectManifest: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
@@ -64,7 +30,10 @@ export default defineConfig({
           'og.png',
           'assets/browser-*.js',
           'fonts/openSans/OpenSansItalic.woff2',
+          'screenshots/**',
         ],
+        // Minifying turns 'push' into `push`, and PWABuilder's feature regexes only match quotes.
+        minify: false,
       },
       devOptions: { enabled: false },
     }),
